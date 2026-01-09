@@ -106,15 +106,16 @@ const App = () => (
               </Suspense>
             }
           />
+          {/* Catch-all route inside Layout to maintain header/footer consistency */}
+          <Route
+            path="*"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <NotFound />
+              </Suspense>
+            }
+          />
         </Route>
-        <Route
-          path="*"
-          element={
-            <Suspense fallback={<PageLoader />}>
-              <NotFound />
-            </Suspense>
-          }
-        />
       </Routes>
     </TooltipProvider>
   </BrowserRouter>

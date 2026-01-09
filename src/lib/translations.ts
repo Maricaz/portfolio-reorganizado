@@ -79,6 +79,11 @@ export const translations = {
       title: 'Tecnologia da Informação',
       view_project: 'Ver Projeto',
     },
+    notFound: {
+      title: '404',
+      message: 'Página não encontrada.',
+      back_home: 'Voltar ao início',
+    },
   },
   en: {
     nav: {
@@ -160,6 +165,11 @@ export const translations = {
       title: 'Information Technology',
       view_project: 'View Project',
     },
+    notFound: {
+      title: '404',
+      message: 'Page not found.',
+      back_home: 'Back to home',
+    },
   },
   ko: {
     nav: {
@@ -240,6 +250,11 @@ export const translations = {
     it: {
       title: '정보 기술',
       view_project: '프로젝트 보기',
+    },
+    notFound: {
+      title: '404',
+      message: '페이지를 찾을 수 없습니다.',
+      back_home: '홈으로 돌아가기',
     },
   },
 }
