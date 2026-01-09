@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
-import { MusicTrack, AlbumSettings } from '@/types'
+import { MusicTrack, AlbumConcept } from '@/types'
 
 export const getMusicTracks = async () => {
   return await supabase
@@ -9,10 +9,10 @@ export const getMusicTracks = async () => {
     .returns<MusicTrack[]>()
 }
 
-export const getAlbumSettings = async () => {
+export const getAlbumConcept = async () => {
   return await supabase
-    .from('album_settings')
+    .from('album_concept')
     .select('*')
     .limit(1)
-    .single<AlbumSettings>()
+    .single<AlbumConcept>()
 }

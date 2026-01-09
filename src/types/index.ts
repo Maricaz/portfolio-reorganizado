@@ -29,28 +29,39 @@ export interface Book {
 
 export interface MusicTrack {
   id: string
+  track_id: string
   title: string
   artist: string
-  deezer_id: string
-  lyrics_pt: string | null
-  lyrics_en: string | null
-  lyrics_ko: string | null
-  // New fields
-  audio_url: string | null
-  spotify_track_id: string | null
-  deezer_track_id: string | null
-  apple_music_id: string | null
-  youtube_video_id: string | null
-  lyrics: Record<string, string> // JSONB
+  src_url: string | null
+  platforms: {
+    spotify?: string
+    deezer?: string
+    apple?: string
+    youtube?: string
+  }
+  lyrics: {
+    pt?: string
+    en?: string
+    ko?: string
+    [key: string]: string | undefined
+  }
   created_at: string
 }
 
-export interface AlbumSettings {
+export interface AlbumConcept {
   id: string
-  title: string
-  description_pt: string
-  description_en: string
-  description_ko: string
+  title: {
+    pt?: string
+    en?: string
+    ko?: string
+    [key: string]: string | undefined
+  }
+  description: {
+    pt?: string
+    en?: string
+    ko?: string
+    [key: string]: string | undefined
+  }
   video_url: string | null
   cover_url: string | null
   created_at: string
@@ -69,6 +80,27 @@ export interface ResumeItem {
   description_en: string
   description_ko: string
   created_at: string
+}
+
+export interface Skill {
+  id: string
+  label: string
+  value: number
+}
+
+export interface SocialLink {
+  id: string
+  platform: string
+  url: string
+}
+
+export interface SiteSettings {
+  brand_config: {
+    primary_gradient: string
+  }
+  resume_config: {
+    url: string
+  }
 }
 
 export interface ContactSubmission {

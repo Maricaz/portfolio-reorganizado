@@ -1,192 +1,135 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useSEO } from '@/hooks/use-seo'
-import { PhotoCarousel } from '@/components/PhotoCarousel'
-import { Button } from '@/components/ui/button'
+import { getProfileContent, getSocialLinks, getSkills } from '@/services/about'
+import { SocialLink, Skill } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ProfileContent, SocialLink, ProfessionalSkill } from '@/types'
+import { useSEO } from '@/hooks/use-seo'
 import {
-  getProfileContent,
-  getSocialLinks,
-  getProfessionalSkills,
-} from '@/services/about'
-import {
-  Instagram,
-  Linkedin,
   Github,
-  FileText,
-  GraduationCap,
-  Download,
+  Linkedin,
+  Youtube,
+  Instagram,
+  ExternalLink,
+  Code2,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-
-const IconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  instagram: Instagram,
-  linkedin: Linkedin,
-  github: Github,
-  lattes: GraduationCap,
-  resume: FileText,
-}
-
-const Paragraphs = ({ text }: { text: string }) => {
-  if (!text) return null
-  return (
-    <div className="space-y-4">
-      {text.split('\n\n').map((paragraph, index) => (
-        <p
-          key={index}
-          className="text-lg leading-relaxed text-muted-foreground indent-pt"
-        >
-          {paragraph}
-        </p>
-      ))}
-    </div>
-  )
-}
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { PhotoCarousel } from '@/components/PhotoCarousel'
 
 export default function AboutPage() {
-  const { language } = useLanguage()
-  const [profile, setProfile] = useState<ProfileContent | null>(null)
+  const { t, language } = useLanguage()
   const [socials, setSocials] = useState<SocialLink[]>([])
-  const [skills, setSkills] = useState<ProfessionalSkill[]>([])
+  const [skills, setSkills] = useState<Skill[]>([])
   const [loading, setLoading] = useState(true)
 
   useSEO({
-    title: 'Sobre Mariana Azevedo',
-    description: profile
-      ? (profile[`bio_${language}` as keyof ProfileContent] as string)?.slice(
-          0,
-          160,
-        )
-      : 'About Mariana Azevedo',
+    title: `${t.about.title} - Portfolio`,
+    description: t.about.description,
   })
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [profileData, socialData, skillsData] = await Promise.all([
-          getProfileContent(),
-          getSocialLinks(),
-          getProfessionalSkills(),
-        ])
-        setProfile(profileData)
-        setSocials(socialData)
-        setSkills(skillsData)
-      } catch (error) {
-        console.error('Error loading about page data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+      setLoading(true)
+      const [socialsRes, skillsRes] = await Promise.all([
+        getSocialLinks(),
+        getSkills(),
+      ])
 
+      if (socialsRes) setSocials(socialsRes)
+      if (skillsRes) setSkills(skillsRes)
+      setLoading(false)
+    }
     fetchData()
   }, [])
 
   const getIcon = (platform: string) => {
-    const NormalizedPlatform = platform.toLowerCase()
-    if (IconMap[NormalizedPlatform]) {
-      return IconMap[NormalizedPlatform]
-    }
-    return IconMap['resume']
+    const p = platform.toLowerCase()
+    if (p.includes('github')) return <Github className="h-5 w-5" />
+    if (p.includes('linkedin')) return <Linkedin className="h-5 w-5" />
+    if (p.includes('youtube')) return <Youtube className="h-5 w-5" />
+    if (p.includes('instagram')) return <Instagram className="h-5 w-5" />
+    return <ExternalLink className="h-5 w-5" />
   }
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-12 space-y-8">
-        <Skeleton className="h-12 w-1/3" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div className="space-y-4">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6" />
-          </div>
-          <Skeleton className="h-[400px] w-full rounded-2xl" />
-        </div>
-      </div>
-    )
-  }
-
-  const bio = profile
-    ? (profile[`bio_${language}` as keyof ProfileContent] as string)
-    : ''
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8 animate-fade-in">
-        Sobre Mariana Azevedo
-      </h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-        {/* Left Column (Desktop) / Second (Mobile) */}
-        <div className="space-y-8 order-2 md:order-1 animate-fade-in-up">
-          {/* Bio */}
-          <div className="prose dark:prose-invert max-w-none">
-            <Paragraphs text={bio} />
+    <div className="container mx-auto px-4 py-12 md:py-16 max-w-5xl space-y-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="space-y-6 animate-fade-in-down">
+          <h1 className="text-4xl font-bold tracking-tight">{t.about.title}</h1>
+          <div className="prose dark:prose-invert">
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              {t.about.description}
+            </p>
+            {/* Hardcoded profile text for now as it's not in the new schema requirements */}
+            <p className="text-muted-foreground leading-relaxed mt-4">
+              {language === 'pt' &&
+                'Sou uma desenvolvedora apaixonada por tecnologia e música. Crio soluções digitais que conectam pessoas e ideias.'}
+              {language === 'en' &&
+                'I am a developer passionate about technology and music. I create digital solutions that connect people and ideas.'}
+              {language === 'ko' &&
+                '저는 기술과 음악에 열정적인 개발자입니다. 사람과 아이디어를 연결하는 디지털 솔루션을 만듭니다.'}
+            </p>
           </div>
 
-          {/* Social & Actions */}
-          <div className="flex flex-wrap gap-4">
-            {socials.map((link) => {
-              const Icon = getIcon(link.platform)
-              const isResume = link.platform === 'resume'
-
-              return (
+          <div className="flex flex-wrap gap-4 pt-4">
+            {loading ? (
+              <Skeleton className="h-10 w-full" />
+            ) : (
+              socials.map((social) => (
                 <Button
-                  key={link.id}
+                  key={social.id}
+                  variant="outline"
+                  size="sm"
                   asChild
-                  className={cn(
-                    'transition-all duration-300',
-                    isResume
-                      ? 'btn-primary'
-                      : 'glass-soft hover:bg-primary/10 text-foreground',
-                  )}
-                  variant={isResume ? 'default' : 'outline'}
+                  className="gap-2"
                 >
                   <a
-                    href={link.url}
+                    href={social.url}
                     target="_blank"
-                    rel="noreferrer"
-                    download={isResume}
+                    rel="noopener noreferrer"
                   >
-                    <Icon className="mr-2 h-4 w-4" />
-                    {link.platform === 'lattes'
-                      ? 'Lattes'
-                      : link.platform.charAt(0).toUpperCase() +
-                        link.platform.slice(1)}
-                    {isResume && <Download className="ml-2 h-3 w-3" />}
+                    {getIcon(social.platform)}
+                    {social.platform}
                   </a>
                 </Button>
-              )
-            })}
-          </div>
-
-          {/* Skills Grid */}
-          <div className="space-y-4">
-            <h3 className="text-2xl font-bold">Top Skills</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {skills.map((skill) => (
-                <Card key={skill.id} className="neon-card bg-card/50">
-                  <CardContent className="p-4 space-y-2">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-medium">{skill.name}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {skill.proficiency}%
-                      </span>
-                    </div>
-                    <Progress value={skill.proficiency} className="h-2" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+              ))
+            )}
           </div>
         </div>
 
-        {/* Right Column (Desktop) / First (Mobile) */}
-        <div className="order-1 md:order-2 animate-fade-in delay-200">
-          <PhotoCarousel auto={true} delay={4200} />
+        <div className="animate-fade-in-up">
+          <PhotoCarousel />
         </div>
+      </div>
+
+      <div className="space-y-8 animate-fade-in">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-primary/10 rounded-lg text-primary">
+            <Code2 className="h-6 w-6" />
+          </div>
+          <h2 className="text-2xl font-bold">Skills</h2>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-24 w-full" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+            {skills.map((skill) => (
+              <div key={skill.id} className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium">{skill.label}</span>
+                  <span className="text-muted-foreground">{skill.value}%</span>
+                </div>
+                <Progress value={skill.value} className="h-2" />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

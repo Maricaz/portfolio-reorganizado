@@ -1,18 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
-import { ProfileContent, SocialLink, ProfessionalSkill } from '@/types'
-
-export const getProfileContent = async () => {
-  const { data, error } = await supabase
-    .from('profile_content')
-    .select('*')
-    .single()
-
-  if (error) {
-    console.error('Error fetching profile content:', error)
-    return null
-  }
-  return data as ProfileContent
-}
+import { SocialLink, Skill } from '@/types'
 
 export const getSocialLinks = async () => {
   const { data, error } = await supabase
@@ -27,16 +14,15 @@ export const getSocialLinks = async () => {
   return data as SocialLink[]
 }
 
-export const getProfessionalSkills = async () => {
+export const getSkills = async () => {
   const { data, error } = await supabase
-    .from('professional_skills')
+    .from('skills')
     .select('*')
-    .order('proficiency', { ascending: false })
-    .limit(4)
+    .order('value', { ascending: false })
 
   if (error) {
-    console.error('Error fetching professional skills:', error)
+    console.error('Error fetching skills:', error)
     return []
   }
-  return data as ProfessionalSkill[]
+  return data as Skill[]
 }

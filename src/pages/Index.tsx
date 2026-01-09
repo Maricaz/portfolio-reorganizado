@@ -1,129 +1,177 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Cpu, Music2, BookOpen, User2, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { useSEO } from '@/hooks/use-seo'
+import { ArrowRight, Code, Music, BookOpen, User, Download } from 'lucide-react'
+import { getLatestItem } from '@/services/database'
+import { getSiteSettings } from '@/services/settings'
+import { SiteSettings } from '@/types'
 import { useAnalytics } from '@/hooks/use-analytics'
 import { cn } from '@/lib/utils'
 
 export default function Index() {
   const { t } = useLanguage()
-  const navigate = useNavigate()
   const { trackResumeDownload } = useAnalytics()
-  const resumeUrl = '/resume.pdf' // Placeholder for actual resume URL
+  const [latest, setLatest] = useState<any>(null)
+  const [settings, setSettings] = useState<Partial<SiteSettings>>({})
+  const [gradient, setGradient] = useState('from-indigo-500 to-fuchsia-500')
 
-  useSEO({
-    title: 'Mariana Azevedo — Portfólio de TI, Música e Livros',
-    description: 'Portfólio vivo.',
-  })
+  useEffect(() => {
+    async function loadData() {
+      const [latestItem, siteSettings] = await Promise.all([
+        getLatestItem(),
+        getSiteSettings(),
+      ])
 
-  const handleResumeClick = () => {
+      if (latestItem) setLatest(latestItem)
+      if (siteSettings) {
+        setSettings(siteSettings)
+        if (siteSettings.brand_config?.primary_gradient) {
+          setGradient(siteSettings.brand_config.primary_gradient)
+        }
+      }
+    }
+    loadData()
+  }, [])
+
+  const handleDownloadResume = () => {
     trackResumeDownload()
-    window.open(resumeUrl, '_blank')
+    if (settings.resume_config?.url) {
+      window.open(settings.resume_config.url, '_blank')
+    }
   }
 
-  const cards = [
-    {
-      icon: Cpu,
-      title: t.home.cards.it,
-      href: '/it',
-      color: 'text-blue-500',
-    },
-    {
-      icon: Music2,
-      title: t.home.cards.music,
-      href: '/music',
-      color: 'text-purple-500',
-    },
-    {
-      icon: BookOpen,
-      title: t.home.cards.books,
-      href: '/books',
-      color: 'text-green-500',
-    },
-    {
-      icon: User2,
-      title: t.home.cards.about,
-      href: '/about',
-      color: 'text-pink-500',
-    },
-  ]
-
   return (
-    <div className="relative min-h-screen w-full overflow-hidden font-sans">
-      {/* Hero Background with Gradient Overlay */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="/media/capa.jpg"
-          alt="Mariana Azevedo"
-          className="h-full w-full object-cover opacity-35"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#f7efe6]/40 to-[#f7efe6] dark:from-zinc-900/40 dark:to-zinc-950/80" />
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-10 container mx-auto flex min-h-screen items-center justify-center px-4 py-20">
-        <div className="grid w-full grid-cols-1 gap-12 md:grid-cols-2 items-center">
-          {/* Left Column: Hero Text & CTA */}
-          <div className="flex flex-col items-center space-y-8 text-center md:items-start md:text-left">
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl animate-fade-in-up">
+    <div className="flex flex-col min-h-screen">
+      {/* Hero Section */}
+      <section className="flex-1 flex flex-col justify-center items-center text-center px-4 py-20 md:py-32 space-y-8 animate-fade-in">
+        <div className="space-y-4 max-w-3xl">
+          <h1 className="text-4xl md:text-7xl font-bold tracking-tight">
+            <span
+              className={cn(
+                'bg-clip-text text-transparent bg-gradient-to-r',
+                gradient,
+              )}
+            >
               {t.home.hero_title}
-            </h1>
-            <h2 className="text-xl text-muted-foreground sm:text-2xl md:text-3xl font-light animate-fade-in-up delay-100 max-w-2xl">
-              {t.home.hero_subtitle}
-            </h2>
-
-            <div className="flex flex-col gap-4 sm:flex-row animate-fade-in-up delay-200">
-              <Button
-                size="lg"
-                className="rounded-full px-8 text-lg gap-2"
-                onClick={() => navigate('/contact')}
-              >
-                <Mail className="h-5 w-5" />
-                {t.home.cta_contact}
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-full px-8 text-lg gap-2 bg-background/50 backdrop-blur-sm"
-                onClick={handleResumeClick}
-              >
-                <Download className="h-5 w-5" />
-                {t.home.resume_btn}
-              </Button>
-            </div>
-          </div>
-
-          {/* Right Column: Feature Cards Grid */}
-          <div className="glass-soft p-6 rounded-3xl animate-fade-in delay-300">
-            <div className="grid grid-cols-2 gap-4">
-              {cards.map((card, index) => {
-                const Icon = card.icon
-                return (
-                  <Link key={index} to={card.href} className="group">
-                    <Card className="h-full border-primary/10 bg-background/50 hover:bg-background/80 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                      <CardContent className="flex flex-col items-center justify-center p-6 text-center space-y-4">
-                        <div
-                          className={cn(
-                            'p-3 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors',
-                            card.color,
-                          )}
-                        >
-                          <Icon className="h-8 w-8" />
-                        </div>
-                        <span className="font-semibold text-sm sm:text-base leading-tight">
-                          {card.title}
-                        </span>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl text-muted-foreground">
+            {t.home.hero_subtitle}
+          </p>
         </div>
-      </div>
+
+        <div className="flex flex-wrap gap-4 justify-center">
+          <Button size="lg" asChild className="rounded-full px-8">
+            <Link to="/it">
+              {t.home.cta}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="rounded-full px-8"
+            onClick={handleDownloadResume}
+            disabled={!settings.resume_config?.url}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            {t.home.resume_btn}
+          </Button>
+        </div>
+      </section>
+
+      {/* Cards Navigation */}
+      <section className="container px-4 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Link to="/it" className="group">
+            <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-primary/50 group-hover:-translate-y-1">
+              <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full justify-center">
+                <div className="p-4 rounded-full bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                  <Code className="h-8 w-8" />
+                </div>
+                <h3 className="font-bold text-lg">{t.home.cards.it}</h3>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/music" className="group">
+            <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-primary/50 group-hover:-translate-y-1">
+              <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full justify-center">
+                <div className="p-4 rounded-full bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                  <Music className="h-8 w-8" />
+                </div>
+                <h3 className="font-bold text-lg">{t.home.cards.music}</h3>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/books" className="group">
+            <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-primary/50 group-hover:-translate-y-1">
+              <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full justify-center">
+                <div className="p-4 rounded-full bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
+                  <BookOpen className="h-8 w-8" />
+                </div>
+                <h3 className="font-bold text-lg">{t.home.cards.books}</h3>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/about" className="group">
+            <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-primary/50 group-hover:-translate-y-1">
+              <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full justify-center">
+                <div className="p-4 rounded-full bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
+                  <User className="h-8 w-8" />
+                </div>
+                <h3 className="font-bold text-lg">{t.home.cards.about}</h3>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      </section>
+
+      {/* Latest Update Preview */}
+      {latest && (
+        <section className="container px-4 pb-20">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold">{t.home.latest}</h2>
+            <Button variant="ghost" asChild>
+              <Link to={latest.type === 'project' ? '/it' : '/books'}>
+                {t.home.explore} <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+
+          <Card className="overflow-hidden hover:shadow-md transition-shadow">
+            <div className="flex flex-col md:flex-row">
+              <div className="md:w-1/3 h-64 md:h-auto relative">
+                <img
+                  src={latest.item.image_url}
+                  alt={latest.item.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6 md:w-2/3 flex flex-col justify-center space-y-4">
+                <div className="text-sm font-medium text-primary uppercase tracking-wider">
+                  {latest.type === 'project' ? t.nav.projects : t.nav.books}
+                </div>
+                <h3 className="text-2xl font-bold">{latest.item.title}</h3>
+                <p className="text-muted-foreground line-clamp-2">
+                  {latest.type === 'project'
+                    ? latest.item.description_en || latest.item.description_pt
+                    : latest.item.review_en || latest.item.review_pt}
+                </p>
+                <Button variant="outline" className="w-fit" asChild>
+                  <Link to={latest.type === 'project' ? '/it' : '/books'}>
+                    {t.home.explore}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </section>
+      )}
     </div>
   )
 }

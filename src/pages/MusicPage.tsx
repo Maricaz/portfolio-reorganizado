@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getMusicTracks, getAlbumSettings } from '@/services/music'
-import { MusicTrack, AlbumSettings } from '@/types'
+import { getMusicTracks, getAlbumConcept } from '@/services/music'
+import { MusicTrack, AlbumConcept } from '@/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 import { TrackCard } from '@/components/music/TrackCard'
@@ -14,7 +14,7 @@ export default function MusicPage() {
   const navigate = useNavigate()
 
   const [tracks, setTracks] = useState<MusicTrack[]>([])
-  const [albumSettings, setAlbumSettings] = useState<AlbumSettings | null>(null)
+  const [albumConcept, setAlbumConcept] = useState<AlbumConcept | null>(null)
   const [selectedTrack, setSelectedTrack] = useState<MusicTrack | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -34,14 +34,14 @@ export default function MusicPage() {
       setLoading(true)
       const [tracksRes, albumRes] = await Promise.all([
         getMusicTracks(),
-        getAlbumSettings(),
+        getAlbumConcept(),
       ])
 
       if (tracksRes.data) {
         setTracks(tracksRes.data)
       }
       if (albumRes.data) {
-        setAlbumSettings(albumRes.data)
+        setAlbumConcept(albumRes.data)
       }
       setLoading(false)
     }
@@ -51,12 +51,14 @@ export default function MusicPage() {
   // Handle URL param
   useEffect(() => {
     if (tracks.length > 0 && trackId) {
-      const found = tracks.find((t) => t.id === trackId)
+      const found = tracks.find(
+        (t) => t.track_id === trackId || t.id === trackId,
+      )
       if (found) {
         setSelectedTrack(found)
         // Scroll to track
         setTimeout(() => {
-          const el = document.getElementById(`track-${trackId}`)
+          const el = document.getElementById(`track-${found.id}`)
           if (el) {
             el.scrollIntoView({ behavior: 'smooth', block: 'center' })
           }
@@ -68,7 +70,7 @@ export default function MusicPage() {
   const handleTrackPlay = (track: MusicTrack) => {
     if (selectedTrack?.id !== track.id) {
       setSelectedTrack(track)
-      navigate(`/music/${track.id}`, { replace: true })
+      navigate(`/music/${track.track_id || track.id}`, { replace: true })
     }
   }
 
@@ -116,7 +118,7 @@ export default function MusicPage() {
           <div className="lg:sticky lg:top-24">
             <SidePanel
               track={selectedTrack}
-              albumSettings={albumSettings}
+              albumConcept={albumConcept}
               globalLanguage={language}
             />
           </div>

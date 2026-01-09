@@ -31,10 +31,12 @@ export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
     }
   }, [isActive])
 
-  const hasSpotify = !!track.spotify_track_id
-  const hasDeezer = !!(track.deezer_track_id || track.deezer_id)
-  const hasApple = !!track.apple_music_id
-  const hasYoutube = !!track.youtube_video_id
+  const platforms = track.platforms || {}
+
+  const hasSpotify = !!platforms.spotify
+  const hasDeezer = !!platforms.deezer
+  const hasApple = !!platforms.apple
+  const hasYoutube = !!platforms.youtube
 
   return (
     <Card
@@ -75,12 +77,12 @@ export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
           <div className="mt-2 rounded-lg overflow-hidden bg-muted/30">
             {platform === 'native' && (
               <div className="p-4 flex items-center justify-center bg-secondary/20">
-                {track.audio_url ? (
+                {track.src_url ? (
                   <audio
                     controls
                     controlsList="nodownload"
                     className="w-full h-10 outline-none"
-                    src={track.audio_url}
+                    src={track.src_url}
                     onPlay={() => {
                       if (!isActive) onPlay(track)
                       trackMusicPlay(track.id, 'native')
@@ -96,10 +98,10 @@ export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
               </div>
             )}
 
-            {platform === 'spotify' && track.spotify_track_id && (
+            {platform === 'spotify' && platforms.spotify && (
               <iframe
                 title={`Spotify - ${track.title}`}
-                src={`https://open.spotify.com/embed/track/${track.spotify_track_id}`}
+                src={`https://open.spotify.com/embed/track/${platforms.spotify}`}
                 width="100%"
                 height="152"
                 frameBorder="0"
@@ -108,23 +110,22 @@ export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
               />
             )}
 
-            {platform === 'deezer' &&
-              (track.deezer_track_id || track.deezer_id) && (
-                <iframe
-                  title={`Deezer - ${track.title}`}
-                  src={`https://widget.deezer.com/widget/auto/track/${track.deezer_track_id || track.deezer_id}`}
-                  width="100%"
-                  height="130"
-                  frameBorder="0"
-                  allow="encrypted-media; clipboard-write"
-                  className="rounded-md"
-                />
-              )}
+            {platform === 'deezer' && platforms.deezer && (
+              <iframe
+                title={`Deezer - ${track.title}`}
+                src={`https://widget.deezer.com/widget/auto/track/${platforms.deezer}`}
+                width="100%"
+                height="130"
+                frameBorder="0"
+                allow="encrypted-media; clipboard-write"
+                className="rounded-md"
+              />
+            )}
 
-            {platform === 'apple' && track.apple_music_id && (
+            {platform === 'apple' && platforms.apple && (
               <iframe
                 title={`Apple Music - ${track.title}`}
-                src={`https://embed.music.apple.com/us/album/${track.apple_music_id}`}
+                src={`https://embed.music.apple.com/us/album/${platforms.apple}`}
                 width="100%"
                 height="150"
                 frameBorder="0"
@@ -133,11 +134,11 @@ export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
               />
             )}
 
-            {platform === 'youtube' && track.youtube_video_id && (
+            {platform === 'youtube' && platforms.youtube && (
               <AspectRatio ratio={16 / 9}>
                 <iframe
                   title={`YouTube - ${track.title}`}
-                  src={`https://www.youtube.com/embed/${track.youtube_video_id}`}
+                  src={`https://www.youtube.com/embed/${platforms.youtube}`}
                   width="100%"
                   height="100%"
                   frameBorder="0"

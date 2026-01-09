@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MusicTrack, AlbumSettings, Language } from '@/types'
+import { MusicTrack, AlbumConcept, Language } from '@/types'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Eye, EyeOff, Music, Disc } from 'lucide-react'
@@ -8,13 +8,13 @@ import { AspectRatio } from '@/components/ui/aspect-ratio'
 
 interface SidePanelProps {
   track: MusicTrack | null
-  albumSettings: AlbumSettings | null
+  albumConcept: AlbumConcept | null
   globalLanguage: Language
 }
 
 export const SidePanel = ({
   track,
-  albumSettings,
+  albumConcept,
   globalLanguage,
 }: SidePanelProps) => {
   const [isVisible, setIsVisible] = useState(true)
@@ -39,26 +39,27 @@ export const SidePanel = ({
   }
 
   const getLyrics = () => {
-    if (!track) return ''
-    if (track.lyrics && track.lyrics[lyricsLang])
-      return track.lyrics[lyricsLang]
-    // Fallback order: language specific col -> pt -> en -> 'Not found'
-    // Also check legacy columns if jsonb is not populated correctly in type (though we rely on JSONB mainly)
-    const specific = track.lyrics?.[lyricsLang]
-    if (specific) return specific
-
-    // Fallback to PT then EN
+    if (!track || !track.lyrics) return 'Lyrics not available'
     return (
-      track.lyrics?.['pt'] ||
-      track.lyrics?.['en'] ||
-      'Lyrics not available for this language.'
+      track.lyrics[lyricsLang] ||
+      track.lyrics['en'] ||
+      track.lyrics['pt'] ||
+      'Lyrics not available'
     )
   }
 
+  const getAlbumTitle = () => {
+    if (!albumConcept || !albumConcept.title) return ''
+    return albumConcept.title[globalLanguage] || albumConcept.title['en'] || ''
+  }
+
   const getAlbumDescription = () => {
-    if (!albumSettings) return ''
-    const key = `description_${globalLanguage}` as keyof AlbumSettings
-    return (albumSettings[key] as string) || albumSettings.description_en || ''
+    if (!albumConcept || !albumConcept.description) return ''
+    return (
+      albumConcept.description[globalLanguage] ||
+      albumConcept.description['en'] ||
+      ''
+    )
   }
 
   if (!isVisible) {
@@ -118,27 +119,27 @@ export const SidePanel = ({
                 {getLyrics()}
               </div>
             </div>
-          ) : albumSettings ? (
+          ) : albumConcept ? (
             <div className="space-y-6 animate-fade-in">
               <h2 className="text-2xl font-bold text-center">
-                {albumSettings.title}
+                {getAlbumTitle()}
               </h2>
-              {albumSettings.cover_url && (
+              {albumConcept.cover_url && (
                 <div className="rounded-lg overflow-hidden shadow-md max-w-[200px] mx-auto">
                   <AspectRatio ratio={1}>
                     <img
-                      src={albumSettings.cover_url}
-                      alt={albumSettings.title}
+                      src={albumConcept.cover_url}
+                      alt={getAlbumTitle()}
                       className="object-cover w-full h-full"
                     />
                   </AspectRatio>
                 </div>
               )}
-              {albumSettings.video_url && (
+              {albumConcept.video_url && (
                 <div className="rounded-lg overflow-hidden shadow-md">
                   <AspectRatio ratio={16 / 9}>
                     <iframe
-                      src={albumSettings.video_url}
+                      src={albumConcept.video_url}
                       className="w-full h-full"
                       allow="autoplay; encrypted-media"
                       title="Album Concept Video"
