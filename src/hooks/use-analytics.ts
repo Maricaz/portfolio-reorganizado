@@ -3,40 +3,42 @@ import { useLocation } from 'react-router-dom'
 
 declare global {
   interface Window {
-    gtag?: (
-      command: string,
-      targetId: string,
-      config?: Record<string, any>,
-    ) => void
+    gtag?: (command: string, ...args: any[]) => void
   }
 }
 
 export const useAnalytics = () => {
   const location = useLocation()
+  const GA_ID = import.meta.env.VITE_GA_ID
 
+  const gtagSafe = (command: string, ...args: any[]) => {
+    if (typeof window.gtag === 'function') {
+      window.gtag(command, ...args)
+    } else {
+      if (import.meta.env.DEV) {
+        // console.log(`[Analytics Mock] ${command}`, ...args)
+      }
+    }
+  }
+
+  // Initialize page view tracking
   useEffect(() => {
-    if (window.gtag) {
-      window.gtag('config', 'G-XXXXXXXXXX', {
+    if (GA_ID) {
+      gtagSafe('config', GA_ID, {
         page_path: location.pathname + location.search,
       })
     }
-  }, [location])
+  }, [location, GA_ID])
 
   const trackEvent = (
     eventName: string,
     params?: Record<string, string | number | boolean>,
   ) => {
-    if (window.gtag) {
-      window.gtag('event', eventName, params)
-    }
-    // Log to console for dev environment or verification
-    if (import.meta.env.DEV) {
-      console.log(`[Analytics] ${eventName}`, params)
-    }
+    gtagSafe('event', eventName, params)
   }
 
   const trackContactSubmit = (success: boolean) => {
-    trackEvent('contact_form_submit', {
+    trackEvent('contact_submit', {
       success,
       timestamp: new Date().toISOString(),
     })
@@ -48,19 +50,44 @@ export const useAnalytics = () => {
     })
   }
 
-  const trackITProjectClick = (projectTitle: string, link: string) => {
-    trackEvent('it_project_click', {
+  const trackProjectOpen = (projectTitle: string, url: string) => {
+    trackEvent('project_open', {
       project_title: projectTitle,
-      link_url: link,
-      timestamp: new Date().toISOString(),
+      url: url,
     })
   }
 
-  const trackMusicPlay = (trackId: string, platform: string = 'native') => {
-    trackEvent('music_play', {
-      track_id: trackId,
-      platform,
-      timestamp: new Date().toISOString(),
+  const trackAudioPlay = (trackTitle: string) => {
+    trackEvent('audio_play', {
+      track_title: trackTitle,
+    })
+  }
+
+  const trackThemeToggle = (theme: 'light' | 'dark') => {
+    trackEvent('theme_toggle', {
+      theme,
+    })
+  }
+
+  const trackLanguageChange = (languageLabel: string) => {
+    trackEvent('language_change', {
+      language: languageLabel,
+    })
+  }
+
+  const trackCarouselNav = (direction: 'prev' | 'next') => {
+    trackEvent('carousel_nav', {
+      direction,
+    })
+  }
+
+  const trackBookSynopsisToggle = (
+    bookTitle: string,
+    state: 'open' | 'closed',
+  ) => {
+    trackEvent('book_synopsis_toggle', {
+      book_title: bookTitle,
+      state,
     })
   }
 
@@ -90,7 +117,11 @@ export const useAnalytics = () => {
     trackEvent,
     trackContactSubmit,
     trackResumeDownload,
-    trackITProjectClick,
-    trackMusicPlay,
+    trackProjectOpen,
+    trackAudioPlay,
+    trackThemeToggle,
+    trackLanguageChange,
+    trackCarouselNav,
+    trackBookSynopsisToggle,
   }
 }

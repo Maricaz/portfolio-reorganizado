@@ -21,6 +21,8 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useSEO } from '@/hooks/use-seo'
+import { useAnalytics } from '@/hooks/use-analytics'
+import { getSiteSettings } from '@/services/settings'
 import {
   Download,
   Briefcase,
@@ -36,6 +38,7 @@ import {
 
 export default function ResumePage() {
   const { t, language } = useLanguage()
+  const { trackResumeDownload } = useAnalytics()
   const [loading, setLoading] = useState(true)
   const [experience, setExperience] = useState<ResumeExperience[]>([])
   const [education, setEducation] = useState<ResumeEducation[]>([])
@@ -45,6 +48,7 @@ export default function ResumePage() {
   )
   const [languages, setLanguages] = useState<ResumeLanguage[]>([])
   const [publications, setPublications] = useState<ResumePublication[]>([])
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null)
 
   useSEO({
     title: `${t.resume.title} - Portfolio`,
@@ -55,13 +59,14 @@ export default function ResumePage() {
     const fetchAllData = async () => {
       try {
         setLoading(true)
-        const [exp, edu, ski, cert, lang, pub] = await Promise.all([
+        const [exp, edu, ski, cert, lang, pub, settings] = await Promise.all([
           getResumeExperience(),
           getResumeEducation(),
           getResumeSkills(),
           getResumeCertifications(),
           getResumeLanguages(),
           getResumePublications(),
+          getSiteSettings(),
         ])
 
         if (exp.data) setExperience(exp.data)
@@ -70,6 +75,8 @@ export default function ResumePage() {
         if (cert.data) setCertifications(cert.data)
         if (lang.data) setLanguages(lang.data)
         if (pub.data) setPublications(pub.data)
+        if (settings.resume_config?.url)
+          setResumeUrl(settings.resume_config.url)
       } catch (err) {
         console.error('Failed to fetch resume data', err)
       } finally {
@@ -78,6 +85,13 @@ export default function ResumePage() {
     }
     fetchAllData()
   }, [])
+
+  const handleDownload = () => {
+    trackResumeDownload()
+    if (resumeUrl) {
+      window.open(resumeUrl, '_blank')
+    }
+  }
 
   const getLocalizedText = (
     item: any,
@@ -128,7 +142,12 @@ export default function ResumePage() {
             {t.resume.description}
           </p>
         </div>
-        <Button variant="outline" className="gap-2">
+        <Button
+          variant="outline"
+          className="gap-2"
+          onClick={handleDownload}
+          disabled={!resumeUrl}
+        >
           <Download className="h-4 w-4" />
           {t.resume.download}
         </Button>

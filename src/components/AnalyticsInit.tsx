@@ -3,14 +3,17 @@ import { useLocation } from 'react-router-dom'
 
 export const AnalyticsInit = () => {
   const location = useLocation()
+  const GA_ID = import.meta.env.VITE_GA_ID
 
   useEffect(() => {
-    // Inject Google Analytics Script
+    if (!GA_ID) return
+
+    // Inject Google Analytics Script if not present
     if (!document.getElementById('ga-script')) {
       const script1 = document.createElement('script')
       script1.id = 'ga-script'
       script1.async = true
-      script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX'
+      script1.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`
       document.head.appendChild(script1)
 
       const script2 = document.createElement('script')
@@ -19,7 +22,7 @@ export const AnalyticsInit = () => {
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
+        gtag('config', '${GA_ID}');
       `
       document.head.appendChild(script2)
     }
@@ -33,15 +36,15 @@ export const AnalyticsInit = () => {
         "default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https: data:; frame-src 'self' https:;"
       document.head.appendChild(meta)
     }
-  }, [])
+  }, [GA_ID])
 
   useEffect(() => {
-    if (window.gtag) {
-      window.gtag('config', 'G-XXXXXXXXXX', {
+    if (GA_ID && window.gtag) {
+      window.gtag('config', GA_ID, {
         page_path: location.pathname + location.search,
       })
     }
-  }, [location])
+  }, [location, GA_ID])
 
   return null
 }

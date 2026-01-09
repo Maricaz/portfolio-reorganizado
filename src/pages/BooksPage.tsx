@@ -11,7 +11,7 @@ import { useAnalytics } from '@/hooks/use-analytics'
 
 export default function BooksPage() {
   const { t, language } = useLanguage()
-  const { trackEvent } = useAnalytics()
+  const { trackBookSynopsisToggle } = useAnalytics()
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -53,13 +53,6 @@ export default function BooksPage() {
   const getTitle = (book: Book) => {
     if (language === 'ko' && book.title_ko) return book.title_ko
     return book.title
-  }
-
-  const trackBookSynopsisToggle = (bookTitle: string, isOpen: boolean) => {
-    trackEvent('book_synopsis_toggle', {
-      book: bookTitle,
-      state: isOpen ? 'open' : 'closed',
-    })
   }
 
   const getSynopsis = (book: Book) => {
@@ -134,7 +127,10 @@ export default function BooksPage() {
                     className="group/details"
                     onToggle={(e) => {
                       const target = e.target as HTMLDetailsElement
-                      trackBookSynopsisToggle(getTitle(book), target.open)
+                      trackBookSynopsisToggle(
+                        getTitle(book),
+                        target.open ? 'open' : 'closed',
+                      )
                     }}
                   >
                     <summary className="cursor-pointer list-none flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">

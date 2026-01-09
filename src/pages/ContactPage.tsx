@@ -88,7 +88,7 @@ export default function ContactPage() {
       // 1. Formspree Integration
       const formspreeEndpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT
       if (!formspreeEndpoint || formspreeEndpoint.includes('PLACEHOLDER')) {
-        // Proceeding to Supabase even if Formspree is not configured for demo purposes
+        // Proceeding to Supabase even if Formspree is not configured
       } else {
         const response = await fetch(formspreeEndpoint, {
           method: 'POST',

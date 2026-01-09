@@ -5,12 +5,12 @@ import { useAnalytics } from '@/hooks/use-analytics'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
-  const { trackEvent } = useAnalytics()
+  const { trackThemeToggle } = useAnalytics()
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light'
     setTheme(newTheme)
-    trackEvent('theme_toggle', { theme: newTheme })
+    trackThemeToggle(newTheme)
   }
 
   return (

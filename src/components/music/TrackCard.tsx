@@ -14,13 +14,13 @@ interface TrackCardProps {
 
 export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
   const [platform, setPlatform] = useState<Platform>('native')
-  const { trackMusicPlay } = useAnalytics()
+  const { trackAudioPlay } = useAnalytics()
 
   const handlePlatformChange = (p: Platform) => {
     setPlatform(p)
     if (p !== 'native' || isActive) {
       onPlay(track)
-      trackMusicPlay(track.id, p)
+      trackAudioPlay(track.title)
     }
   }
 
@@ -85,7 +85,7 @@ export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
                     src={track.src_url}
                     onPlay={() => {
                       if (!isActive) onPlay(track)
-                      trackMusicPlay(track.id, 'native')
+                      trackAudioPlay(track.title)
                     }}
                   >
                     Your browser does not support the audio element.

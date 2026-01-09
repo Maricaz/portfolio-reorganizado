@@ -12,7 +12,7 @@ import { useAnalytics } from '@/hooks/use-analytics'
 
 export default function ITPage() {
   const { t, language } = useLanguage()
-  const { trackITProjectClick } = useAnalytics()
+  const { trackProjectOpen } = useAnalytics()
   const [projects, setProjects] = useState<ITProject[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -49,7 +49,7 @@ export default function ITPage() {
   }
 
   const handleProjectClick = (title: string, link: string) => {
-    trackITProjectClick(title, link)
+    trackProjectOpen(title, link)
   }
 
   return (

@@ -20,8 +20,14 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
   undefined,
 )
 
+const LANGUAGE_LABELS: Record<Language, string> = {
+  pt: 'Português',
+  en: 'English',
+  ko: 'Korean',
+}
+
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const { trackEvent } = useAnalytics()
+  const { trackLanguageChange } = useAnalytics()
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
     return (saved as Language) || 'pt'
@@ -76,7 +82,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   const setLanguage = async (lang: Language) => {
     setLanguageState(lang)
-    trackEvent('language_change', { language: lang })
+    trackLanguageChange(LANGUAGE_LABELS[lang] || lang)
 
     // Update Supabase if user is logged in
     const {

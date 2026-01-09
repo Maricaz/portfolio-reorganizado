@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
 import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { Image as ImageIcon } from 'lucide-react'
+import { Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useAnalytics } from '@/hooks/use-analytics'
 
 interface PhotoCarouselProps {
   auto?: boolean
@@ -22,6 +24,7 @@ export function PhotoCarousel({
     Array<{ src: string; alt: string; id: string }>
   >([])
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const { trackCarouselNav } = useAnalytics()
 
   const plugins = []
   if (auto) {
@@ -73,6 +76,20 @@ export function PhotoCarousel({
     }
   }, [emblaApi, onSelect])
 
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) {
+      emblaApi.scrollPrev()
+      trackCarouselNav('prev')
+    }
+  }, [emblaApi, trackCarouselNav])
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) {
+      emblaApi.scrollNext()
+      trackCarouselNav('next')
+    }
+  }, [emblaApi, trackCarouselNav])
+
   if (images.length === 0) {
     return (
       <Card className="neon-card glass-soft w-full h-full min-h-[300px] flex items-center justify-center">
@@ -85,10 +102,10 @@ export function PhotoCarousel({
   }
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl neon-border glass-soft">
+    <div className="relative w-full overflow-hidden rounded-2xl neon-border glass-soft group">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex touch-pan-y">
-          {images.map((image, index) => (
+          {images.map((image) => (
             <div
               key={image.id}
               className="relative flex-[0_0_100%] min-w-0 h-[400px] sm:h-[500px] flex items-center justify-center bg-black/5"
@@ -105,6 +122,27 @@ export function PhotoCarousel({
           ))}
         </div>
       </div>
+
+      {/* Navigation Buttons */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/30 hover:bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        onClick={scrollPrev}
+        aria-label="Previous photo"
+      >
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/30 hover:bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        onClick={scrollNext}
+        aria-label="Next photo"
+      >
+        <ChevronRight className="h-6 w-6" />
+      </Button>
 
       <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
         {images.map((_, index) => (

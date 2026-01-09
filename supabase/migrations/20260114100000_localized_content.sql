@@ -11,12 +11,13 @@ SET title_ko = CASE
     WHEN title = 'Game Número' THEN '숫자 맞추기 게임'
     WHEN title = 'Amigo Secreto' THEN '비밀 산타'
     ELSE title
-END;
+END
+WHERE title_ko IS NULL;
 
 -- Insert missing IT Projects for user story (5 total required)
 -- 4. Form Integrations
 INSERT INTO public.it_projects (title, title_ko, description_pt, description_en, description_ko, tags, link, created_at)
-VALUES (
+SELECT
     'Integração de Formulários',
     '폼 통합 시스템',
     'Sistema centralizado para coleta e processamento de dados de formulários diversos, garantindo integridade e acessibilidade.',
@@ -25,11 +26,13 @@ VALUES (
     ARRAY['Node.js', 'PostgreSQL', 'API Integration'],
     '#',
     NOW() - INTERVAL '4 days'
+WHERE NOT EXISTS (
+    SELECT 1 FROM public.it_projects WHERE title = 'Integração de Formulários'
 );
 
 -- 5. Nutritionist Website
 INSERT INTO public.it_projects (title, title_ko, description_pt, description_en, description_ko, tags, link, created_at)
-VALUES (
+SELECT
     'Site de Nutricionista',
     '영양사 웹사이트',
     'Plataforma web moderna para nutricionistas, com agendamento online, blog de receitas e área do cliente.',
@@ -38,6 +41,8 @@ VALUES (
     ARRAY['React', 'Tailwind', 'Supabase'],
     '#',
     NOW() - INTERVAL '5 days'
+WHERE NOT EXISTS (
+    SELECT 1 FROM public.it_projects WHERE title = 'Site de Nutricionista'
 );
 
 -- Update Books with Korean Titles
@@ -49,4 +54,5 @@ SET title_ko = CASE
     WHEN title = 'Dom Casmurro' THEN '돔 카스무후'
     WHEN title = 'A Hora da Estrela' THEN '별의 시간'
     ELSE title
-END;
+END
+WHERE title_ko IS NULL;
