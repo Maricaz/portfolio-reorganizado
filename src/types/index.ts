@@ -11,6 +11,8 @@ export interface Book {
   translation?: string
   image_url?: string
   created_at?: string
+  category?: string
+  rating?: number
 }
 
 export interface Project {

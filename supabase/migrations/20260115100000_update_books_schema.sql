@@ -1,11 +1,13 @@
--- Update books table to support new requirements
+-- Update books table to support new requirements and ensure all columns exist
 ALTER TABLE public.books 
 ADD COLUMN IF NOT EXISTS curatorship TEXT,
 ADD COLUMN IF NOT EXISTS original_title TEXT,
-ADD COLUMN IF NOT EXISTS translation TEXT;
+ADD COLUMN IF NOT EXISTS translation TEXT,
+ADD COLUMN IF NOT EXISTS category TEXT,
+ADD COLUMN IF NOT EXISTS rating INTEGER;
 
--- Clear existing data to ensure clean state for seeding
-TRUNCATE TABLE public.books;
+-- Clear existing data to ensure clean state for seeding (using DELETE instead of TRUNCATE for better compatibility)
+DELETE FROM public.books;
 
 -- Seed data for Portuguese and English
 INSERT INTO public.books (title, author, curatorship, synopsis, original_title, translation, language, image_url, category, rating, created_at)
