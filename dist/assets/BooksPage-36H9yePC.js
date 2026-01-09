@@ -1,6 +1,6 @@
-import { B as Primitive, C as createPopperScope, F as Presence, H as require_jsx_runtime, I as Portal, M as createLucideIcon, P as useControllableState, Q as __toESM, R as DismissableLayer, S as Root2$1, T as cn, U as useComposedRefs, V as createContextScope, W as composeEventHandlers, Z as require_react, b as Arrow, t as Skeleton, v as useLanguage, x as Content, y as Anchor } from "./index-Cd67lrX4.js";
-import { t as useSEO } from "./use-seo-DfaXb9C3.js";
-import { t as getBooks } from "./database-SX4ETfgU.js";
+import { B as Primitive, C as createPopperScope, F as Presence, H as require_jsx_runtime, I as Portal, M as createLucideIcon, P as useControllableState, Q as __toESM, R as DismissableLayer, S as Root2$1, T as cn, U as useComposedRefs, V as createContextScope, W as composeEventHandlers, Z as require_react, b as Arrow, t as Skeleton, v as useLanguage, x as Content, y as Anchor } from "./index-BvwkRJRs.js";
+import { t as useSEO } from "./use-seo-BIaJr0en.js";
+import { t as getBooks } from "./database-DQO5v4G_.js";
 var Star = createLucideIcon("star", [["path", {
 	d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
 	key: "r04s7s"
@@ -228,11 +228,14 @@ function BooksPage() {
 		description: "A curated list of books I recommend"
 	});
 	(0, import_react.useEffect)(() => {
-		getBooks(language).then(({ data }) => {
+		getBooks().then(({ data }) => {
 			if (data) setBooks(data);
 			setLoading(false);
 		});
-	}, [language]);
+	}, []);
+	const getReview = (book) => {
+		return book[`review_${language}`] || book.review_en || book.review_pt || "";
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-8",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
@@ -285,7 +288,7 @@ function BooksPage() {
 							className: "text-sm text-muted-foreground italic",
 							children: [
 								"\"",
-								book.review,
+								getReview(book),
 								"\""
 							]
 						})
@@ -297,4 +300,4 @@ function BooksPage() {
 }
 export { BooksPage as default };
 
-//# sourceMappingURL=BooksPage-B5zVFrrV.js.map
+//# sourceMappingURL=BooksPage-36H9yePC.js.map

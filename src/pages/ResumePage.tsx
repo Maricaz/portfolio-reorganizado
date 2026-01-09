@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getResumeItems } from '@/services/database'
-import { ResumeItem } from '@/types'
+import { getResumeData } from '@/services/database'
+import { ResumeData } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Download, Briefcase, GraduationCap, Calendar } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -10,7 +10,7 @@ import { useSEO } from '@/hooks/use-seo'
 
 export default function ResumePage() {
   const { t, language } = useLanguage()
-  const [experience, setExperience] = useState<ResumeItem[]>([])
+  const [experience, setExperience] = useState<ResumeData[]>([])
   const [loading, setLoading] = useState(true)
 
   useSEO({
@@ -19,14 +19,24 @@ export default function ResumePage() {
   })
 
   useEffect(() => {
-    getResumeItems(language).then(({ data }) => {
+    getResumeData().then(({ data }) => {
       if (data) setExperience(data)
       setLoading(false)
     })
-  }, [language])
+  }, [])
 
   const handleDownload = () => {
-    alert('PDF Download not implemented in this demo.')
+    // Ideally this links to a PDF stored in Supabase Storage or public folder
+    alert('PDF Download to be implemented.')
+  }
+
+  const getLocalized = (item: ResumeData, field: 'title' | 'description') => {
+    return (
+      item[`${field}_${language}` as keyof ResumeData] ||
+      item[`${field}_en` as keyof ResumeData] ||
+      item[`${field}_pt` as keyof ResumeData] ||
+      ''
+    )
   }
 
   return (
@@ -70,7 +80,9 @@ export default function ResumePage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-                  <h3 className="text-xl font-bold">{item.title}</h3>
+                  <h3 className="text-xl font-bold">
+                    {getLocalized(item, 'title')}
+                  </h3>
                 </div>
 
                 <div className="flex items-center text-sm text-muted-foreground mb-4">
@@ -79,7 +91,7 @@ export default function ResumePage() {
                 </div>
 
                 <p className="text-muted-foreground leading-relaxed">
-                  {item.description}
+                  {getLocalized(item, 'description')}
                 </p>
               </div>
             ))}

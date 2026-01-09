@@ -22,11 +22,20 @@ export default function BooksPage() {
   })
 
   useEffect(() => {
-    getBooks(language).then(({ data }) => {
+    getBooks().then(({ data }) => {
       if (data) setBooks(data)
       setLoading(false)
     })
-  }, [language])
+  }, [])
+
+  const getReview = (book: Book) => {
+    return (
+      book[`review_${language}` as keyof Book] ||
+      book.review_en ||
+      book.review_pt ||
+      ''
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -79,7 +88,7 @@ export default function BooksPage() {
                       <Star className="h-3 w-3 fill-current" />
                     </div>
                     <p className="text-sm text-muted-foreground italic">
-                      "{book.review}"
+                      "{getReview(book)}"
                     </p>
                   </div>
                 </HoverCardContent>

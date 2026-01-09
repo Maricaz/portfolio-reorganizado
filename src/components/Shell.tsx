@@ -47,6 +47,8 @@ export function Shell({ children }: ShellProps) {
     { title: t.nav.contact, url: '/contact', icon: Mail },
   ]
 
+  const LATTES_URL = 'http://lattes.cnpq.br/1234567890'
+
   const SocialLinks = () => (
     <div className="flex gap-2">
       <Button variant="ghost" size="icon" asChild>
@@ -83,13 +85,15 @@ export function Shell({ children }: ShellProps) {
   )
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-300">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4 md:px-8">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-8">
           <div className="mr-4 flex items-center gap-2">
             <Link to="/" className="flex items-center space-x-2">
-              <span className="font-bold text-xl">Mariana Azevedo</span>
+              <span className="font-bold text-xl tracking-tight">
+                Mariana Azevedo
+              </span>
             </Link>
           </div>
 
@@ -100,9 +104,9 @@ export function Shell({ children }: ShellProps) {
                 key={item.url}
                 to={item.url}
                 className={cn(
-                  'transition-colors hover:text-foreground/80',
+                  'transition-colors hover:text-foreground/80 relative',
                   location.pathname === item.url
-                    ? 'text-foreground'
+                    ? 'text-foreground font-semibold after:absolute after:left-0 after:-bottom-5 after:h-0.5 after:w-full after:bg-primary'
                     : 'text-foreground/60',
                 )}
               >
@@ -125,14 +129,16 @@ export function Shell({ children }: ShellProps) {
               <Drawer open={open} onOpenChange={setOpen}>
                 <DrawerTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <Menu className="h-5 w-5" />
+                    <Menu className="h-6 w-6" />
                     <span className="sr-only">Toggle menu</span>
                   </Button>
                 </DrawerTrigger>
                 <DrawerContent>
                   <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
-                      <DrawerTitle className="text-center">Menu</DrawerTitle>
+                      <DrawerTitle className="text-center text-lg">
+                        Menu
+                      </DrawerTitle>
                     </DrawerHeader>
                     <div className="p-4 pb-0">
                       <nav className="flex flex-col gap-2">
@@ -141,9 +147,9 @@ export function Shell({ children }: ShellProps) {
                             <Link
                               to={item.url}
                               className={cn(
-                                'flex items-center gap-4 rounded-md p-3 text-sm font-medium transition-colors hover:bg-muted',
+                                'flex items-center gap-4 rounded-md p-3 text-base font-medium transition-colors hover:bg-muted',
                                 location.pathname === item.url
-                                  ? 'bg-muted'
+                                  ? 'bg-muted font-semibold'
                                   : '',
                               )}
                             >
@@ -176,11 +182,21 @@ export function Shell({ children }: ShellProps) {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-6 md:py-0">
-        <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
-          <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-            Built with React, Supabase & Tailwind.
+      <footer className="border-t py-8 md:py-12 bg-muted/20">
+        <div className="container flex flex-col items-center justify-between gap-6 md:flex-row max-w-screen-2xl">
+          <p className="text-center text-sm text-muted-foreground md:text-left">
+            © {new Date().getFullYear()} Mariana Azevedo. All rights reserved.
           </p>
+          <div className="flex items-center gap-4">
+            <a
+              href={LATTES_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium hover:underline text-primary"
+            >
+              Curriculum Lattes
+            </a>
+          </div>
         </div>
       </footer>
     </div>

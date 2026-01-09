@@ -28,23 +28,12 @@ export default function MusicPage() {
       ? `Listen to ${selectedTrack.title} by ${selectedTrack.artist}`
       : 'My music tracks and production portfolio',
     type: 'music.song',
-    jsonLd: selectedTrack
-      ? {
-          '@context': 'https://schema.org',
-          '@type': 'MusicRecording',
-          name: selectedTrack.title,
-          byArtist: {
-            '@type': 'MusicGroup',
-            name: selectedTrack.artist,
-          },
-          duration: selectedTrack.duration,
-          inAlbum: {
-            '@type': 'MusicAlbum',
-            name: 'Portfolio Tracks',
-          },
-        }
-      : undefined,
   })
+
+  // Sync default lyrics language when global language changes
+  useEffect(() => {
+    setLyricsLang(language)
+  }, [language])
 
   useEffect(() => {
     getMusicTracks().then(({ data }) => {
@@ -65,6 +54,15 @@ export default function MusicPage() {
   const handleTrackSelect = (track: MusicTrack) => {
     setSelectedTrack(track)
     navigate(`/music/${track.id}`)
+  }
+
+  const getLyrics = () => {
+    if (!selectedTrack) return ''
+    return (
+      selectedTrack[`lyrics_${lyricsLang}` as keyof MusicTrack] ||
+      selectedTrack.lyrics_en ||
+      'Lyrics not available.'
+    )
   }
 
   return (
@@ -161,6 +159,17 @@ export default function MusicPage() {
                   allow="encrypted-media; clipboard-write"
                   className="rounded-lg shadow-sm"
                 />
+              ) : selectedTrack.spotify_id ? (
+                <iframe
+                  title="Spotify Widget"
+                  src={`https://open.spotify.com/embed/track/${selectedTrack.spotify_id}`}
+                  width="100%"
+                  height="152"
+                  frameBorder="0"
+                  allowTransparency={true}
+                  allow="encrypted-media"
+                  className="rounded-lg shadow-sm"
+                />
               ) : (
                 <div className="h-24 flex items-center justify-center bg-muted/30 rounded-lg text-muted-foreground">
                   No audio source available
@@ -199,13 +208,7 @@ export default function MusicPage() {
               <CardContent className="flex-1 overflow-y-auto p-8">
                 <div className="max-w-2xl mx-auto text-center">
                   <div className="animate-fade-in key={lyricsLang} whitespace-pre-line text-lg leading-loose text-foreground/90 font-medium">
-                    {selectedTrack[`lyrics_${lyricsLang}`] ? (
-                      selectedTrack[`lyrics_${lyricsLang}`]
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-40 text-muted-foreground opacity-50">
-                        <p>Lyrics not available in this language.</p>
-                      </div>
-                    )}
+                    {getLyrics()}
                   </div>
                 </div>
               </CardContent>

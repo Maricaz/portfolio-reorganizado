@@ -1,8 +1,8 @@
-import { E as X, H as require_jsx_runtime, M as createLucideIcon, Q as __toESM, T as cn, Z as require_react, a as Overlay, c as Title, i as Description, l as Trigger, m as Button, n as Close, o as Portal, r as Content, s as Root, t as Skeleton, v as useLanguage } from "./index-Cd67lrX4.js";
-import { a as CardHeader, i as CardFooter, n as CardContent, o as CardTitle, t as Card } from "./card-5cxK_lj9.js";
-import { t as Badge } from "./badge-DpTlWs_U.js";
-import { t as useSEO } from "./use-seo-DfaXb9C3.js";
-import { n as getITProjects } from "./database-SX4ETfgU.js";
+import { A as Github, E as X, H as require_jsx_runtime, M as createLucideIcon, Q as __toESM, T as cn, Z as require_react, a as Overlay, c as Title, i as Description, l as Trigger, m as Button, n as Close, o as Portal, r as Content, s as Root, t as Skeleton, v as useLanguage } from "./index-BvwkRJRs.js";
+import { a as CardHeader, i as CardFooter, n as CardContent, o as CardTitle, t as Card } from "./card-6MhxgsR0.js";
+import { t as Badge } from "./badge-CPBL9Sbw.js";
+import { t as useSEO } from "./use-seo-BIaJr0en.js";
+import { i as getProjects } from "./database-DQO5v4G_.js";
 var ExternalLink = createLucideIcon("external-link", [
 	["path", {
 		d: "M15 3h6v6",
@@ -72,11 +72,14 @@ function ITPage() {
 		description: "My technical projects and portfolio"
 	});
 	(0, import_react.useEffect)(() => {
-		getITProjects(language).then(({ data }) => {
+		getProjects().then(({ data }) => {
 			if (data) setProjects(data);
 			setLoading(false);
 		});
-	}, [language]);
+	}, []);
+	const getDescription = (project) => {
+		return project[`description_${language}`] || project.description_en || project.description_pt || "";
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-8",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
@@ -120,7 +123,7 @@ function ITPage() {
 						className: "flex-1",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed",
-							children: project.description
+							children: getDescription(project)
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex flex-wrap gap-1.5",
 							children: [project.tech_stack?.slice(0, 4).map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
@@ -134,20 +137,31 @@ function ITPage() {
 							})]
 						})]
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
-						className: "pt-0",
-						children: project.link && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardFooter, {
+						className: "pt-0 flex gap-2",
+						children: [project.demo_url && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							variant: "ghost",
 							size: "sm",
-							className: "w-full gap-2",
+							className: "flex-1 gap-2",
 							asChild: true,
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
-								href: project.link,
+								href: project.demo_url,
 								target: "_blank",
 								rel: "noopener noreferrer",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "h-4 w-4" }), " Link"]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "h-4 w-4" }), " Demo"]
 							})
-						})
+						}), project.github_url && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "sm",
+							className: "flex-1 gap-2",
+							asChild: true,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+								href: project.github_url,
+								target: "_blank",
+								rel: "noopener noreferrer",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Github, { className: "h-4 w-4" }), " Code"]
+							})
+						})]
 					})
 				]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
@@ -168,8 +182,8 @@ function ITPage() {
 						className: "space-y-6",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, {
-								className: "text-base text-foreground leading-relaxed",
-								children: project.description
+								className: "text-base text-foreground leading-relaxed whitespace-pre-line",
+								children: getDescription(project)
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
 								className: "text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3",
@@ -181,15 +195,28 @@ function ITPage() {
 									children: tag
 								}, tag))
 							})] }),
-							project.link && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								className: "w-full md:w-auto",
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
-									href: project.link,
-									target: "_blank",
-									rel: "noopener noreferrer",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "mr-2 h-4 w-4" }), " Visit Project"]
-								})
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex gap-4",
+								children: [project.demo_url && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									className: "flex-1",
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+										href: project.demo_url,
+										target: "_blank",
+										rel: "noopener noreferrer",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "mr-2 h-4 w-4" }), " Visit Demo"]
+									})
+								}), project.github_url && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "outline",
+									className: "flex-1",
+									asChild: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+										href: project.github_url,
+										target: "_blank",
+										rel: "noopener noreferrer",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Github, { className: "mr-2 h-4 w-4" }), " View Code"]
+									})
+								})]
 							})
 						]
 					})]
@@ -200,4 +227,4 @@ function ITPage() {
 }
 export { ITPage as default };
 
-//# sourceMappingURL=ITPage-DDOE9Bcy.js.map
+//# sourceMappingURL=ITPage-F1-C7jIT.js.map

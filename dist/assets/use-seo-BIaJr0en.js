@@ -1,4 +1,4 @@
-import { Q as __toESM, Z as require_react, v as useLanguage } from "./index-Cd67lrX4.js";
+import { Q as __toESM, Z as require_react, v as useLanguage } from "./index-BvwkRJRs.js";
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 const useSEO = ({ title, description, image = "/og-image.png", type = "website", jsonLd }) => {
 	const { language } = useLanguage();
@@ -45,4 +45,4 @@ const useSEO = ({ title, description, image = "/og-image.png", type = "website",
 };
 export { useSEO as t };
 
-//# sourceMappingURL=use-seo-DfaXb9C3.js.map
+//# sourceMappingURL=use-seo-BIaJr0en.js.map

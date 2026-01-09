@@ -1,8 +1,8 @@
-import { t as ArrowRight } from "./arrow-right-m0viHn5g.js";
-import { H as require_jsx_runtime, M as createLucideIcon, Q as __toESM, T as cn, Z as require_react, m as Button, v as useLanguage } from "./index-Cd67lrX4.js";
-import { n as CardContent, t as Card } from "./card-5cxK_lj9.js";
-import { t as Badge } from "./badge-DpTlWs_U.js";
-import { t as useSEO } from "./use-seo-DfaXb9C3.js";
+import { t as ArrowRight } from "./arrow-right-Cg61Wb8q.js";
+import { H as require_jsx_runtime, M as createLucideIcon, Q as __toESM, T as cn, Z as require_react, m as Button, v as useLanguage } from "./index-BvwkRJRs.js";
+import { n as CardContent, t as Card } from "./card-6MhxgsR0.js";
+import { t as Badge } from "./badge-CPBL9Sbw.js";
+import { t as useSEO } from "./use-seo-BIaJr0en.js";
 var ArrowLeft = createLucideIcon("arrow-left", [["path", {
 	d: "m12 19-7-7 7-7",
 	key: "1l729n"
@@ -1613,7 +1613,7 @@ function AboutPage() {
 					className: "w-full",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselContent, { children: [
-							"https://img.usecurling.com/ppl/large?gender=male&seed=1",
+							"https://img.usecurling.com/ppl/large?gender=female&seed=1",
 							"https://img.usecurling.com/p/600/600?q=coding%20setup&color=blue",
 							"https://img.usecurling.com/p/600/600?q=guitar%20playing&color=black",
 							"https://img.usecurling.com/p/600/600?q=library%20reading"
@@ -1694,4 +1694,4 @@ function AboutPage() {
 }
 export { AboutPage as default };
 
-//# sourceMappingURL=AboutPage-DiEy9bYp.js.map
+//# sourceMappingURL=AboutPage-uL-fGKqV.js.map

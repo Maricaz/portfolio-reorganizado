@@ -4,8 +4,8 @@
 }
 
 
+
 /* Global styles - Theme, font, utilities, animations and global components */
-/* CHANGE THE FONT BELOW TO WHATEVER YOU WANT */
 *, ::before, ::after{
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -440,102 +440,96 @@ video {
   display: none;
 }
 :root {
-    /* Change the colors to match the design system */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Light theme: #f7efe6 (approx HSL 33 50% 93.5%) */
+    --background: 33 50% 93.5%;
+    --foreground: 240 10% 3.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 10% 3.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 240 10% 3.9%;
 
-    --primary: 222.2 84% 4.9%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 210 40% 98%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
 
-    --muted: 210 40% 98%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
 
-    --accent: 210 40% 98%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
 
-    --sidebar-foreground: 222.2 84% 4.9%;
-
-    --sidebar-primary: 222.2 84% 4.9%;
-
-    --sidebar-primary-foreground: 0 0% 100%;
-
-    --sidebar-accent: 210 40% 98%;
-
-    --sidebar-accent-foreground: 222.2 84% 4.9%;
-
-    --sidebar-border: 214.3 31.8% 91.4%;
-
-    --sidebar-ring: 222.2 84% 4.9%;
-
-    --chart-1: 34 100% 44%;
-    --chart-2: 189 100% 38%;
-    --chart-3: 209 100% 32%;
-    --chart-4: 42 100% 50%;
-    --chart-5: 33 100% 50%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 .dark {
-    /* Change the colors to match the design system consistent with the dark mode */
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark theme: zinc-950 (approx HSL 240 10% 3.9%) */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 84% 4.9%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
 
-    --secondary: 222.2 84% 4.9%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 222.2 84% 4.9%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
 
-    --accent: 222.2 84% 4.9%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 222.2 84% 4.9%;
-    --input: 222.2 84% 4.9%;
-    --ring: 214.3 31.8% 91.4%;
-    --sidebar-background: 222.2 84% 4.9%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 222.2 84% 4.9%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 222.2 84% 4.9%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 222.2 84% 4.9%;
-    --sidebar-ring: 222.2 84% 4.9%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
 
-    --chart-1: 270 100% 44%;
-    --chart-2: 164 100% 38%;
-    --chart-3: 43 100% 32%;
-    --chart-4: 340 100% 50%;
-    --chart-5: 10 100% 50%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 /* NEVER REMOVE THIS */
 section[aria-label='Notifications alt+T'] {
@@ -806,12 +800,6 @@ section[aria-label='Notifications alt+T'] {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
 }
-.line-clamp-2{
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
 .line-clamp-3{
   overflow: hidden;
   display: -webkit-box;
@@ -882,9 +870,6 @@ section[aria-label='Notifications alt+T'] {
 }
 .h-4{
   height: 1rem;
-}
-.h-40{
-  height: 10rem;
 }
 .h-48{
   height: 12rem;
@@ -958,11 +943,11 @@ section[aria-label='Notifications alt+T'] {
 .min-h-\[150px\]{
   min-height: 150px;
 }
-.min-h-\[50vh\]{
-  min-height: 50vh;
-}
 .min-h-\[600px\]{
   min-height: 600px;
+}
+.min-h-\[60vh\]{
+  min-height: 60vh;
 }
 .min-h-\[80px\]{
   min-height: 80px;
@@ -1355,6 +1340,11 @@ section[aria-label='Notifications alt+T'] {
   margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(3rem * var(--tw-space-y-reverse));
 }
+.space-y-16 > :not([hidden]) ~ :not([hidden]){
+  --tw-space-y-reverse: 0;
+  margin-top: calc(4rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(4rem * var(--tw-space-y-reverse));
+}
 .space-y-2 > :not([hidden]) ~ :not([hidden]){
   --tw-space-y-reverse: 0;
   margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
@@ -1409,8 +1399,8 @@ section[aria-label='Notifications alt+T'] {
 .rounded{
   border-radius: 0.25rem;
 }
-.rounded-2xl{
-  border-radius: 1rem;
+.rounded-3xl{
+  border-radius: 1.5rem;
 }
 .rounded-\[2px\]{
   border-radius: 2px;
@@ -1555,8 +1545,8 @@ section[aria-label='Notifications alt+T'] {
 .bg-background\/50{
   background-color: hsl(var(--background) / 0.5);
 }
-.bg-background\/95{
-  background-color: hsl(var(--background) / 0.95);
+.bg-background\/80{
+  background-color: hsl(var(--background) / 0.8);
 }
 .bg-black\/50{
   background-color: rgb(0 0 0 / 0.5);
@@ -1650,8 +1640,8 @@ section[aria-label='Notifications alt+T'] {
   --tw-gradient-to: rgb(0 0 0 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.from-blue-500\/10{
-  --tw-gradient-from: rgb(59 130 246 / 0.1) var(--tw-gradient-from-position);
+.from-blue-500\/20{
+  --tw-gradient-from: rgb(59 130 246 / 0.2) var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(59 130 246 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
@@ -1660,15 +1650,15 @@ section[aria-label='Notifications alt+T'] {
   --tw-gradient-to: hsl(var(--foreground) / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.via-purple-500\/10{
+.via-purple-500\/20{
   --tw-gradient-to: rgb(168 85 247 / 0)  var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), rgb(168 85 247 / 0.1) var(--tw-gradient-via-position), var(--tw-gradient-to);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(168 85 247 / 0.2) var(--tw-gradient-via-position), var(--tw-gradient-to);
 }
 .to-foreground\/70{
   --tw-gradient-to: hsl(var(--foreground) / 0.7) var(--tw-gradient-to-position);
 }
-.to-pink-500\/10{
-  --tw-gradient-to: rgb(236 72 153 / 0.1) var(--tw-gradient-to-position);
+.to-pink-500\/20{
+  --tw-gradient-to: rgb(236 72 153 / 0.2) var(--tw-gradient-to-position);
 }
 .to-transparent{
   --tw-gradient-to: transparent var(--tw-gradient-to-position);
@@ -1896,6 +1886,9 @@ section[aria-label='Notifications alt+T'] {
 .font-bold{
   font-weight: 700;
 }
+.font-extrabold{
+  font-weight: 800;
+}
 .font-light{
   font-weight: 300;
 }
@@ -2112,10 +2105,6 @@ section[aria-label='Notifications alt+T'] {
 .filter{
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
-.backdrop-blur{
-  --tw-backdrop-blur: blur(8px);
-  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
-}
 .backdrop-blur-md{
   --tw-backdrop-blur: blur(12px);
   backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
@@ -2268,7 +2257,6 @@ section[aria-label='Notifications alt+T'] {
 .ease-linear{
   animation-timing-function: linear;
 }
-/* KEEP ALL THE ANIMATIONS CLASSES THAT ARE USED BELOW */
 @keyframes accordion-down {
     from {
       height: 0;
@@ -2430,9 +2418,21 @@ section[aria-label='Notifications alt+T'] {
   top: 0px;
   bottom: 0px;
 }
+.after\:-bottom-5::after{
+  content: var(--tw-content);
+  bottom: -1.25rem;
+}
+.after\:left-0::after{
+  content: var(--tw-content);
+  left: 0px;
+}
 .after\:left-1\/2::after{
   content: var(--tw-content);
   left: 50%;
+}
+.after\:h-0\.5::after{
+  content: var(--tw-content);
+  height: 0.125rem;
 }
 .after\:w-1::after{
   content: var(--tw-content);
@@ -2442,10 +2442,18 @@ section[aria-label='Notifications alt+T'] {
   content: var(--tw-content);
   width: 2px;
 }
+.after\:w-full::after{
+  content: var(--tw-content);
+  width: 100%;
+}
 .after\:-translate-x-1\/2::after{
   content: var(--tw-content);
   --tw-translate-x: -50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.after\:bg-primary::after{
+  content: var(--tw-content);
+  background-color: hsl(var(--primary));
 }
 .first\:rounded-l-md:first-child{
   border-top-left-radius: calc(var(--radius) - 2px);
@@ -3310,11 +3318,11 @@ section[aria-label='Notifications alt+T'] {
   .md\:hidden{
     display: none;
   }
-  .md\:h-24{
-    height: 6rem;
+  .md\:h-auto{
+    height: auto;
   }
-  .md\:w-48{
-    width: 12rem;
+  .md\:w-64{
+    width: 16rem;
   }
   .md\:w-\[var\(--radix-navigation-menu-viewport-width\)\]{
     width: var(--radix-navigation-menu-viewport-width);
@@ -3350,19 +3358,19 @@ section[aria-label='Notifications alt+T'] {
     padding-left: 2rem;
     padding-right: 2rem;
   }
-  .md\:py-0{
-    padding-top: 0px;
-    padding-bottom: 0px;
+  .md\:py-12{
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
   .md\:text-left{
     text-align: left;
   }
-  .md\:text-4xl{
-    font-size: 2.25rem;
-    line-height: 2.5rem;
+  .md\:text-3xl{
+    font-size: 1.875rem;
+    line-height: 2.25rem;
   }
-  .md\:text-8xl{
-    font-size: 6rem;
+  .md\:text-7xl{
+    font-size: 4.5rem;
     line-height: 1;
   }
   .md\:text-sm{
@@ -3412,6 +3420,10 @@ section[aria-label='Notifications alt+T'] {
   }
   .lg\:grid-cols-5{
     grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .lg\:text-8xl{
+    font-size: 6rem;
+    line-height: 1;
   }
 }
 .\[\&\:first-child\[data-selected\=true\]_button\]\:rounded-l-md:first-child[data-selected=true] button{

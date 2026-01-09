@@ -1,7 +1,7 @@
-import { B as Primitive, D as Music, F as Presence, H as require_jsx_runtime, J as useNavigate, L as useLayoutEffect2, M as createLucideIcon, P as useControllableState, Q as __toESM, T as cn, U as useComposedRefs, V as createContextScope, W as composeEventHandlers, Y as useParams, Z as require_react, d as Root$1, f as createRovingFocusGroupScope, p as useDirection, t as Skeleton, u as Item, v as useLanguage, w as useId, z as useCallbackRef } from "./index-Cd67lrX4.js";
-import { a as CardHeader, n as CardContent, o as CardTitle, t as Card } from "./card-5cxK_lj9.js";
-import { t as useSEO } from "./use-seo-DfaXb9C3.js";
-import { i as getMusicTracks } from "./database-SX4ETfgU.js";
+import { B as Primitive, D as Music, F as Presence, H as require_jsx_runtime, J as useNavigate, L as useLayoutEffect2, M as createLucideIcon, P as useControllableState, Q as __toESM, T as cn, U as useComposedRefs, V as createContextScope, W as composeEventHandlers, Y as useParams, Z as require_react, d as Root$1, f as createRovingFocusGroupScope, p as useDirection, t as Skeleton, u as Item, v as useLanguage, w as useId, z as useCallbackRef } from "./index-BvwkRJRs.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, t as Card } from "./card-6MhxgsR0.js";
+import { t as useSEO } from "./use-seo-BIaJr0en.js";
+import { r as getMusicTracks } from "./database-DQO5v4G_.js";
 var CirclePlay = createLucideIcon("circle-play", [["path", {
 	d: "M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z",
 	key: "kmsa83"
@@ -864,22 +864,11 @@ function MusicPage() {
 	useSEO({
 		title: selectedTrack ? `${selectedTrack.title} - ${t.music.title}` : t.music.title,
 		description: selectedTrack ? `Listen to ${selectedTrack.title} by ${selectedTrack.artist}` : "My music tracks and production portfolio",
-		type: "music.song",
-		jsonLd: selectedTrack ? {
-			"@context": "https://schema.org",
-			"@type": "MusicRecording",
-			name: selectedTrack.title,
-			byArtist: {
-				"@type": "MusicGroup",
-				name: selectedTrack.artist
-			},
-			duration: selectedTrack.duration,
-			inAlbum: {
-				"@type": "MusicAlbum",
-				name: "Portfolio Tracks"
-			}
-		} : void 0
+		type: "music.song"
 	});
+	(0, import_react.useEffect)(() => {
+		setLyricsLang(language);
+	}, [language]);
 	(0, import_react.useEffect)(() => {
 		getMusicTracks().then(({ data }) => {
 			if (data) {
@@ -896,6 +885,10 @@ function MusicPage() {
 	const handleTrackSelect = (track) => {
 		setSelectedTrack(track);
 		navigate(`/music/${track.id}`);
+	};
+	const getLyrics = () => {
+		if (!selectedTrack) return "";
+		return selectedTrack[`lyrics_${lyricsLang}`] || selectedTrack.lyrics_en || "Lyrics not available.";
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-10rem)] min-h-[600px]",
@@ -974,6 +967,15 @@ function MusicPage() {
 					allowTransparency: true,
 					allow: "encrypted-media; clipboard-write",
 					className: "rounded-lg shadow-sm"
+				}) : selectedTrack.spotify_id ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("iframe", {
+					title: "Spotify Widget",
+					src: `https://open.spotify.com/embed/track/${selectedTrack.spotify_id}`,
+					width: "100%",
+					height: "152",
+					frameBorder: "0",
+					allowTransparency: true,
+					allow: "encrypted-media",
+					className: "rounded-lg shadow-sm"
 				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "h-24 flex items-center justify-center bg-muted/30 rounded-lg text-muted-foreground",
 					children: "No audio source available"
@@ -1022,10 +1024,7 @@ function MusicPage() {
 						className: "max-w-2xl mx-auto text-center",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "animate-fade-in key={lyricsLang} whitespace-pre-line text-lg leading-loose text-foreground/90 font-medium",
-							children: selectedTrack[`lyrics_${lyricsLang}`] ? selectedTrack[`lyrics_${lyricsLang}`] : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "flex flex-col items-center justify-center h-40 text-muted-foreground opacity-50",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Lyrics not available in this language." })
-							})
+							children: getLyrics()
 						})
 					})
 				})]
@@ -1041,4 +1040,4 @@ function MusicPage() {
 }
 export { MusicPage as default };
 
-//# sourceMappingURL=MusicPage-DB51tRyN.js.map
+//# sourceMappingURL=MusicPage-Dojq2vdS.js.map

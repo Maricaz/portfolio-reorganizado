@@ -1,6 +1,6 @@
-import { H as require_jsx_runtime, M as createLucideIcon, Q as __toESM, T as cn, Z as require_react, m as Button, t as Skeleton, v as useLanguage } from "./index-Cd67lrX4.js";
-import { t as useSEO } from "./use-seo-DfaXb9C3.js";
-import { a as getResumeItems } from "./database-SX4ETfgU.js";
+import { H as require_jsx_runtime, M as createLucideIcon, Q as __toESM, T as cn, Z as require_react, m as Button, t as Skeleton, v as useLanguage } from "./index-BvwkRJRs.js";
+import { t as useSEO } from "./use-seo-BIaJr0en.js";
+import { a as getResumeData } from "./database-DQO5v4G_.js";
 var Briefcase = createLucideIcon("briefcase", [["path", {
 	d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16",
 	key: "jecpp"
@@ -73,13 +73,16 @@ function ResumePage() {
 		description: t.resume.title
 	});
 	(0, import_react.useEffect)(() => {
-		getResumeItems(language).then(({ data }) => {
+		getResumeData().then(({ data }) => {
 			if (data) setExperience(data);
 			setLoading(false);
 		});
-	}, [language]);
+	}, []);
 	const handleDownload = () => {
-		alert("PDF Download not implemented in this demo.");
+		alert("PDF Download to be implemented.");
+	};
+	const getLocalized = (item, field) => {
+		return item[`${field}_${language}`] || item[`${field}_en`] || item[`${field}_pt`] || "";
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "max-w-3xl mx-auto space-y-8 relative",
@@ -113,7 +116,7 @@ function ResumePage() {
 						className: "flex flex-col sm:flex-row sm:items-center gap-2 mb-1",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
 							className: "text-xl font-bold",
-							children: item.title
+							children: getLocalized(item, "title")
 						})
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -122,7 +125,7 @@ function ResumePage() {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 						className: "text-muted-foreground leading-relaxed",
-						children: item.description
+						children: getLocalized(item, "description")
 					})
 				]
 			}, item.id))
@@ -131,4 +134,4 @@ function ResumePage() {
 }
 export { ResumePage as default };
 
-//# sourceMappingURL=ResumePage-DFuTyTCr.js.map
+//# sourceMappingURL=ResumePage-Bo4qFoSM.js.map

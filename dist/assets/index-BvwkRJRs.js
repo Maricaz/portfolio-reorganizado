@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-DM9NY9Jj.js","assets/arrow-right-m0viHn5g.js","assets/card-5cxK_lj9.js","assets/use-seo-DfaXb9C3.js","assets/database-SX4ETfgU.js","assets/AboutPage-DiEy9bYp.js","assets/badge-DpTlWs_U.js","assets/ResumePage-DFuTyTCr.js","assets/ITPage-DDOE9Bcy.js","assets/BooksPage-B5zVFrrV.js","assets/MusicPage-DB51tRyN.js","assets/ContactPage-BpDHFvt4.js"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-Dt0y_7hf.js","assets/arrow-right-Cg61Wb8q.js","assets/card-6MhxgsR0.js","assets/use-seo-BIaJr0en.js","assets/database-DQO5v4G_.js","assets/AboutPage-uL-fGKqV.js","assets/badge-CPBL9Sbw.js","assets/ResumePage-Bo4qFoSM.js","assets/ITPage-F1-C7jIT.js","assets/BooksPage-36H9yePC.js","assets/MusicPage-Dojq2vdS.js","assets/ContactPage-DJFaf2se.js"])))=>i.map(i=>d[i]);
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -35861,6 +35861,7 @@ function Shell({ children }) {
 			icon: Mail
 		}
 	];
+	const LATTES_URL = "http://lattes.cnpq.br/1234567890";
 	const SocialLinks = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex gap-2",
 		children: [
@@ -35903,12 +35904,12 @@ function Shell({ children }) {
 		]
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "min-h-screen bg-background text-foreground flex flex-col",
+		className: "min-h-screen bg-background text-foreground flex flex-col transition-colors duration-300",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("header", {
-				className: "sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+				className: "sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "container flex h-14 max-w-screen-2xl items-center justify-between px-4 md:px-8",
+					className: "container flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-8",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "mr-4 flex items-center gap-2",
@@ -35916,7 +35917,7 @@ function Shell({ children }) {
 								to: "/",
 								className: "flex items-center space-x-2",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "font-bold text-xl",
+									className: "font-bold text-xl tracking-tight",
 									children: "Mariana Azevedo"
 								})
 							})
@@ -35925,7 +35926,7 @@ function Shell({ children }) {
 							className: "hidden md:flex items-center gap-6 text-sm font-medium",
 							children: navItems.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 								to: item.url,
-								className: cn("transition-colors hover:text-foreground/80", location.pathname === item.url ? "text-foreground" : "text-foreground/60"),
+								className: cn("transition-colors hover:text-foreground/80 relative", location.pathname === item.url ? "text-foreground font-semibold after:absolute after:left-0 after:-bottom-5 after:h-0.5 after:w-full after:bg-primary" : "text-foreground/60"),
 								children: item.title
 							}, item.url))
 						}),
@@ -35950,7 +35951,7 @@ function Shell({ children }) {
 											children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 												variant: "ghost",
 												size: "icon",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "h-5 w-5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "h-6 w-6" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 													className: "sr-only",
 													children: "Toggle menu"
 												})]
@@ -35959,7 +35960,7 @@ function Shell({ children }) {
 											className: "mx-auto w-full max-w-sm",
 											children: [
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DrawerHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DrawerTitle, {
-													className: "text-center",
+													className: "text-center text-lg",
 													children: "Menu"
 												}) }),
 												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -35970,7 +35971,7 @@ function Shell({ children }) {
 															asChild: true,
 															children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 																to: item.url,
-																className: cn("flex items-center gap-4 rounded-md p-3 text-sm font-medium transition-colors hover:bg-muted", location.pathname === item.url ? "bg-muted" : ""),
+																className: cn("flex items-center gap-4 rounded-md p-3 text-base font-medium transition-colors hover:bg-muted", location.pathname === item.url ? "bg-muted font-semibold" : ""),
 																children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "h-5 w-5" }), item.title]
 															})
 														}, item.url))
@@ -36003,13 +36004,26 @@ function Shell({ children }) {
 				children
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("footer", {
-				className: "border-t py-6 md:py-0",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-center text-sm leading-loose text-muted-foreground md:text-left",
-						children: "Built with React, Supabase & Tailwind."
-					})
+				className: "border-t py-8 md:py-12 bg-muted/20",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "container flex flex-col items-center justify-between gap-6 md:flex-row max-w-screen-2xl",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+						className: "text-center text-sm text-muted-foreground md:text-left",
+						children: [
+							"© ",
+							(/* @__PURE__ */ new Date()).getFullYear(),
+							" Mariana Azevedo. All rights reserved."
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex items-center gap-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: LATTES_URL,
+							target: "_blank",
+							rel: "noopener noreferrer",
+							className: "text-sm font-medium hover:underline text-primary",
+							children: "Curriculum Lattes"
+						})
+					})]
 				})
 			})
 		]
@@ -36029,14 +36043,14 @@ function Skeleton({ className, ...props }) {
 		...props
 	});
 }
-var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-DM9NY9Jj.js"), __vite__mapDeps([0,1,2,3,4])));
-var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-DiEy9bYp.js"), __vite__mapDeps([5,1,6,2,3])));
-var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-DFuTyTCr.js"), __vite__mapDeps([7,3,4])));
-var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-DDOE9Bcy.js"), __vite__mapDeps([8,6,2,3,4])));
-var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-B5zVFrrV.js"), __vite__mapDeps([9,3,4])));
-var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-DB51tRyN.js"), __vite__mapDeps([10,2,3,4])));
-var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage-BpDHFvt4.js"), __vite__mapDeps([11,2,3,4])));
-var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound-C9ZDL55p.js"), []));
+var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-Dt0y_7hf.js"), __vite__mapDeps([0,1,2,3,4])));
+var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-uL-fGKqV.js"), __vite__mapDeps([5,1,6,2,3])));
+var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-Bo4qFoSM.js"), __vite__mapDeps([7,3,4])));
+var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-F1-C7jIT.js"), __vite__mapDeps([8,6,2,3,4])));
+var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-36H9yePC.js"), __vite__mapDeps([9,3,4])));
+var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-Dojq2vdS.js"), __vite__mapDeps([10,2,3,4])));
+var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage-DJFaf2se.js"), __vite__mapDeps([11,2,3,4])));
+var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound-UKryiv5q.js"), []));
 var PageLoader = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 	className: "p-8 space-y-4 max-w-4xl mx-auto",
 	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-12 w-1/3 mb-8" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -36138,4 +36152,4 @@ var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 export { Github as A, Primitive as B, createPopperScope as C, Music as D, X as E, Presence as F, useToast as G, require_jsx_runtime as H, Portal$1 as I, useNavigate as J, Link as K, useLayoutEffect2 as L, createLucideIcon as M, cva as N, Mail as O, useControllableState$1 as P, __toESM as Q, DismissableLayer as R, Root2$1 as S, cn as T, useComposedRefs$1 as U, createContextScope as V, composeEventHandlers as W, require_react_dom as X, useParams as Y, require_react as Z, supabase as _, Overlay$1 as a, Arrow as b, Title as c, Root$2 as d, createRovingFocusGroupScope as f, createSlot$1 as g, Slot$2 as h, Description as i, Code as j, Linkedin as k, Trigger as l, Button as m, Close as n, Portal$2 as o, useDirection as p, useLocation as q, Content$1 as r, Root$1 as s, Skeleton as t, Item as u, useLanguage as v, useId as w, Content$2 as x, Anchor as y, useCallbackRef$1 as z };
 
-//# sourceMappingURL=index-Cd67lrX4.js.map
+//# sourceMappingURL=index-BvwkRJRs.js.map

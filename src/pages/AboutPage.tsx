@@ -19,7 +19,7 @@ export default function AboutPage() {
   })
 
   const photos = [
-    'https://img.usecurling.com/ppl/large?gender=male&seed=1',
+    'https://img.usecurling.com/ppl/large?gender=female&seed=1',
     'https://img.usecurling.com/p/600/600?q=coding%20setup&color=blue',
     'https://img.usecurling.com/p/600/600?q=guitar%20playing&color=black',
     'https://img.usecurling.com/p/600/600?q=library%20reading',

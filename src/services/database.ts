@@ -1,37 +1,34 @@
 import { supabase } from '@/lib/supabase/client'
 import {
-  ITProject,
+  Project,
   Book,
-  ResumeItem,
+  ResumeData,
   MusicTrack,
   ContactSubmission,
 } from '@/types'
 
-export const getITProjects = async (language: string) => {
+export const getProjects = async () => {
   const { data, error } = await supabase
-    .from('it_projects')
+    .from('projects')
     .select('*')
-    .eq('language', language)
     .order('created_at', { ascending: false })
-  return { data: data as ITProject[], error }
+  return { data: data as Project[], error }
 }
 
-export const getBooks = async (language: string) => {
+export const getBooks = async () => {
   const { data, error } = await supabase
     .from('books')
     .select('*')
-    .eq('language', language)
     .order('created_at', { ascending: false })
   return { data: data as Book[], error }
 }
 
-export const getResumeItems = async (language: string) => {
+export const getResumeData = async () => {
   const { data, error } = await supabase
-    .from('resume_items')
+    .from('resume_data')
     .select('*')
-    .eq('language', language)
     .order('created_at', { ascending: false })
-  return { data: data as ResumeItem[], error }
+  return { data: data as ResumeData[], error }
 }
 
 export const getMusicTracks = async () => {
@@ -50,32 +47,30 @@ export const submitContact = async (submission: ContactSubmission) => {
   return { data, error }
 }
 
-export const getLatestItem = async (language: string) => {
+export const getLatestItem = async () => {
   const { data: projects } = await supabase
-    .from('it_projects')
+    .from('projects')
     .select('*')
-    .eq('language', language)
     .limit(1)
     .order('created_at', { ascending: false })
 
   const { data: books } = await supabase
     .from('books')
     .select('*')
-    .eq('language', language)
     .limit(1)
     .order('created_at', { ascending: false })
 
-  const project = projects?.[0]
-  const book = books?.[0]
+  const project = projects?.[0] as Project
+  const book = books?.[0] as Book
 
   if (project && book) {
     return new Date(project.created_at) > new Date(book.created_at)
-      ? { type: 'project', item: project as ITProject }
-      : { type: 'book', item: book as Book }
+      ? { type: 'project', item: project }
+      : { type: 'book', item: book }
   } else if (project) {
-    return { type: 'project', item: project as ITProject }
+    return { type: 'project', item: project }
   } else if (book) {
-    return { type: 'book', item: book as Book }
+    return { type: 'book', item: book }
   }
 
   return null

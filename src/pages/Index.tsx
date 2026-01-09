@@ -5,7 +5,7 @@ import { ArrowRight, Code, Book, Music } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getLatestItem } from '@/services/database'
-import { ITProject, Book as BookType } from '@/types'
+import { Project, Book as BookType } from '@/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 
@@ -13,7 +13,7 @@ export default function Index() {
   const { t, language } = useLanguage()
   const [latest, setLatest] = useState<{
     type: string
-    item: ITProject | BookType
+    item: Project | BookType
   } | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -23,27 +23,37 @@ export default function Index() {
   })
 
   useEffect(() => {
-    getLatestItem(language).then((res) => {
+    getLatestItem().then((res) => {
       setLatest(res)
       setLoading(false)
     })
-  }, [language])
+  }, [])
+
+  const getLocalizedContent = (
+    item: any,
+    field: 'description' | 'review',
+    lang: string,
+  ) => {
+    return (
+      item[`${field}_${lang}`] || item[`${field}_en`] || item[`${field}_pt`]
+    )
+  }
 
   return (
-    <div className="space-y-12 pb-12">
+    <div className="space-y-16 pb-12">
       {/* Hero Section */}
-      <section className="relative min-h-[50vh] flex flex-col justify-center items-center text-center space-y-8 max-w-4xl mx-auto py-12">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 blur-3xl rounded-full opacity-50" />
+      <section className="relative min-h-[60vh] flex flex-col justify-center items-center text-center space-y-8 max-w-4xl mx-auto py-12">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-3xl rounded-full opacity-60" />
 
-        <h1 className="text-5xl md:text-8xl font-bold tracking-tight animate-fade-in-down bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight animate-fade-in-down bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
           {t.home.hero_title}
         </h1>
-        <h2 className="text-2xl md:text-4xl font-light text-muted-foreground animate-fade-in-up delay-100">
+        <h2 className="text-2xl md:text-3xl font-light text-muted-foreground animate-fade-in-up delay-100 max-w-2xl">
           {t.home.hero_subtitle}
         </h2>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-8 animate-fade-in delay-200">
-          <Button asChild size="lg" className="rounded-full h-12 px-8 text-lg">
+          <Button asChild size="lg" className="rounded-full h-14 px-8 text-lg">
             <Link to="/contact">
               {t.nav.contact} <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
@@ -52,7 +62,7 @@ export default function Index() {
             asChild
             variant="outline"
             size="lg"
-            className="rounded-full h-12 px-8 text-lg"
+            className="rounded-full h-14 px-8 text-lg bg-background/50 backdrop-blur-sm"
           >
             <Link to="/about">{t.home.explore}</Link>
           </Button>
@@ -61,7 +71,7 @@ export default function Index() {
 
       {/* Quick Nav */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up delay-300">
-        <Link to="/it" className="group block">
+        <Link to="/it" className="group block h-full">
           <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-primary/10 hover:border-primary/30">
             <CardHeader>
               <Code className="h-10 w-10 text-primary mb-2 group-hover:scale-110 transition-transform" />
@@ -72,7 +82,7 @@ export default function Index() {
             </CardContent>
           </Card>
         </Link>
-        <Link to="/music" className="group block">
+        <Link to="/music" className="group block h-full">
           <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-primary/10 hover:border-primary/30">
             <CardHeader>
               <Music className="h-10 w-10 text-primary mb-2 group-hover:scale-110 transition-transform" />
@@ -83,7 +93,7 @@ export default function Index() {
             </CardContent>
           </Card>
         </Link>
-        <Link to="/books" className="group block">
+        <Link to="/books" className="group block h-full">
           <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-primary/10 hover:border-primary/30">
             <CardHeader>
               <Book className="h-10 w-10 text-primary mb-2 group-hover:scale-110 transition-transform" />
@@ -97,8 +107,8 @@ export default function Index() {
       </section>
 
       {/* Latest Update */}
-      <section className="bg-muted/30 p-8 rounded-2xl border border-border/50 animate-fade-in delay-500 hover:bg-muted/50 transition-colors">
-        <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+      <section className="bg-muted/30 p-8 rounded-3xl border border-border/50 animate-fade-in delay-500 hover:bg-muted/50 transition-colors">
+        <h3 className="text-xl font-bold mb-8 flex items-center gap-3">
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
@@ -113,11 +123,11 @@ export default function Index() {
           </div>
         ) : latest ? (
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="w-full md:w-48 h-48 shrink-0 overflow-hidden rounded-xl shadow-md">
+            <div className="w-full md:w-64 h-48 md:h-auto aspect-video md:aspect-auto shrink-0 overflow-hidden rounded-xl shadow-md">
               <img
                 src={
                   latest.type === 'project'
-                    ? (latest.item as ITProject).image_url
+                    ? (latest.item as Project).image_url
                     : (latest.item as BookType).cover_url
                 }
                 alt={latest.item.title}
@@ -134,10 +144,10 @@ export default function Index() {
                 </span>
               </div>
               <h4 className="text-3xl font-bold">{latest.item.title}</h4>
-              <p className="text-muted-foreground text-lg leading-relaxed line-clamp-2">
+              <p className="text-muted-foreground text-lg leading-relaxed line-clamp-3">
                 {latest.type === 'project'
-                  ? (latest.item as ITProject).description
-                  : (latest.item as BookType).review}
+                  ? getLocalizedContent(latest.item, 'description', language)
+                  : getLocalizedContent(latest.item, 'review', language)}
               </p>
               <Button asChild variant="link" className="px-0 text-lg">
                 <Link to={latest.type === 'project' ? '/it' : '/books'}>

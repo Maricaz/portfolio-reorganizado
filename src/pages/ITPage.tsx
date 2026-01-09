@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getITProjects } from '@/services/database'
-import { ITProject } from '@/types'
+import { getProjects } from '@/services/database'
+import { Project } from '@/types'
 import {
   Card,
   CardContent,
@@ -19,13 +19,13 @@ import {
   DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, Github } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 
 export default function ITPage() {
   const { t, language } = useLanguage()
-  const [projects, setProjects] = useState<ITProject[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
 
   useSEO({
@@ -34,11 +34,20 @@ export default function ITPage() {
   })
 
   useEffect(() => {
-    getITProjects(language).then(({ data }) => {
+    getProjects().then(({ data }) => {
       if (data) setProjects(data)
       setLoading(false)
     })
-  }, [language])
+  }, [])
+
+  const getDescription = (project: Project) => {
+    return (
+      project[`description_${language}` as keyof Project] ||
+      project.description_en ||
+      project.description_pt ||
+      ''
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -86,7 +95,7 @@ export default function ITPage() {
 
                   <CardContent className="flex-1">
                     <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed">
-                      {project.description}
+                      {getDescription(project)}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {project.tech_stack?.slice(0, 4).map((tag) => (
@@ -106,20 +115,36 @@ export default function ITPage() {
                     </div>
                   </CardContent>
 
-                  <CardFooter className="pt-0">
-                    {project.link && (
+                  <CardFooter className="pt-0 flex gap-2">
+                    {project.demo_url && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="w-full gap-2"
+                        className="flex-1 gap-2"
                         asChild
                       >
                         <a
-                          href={project.link}
+                          href={project.demo_url}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <ExternalLink className="h-4 w-4" /> Link
+                          <ExternalLink className="h-4 w-4" /> Demo
+                        </a>
+                      </Button>
+                    )}
+                    {project.github_url && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex-1 gap-2"
+                        asChild
+                      >
+                        <a
+                          href={project.github_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Github className="h-4 w-4" /> Code
                         </a>
                       </Button>
                     )}
@@ -141,8 +166,8 @@ export default function ITPage() {
                       />
                     </div>
                     <div className="space-y-6">
-                      <DialogDescription className="text-base text-foreground leading-relaxed">
-                        {project.description}
+                      <DialogDescription className="text-base text-foreground leading-relaxed whitespace-pre-line">
+                        {getDescription(project)}
                       </DialogDescription>
 
                       <div>
@@ -158,18 +183,31 @@ export default function ITPage() {
                         </div>
                       </div>
 
-                      {project.link && (
-                        <Button className="w-full md:w-auto" asChild>
-                          <a
-                            href={project.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink className="mr-2 h-4 w-4" /> Visit
-                            Project
-                          </a>
-                        </Button>
-                      )}
+                      <div className="flex gap-4">
+                        {project.demo_url && (
+                          <Button className="flex-1" asChild>
+                            <a
+                              href={project.demo_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="mr-2 h-4 w-4" /> Visit
+                              Demo
+                            </a>
+                          </Button>
+                        )}
+                        {project.github_url && (
+                          <Button variant="outline" className="flex-1" asChild>
+                            <a
+                              href={project.github_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Github className="mr-2 h-4 w-4" /> View Code
+                            </a>
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </DialogContent>
