@@ -5,7 +5,15 @@ import { Book } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import {
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  Quote,
+  Globe,
+  PenTool,
+} from 'lucide-react'
 import { useSEO } from '@/hooks/use-seo'
 import { useAnalytics } from '@/hooks/use-analytics'
 import { cn } from '@/lib/utils'
@@ -44,51 +52,90 @@ function BookCard({
         )}
       </div>
 
-      <CardHeader className="pb-2 space-y-1">
-        <CardTitle
-          className="text-lg leading-tight line-clamp-2"
-          title={book.title}
-        >
-          {book.title}
-        </CardTitle>
-        <p className="text-sm text-muted-foreground line-clamp-1">
-          {book.author}
-        </p>
+      <CardHeader className="pb-2 space-y-2">
+        <div className="space-y-1">
+          <CardTitle
+            className="text-xl leading-tight line-clamp-2 font-bold font-serif tracking-tight"
+            title={book.title}
+          >
+            {book.title}
+          </CardTitle>
+          <p className="text-sm font-medium text-primary/80 line-clamp-1">
+            {book.author}
+          </p>
+        </div>
       </CardHeader>
 
-      <CardContent className="flex-1 pt-2 flex flex-col">
-        <div
-          className={cn(
-            'text-sm text-muted-foreground relative transition-all duration-300 overflow-hidden',
-            isExpanded ? 'max-h-[500px]' : 'max-h-[80px]',
-          )}
-        >
-          <p className="whitespace-pre-line leading-relaxed">
-            {book.synopsis || 'No synopsis available.'}
-          </p>
-          {!isExpanded && book.synopsis && book.synopsis.length > 100 && (
-            <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-card to-transparent" />
-          )}
+      <CardContent className="flex-1 pt-0 flex flex-col gap-4">
+        {/* Metadata */}
+        <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground bg-muted/30 p-2 rounded-md">
+          <div className="space-y-0.5">
+            <span className="flex items-center gap-1 opacity-70">
+              <Globe className="h-3 w-3" /> Original
+            </span>
+            <p
+              className="font-medium truncate"
+              title={book.original_title || '—'}
+            >
+              {book.original_title || '—'}
+            </p>
+          </div>
+          <div className="space-y-0.5">
+            <span className="flex items-center gap-1 opacity-70">
+              <PenTool className="h-3 w-3" />{' '}
+              {book.language === 'pt' ? 'Tradução' : 'Translation'}
+            </span>
+            <p className="font-medium truncate" title={book.translation || '—'}>
+              {book.translation || '—'}
+            </p>
+          </div>
         </div>
 
-        {book.synopsis && book.synopsis.length > 50 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleSynopsis}
-            className="mt-2 w-full flex items-center justify-center gap-1 text-xs font-medium text-primary hover:text-primary/80 hover:bg-primary/5"
-          >
-            {isExpanded ? (
-              <>
-                Show Less <ChevronUp className="h-3 w-3" />
-              </>
-            ) : (
-              <>
-                Read Synopsis <ChevronDown className="h-3 w-3" />
-              </>
-            )}
-          </Button>
+        {/* Curatorship */}
+        {book.curatorship && (
+          <div className="relative pl-3 border-l-2 border-primary/30 italic text-sm text-muted-foreground/90">
+            <Quote className="h-3 w-3 absolute -top-1 -left-4 text-primary/40" />
+            <p className="line-clamp-3 leading-relaxed">"{book.curatorship}"</p>
+          </div>
         )}
+
+        <div className="flex-1" />
+
+        {/* Synopsis */}
+        <div className="space-y-2">
+          <div
+            className={cn(
+              'text-sm text-muted-foreground relative transition-all duration-300 overflow-hidden',
+              isExpanded ? 'max-h-[500px]' : 'max-h-[60px]',
+            )}
+          >
+            <p className="whitespace-pre-line leading-relaxed text-xs">
+              {book.synopsis || 'No synopsis available.'}
+            </p>
+            {!isExpanded && book.synopsis && book.synopsis.length > 80 && (
+              <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-card to-transparent" />
+            )}
+          </div>
+
+          {book.synopsis && book.synopsis.length > 50 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSynopsis}
+              className="w-full flex items-center justify-center gap-1 text-[10px] font-medium text-primary hover:text-primary/80 h-6"
+            >
+              {isExpanded ? (
+                <>
+                  <ChevronUp className="h-3 w-3" />
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-3 w-3" />
+                </>
+              )}
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   )
@@ -122,26 +169,34 @@ export default function BooksPage() {
   }, [language])
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
-      <div className="space-y-4 animate-fade-in-down">
-        <h1 className="text-4xl font-bold tracking-tight">{t.books.title}</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl">
+    <div className="container mx-auto px-4 py-8 max-w-7xl space-y-12 min-h-[80vh]">
+      <div className="space-y-6 animate-fade-in-down text-center max-w-3xl mx-auto">
+        <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-4">
+          <BookOpen className="h-8 w-8 text-primary" />
+        </div>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-serif">
+          {t.books.title}
+        </h1>
+        <p className="text-lg text-muted-foreground leading-relaxed">
           {t.books.description}
         </p>
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="space-y-4">
               <Skeleton className="aspect-[2/3] w-full rounded-xl" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+              <Skeleton className="h-24 w-full" />
             </div>
           ))}
         </div>
       ) : books.length > 0 ? (
-        <div className="grid grid-auto-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {books.map((book) => (
             <BookCard
               key={book.id}
@@ -151,9 +206,11 @@ export default function BooksPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-muted/20 rounded-xl border border-dashed border-primary/20">
+        <div className="text-center py-20 bg-muted/20 rounded-xl border border-dashed border-primary/20 max-w-md mx-auto">
           <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">{t.projects.no_projects}</p>
+          <p className="text-muted-foreground font-medium">
+            No books found for this language.
+          </p>
         </div>
       )}
     </div>

@@ -4,16 +4,13 @@ export interface Book {
   id: string
   title: string
   author: string
-  synopsis: string
   language: string
-  image_url: string
-  created_at: string
-  rating?: number
-  category?: string
-  // Legacy fields for backward compatibility if needed, though we prefer language-specific rows now
-  review_pt?: string
-  review_en?: string
-  review_ko?: string
+  curatorship?: string
+  synopsis?: string
+  original_title?: string
+  translation?: string
+  image_url?: string
+  created_at?: string
 }
 
 export interface Project {
@@ -22,25 +19,44 @@ export interface Project {
   description_pt: string
   description_en: string
   description_ko: string
-  image_url: string
-  demo_url?: string
-  github_url?: string
   tags: string[]
+  image_url: string
+  demo_url?: string | null
+  github_url?: string | null
   created_at: string
 }
 
-export interface SiteSettings {
-  brand_config: {
-    primary_gradient: string
-  }
-  resume_config: {
-    url: string
-  }
+export interface MusicTrack {
+  id: string
+  title: string
+  artist: string
+  deezer_id: string
+  lyrics_pt?: string | null
+  lyrics_en?: string | null
+  lyrics_ko?: string | null
+  created_at: string
 }
 
-export interface ContactFormData {
+export interface ExperienceItem {
+  id: string
+  role_pt: string
+  role_en: string
+  role_ko: string
+  company: string
+  type: string
+  start_date: string
+  end_date?: string | null
+  description_pt: string
+  description_en: string
+  description_ko: string
+  created_at: string
+}
+
+export interface ContactSubmission {
+  id: string
   name: string
   email: string
+  subject: string
   message: string
-  origin: string
+  created_at: string
 }
