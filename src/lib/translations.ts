@@ -26,8 +26,12 @@ export const translations = {
     },
     about: {
       title: 'Sobre Mim',
-      description: 'Conheça um pouco mais sobre minha jornada.',
-      carousel_hint: 'Nenhuma imagem encontrada em src/media/sobre.',
+      paragraphs: [
+        'Sou uma desenvolvedora apaixonada por tecnologia e música. Crio soluções digitais que conectam pessoas e ideias.',
+        'Com vasta experiência em desenvolvimento backend e frontend, busco sempre a excelência e a inovação em meus projetos.',
+        'Além da tecnologia, dedico meu tempo à música e à leitura, fontes constantes de inspiração e criatividade.',
+      ],
+      carousel_hint: 'Galeria de fotos',
       carousel_prev: 'Foto anterior',
       carousel_next: 'Próxima foto',
     },
@@ -68,13 +72,23 @@ export const translations = {
     contact: {
       title: 'Contato',
       description: 'Vamos conversar sobre seu projeto.',
-      name: 'Nome',
-      email: 'Email',
+      name: 'Seu nome',
+      email: 'Seu email',
       subject: 'Assunto',
-      message: 'Mensagem',
+      message: 'Sua mensagem',
       send: 'Enviar Mensagem',
       success: 'Mensagem enviada com sucesso!',
       error: 'Erro ao enviar mensagem. Tente novamente.',
+      validation: {
+        name: 'Nome deve ter pelo menos 2 caracteres',
+        email: 'Email inválido',
+        message: 'Mensagem deve ter pelo menos 10 caracteres',
+      },
+    },
+    footer: {
+      rights: 'Todos os direitos reservados.',
+      privacy: 'Política de Privacidade',
+      lattes: 'Currículo Lattes',
     },
     common: {
       loading: 'Carregando...',
@@ -104,8 +118,8 @@ export const translations = {
       hero_title: 'Mariana Azevedo',
       hero_subtitle: 'IT, Music & Books Portfolio',
       cta: 'View Projects',
-      cta_contact: 'Get in Touch',
-      resume_btn: 'Download CV',
+      cta_contact: 'Contact me',
+      resume_btn: 'Download resume',
       cards: {
         it: 'Projects & Technologies',
         music: 'Music & Compositions',
@@ -117,8 +131,12 @@ export const translations = {
     },
     about: {
       title: 'About Me',
-      description: 'Learn a bit more about my journey.',
-      carousel_hint: 'No images found in src/media/sobre.',
+      paragraphs: [
+        'I am a developer passionate about technology and music. I create digital solutions that connect people and ideas.',
+        'With extensive experience in backend and frontend development, I always strive for excellence and innovation in my projects.',
+        'Beyond technology, I dedicate my time to music and reading, constant sources of inspiration and creativity.',
+      ],
+      carousel_hint: 'Photo gallery',
       carousel_prev: 'Previous photo',
       carousel_next: 'Next photo',
     },
@@ -159,13 +177,23 @@ export const translations = {
     contact: {
       title: 'Contact',
       description: "Let's talk about your project.",
-      name: 'Name',
-      email: 'Email',
+      name: 'Your name',
+      email: 'Your email',
       subject: 'Subject',
-      message: 'Message',
+      message: 'Your message',
       send: 'Send Message',
       success: 'Message sent successfully!',
       error: 'Error sending message. Please try again.',
+      validation: {
+        name: 'Name must be at least 2 characters',
+        email: 'Invalid email address',
+        message: 'Message must be at least 10 characters',
+      },
+    },
+    footer: {
+      rights: 'All rights reserved.',
+      privacy: 'Privacy Policy',
+      lattes: 'Lattes CV',
     },
     common: {
       loading: 'Loading...',
@@ -208,8 +236,12 @@ export const translations = {
     },
     about: {
       title: '소개',
-      description: '저의 여정에 대해 더 알아보세요.',
-      carousel_hint: 'src/media/sobre 에서 이미지를 찾을 수 없습니다.',
+      paragraphs: [
+        '저는 기술과 음악에 열정적인 개발자입니다. 사람과 아이디어를 연결하는 디지털 솔루션을 만듭니다.',
+        '백엔드 및 프론트엔드 개발에 대한 광범위한 경험을 바탕으로, 저는 항상 프로젝트에서 탁월함과 혁신을 추구합니다.',
+        '기술 외에도 음악과 독서에 시간을 투자하며, 이는 끊임없는 영감과 창의성의 원천입니다.',
+      ],
+      carousel_hint: '사진 갤러리',
       carousel_prev: '이전 사진',
       carousel_next: '다음 사진',
     },
@@ -257,6 +289,16 @@ export const translations = {
       send: '메시지 보내기',
       success: '메시지가 성공적으로 전송되었습니다!',
       error: '메시지 전송 중 오류가 발생했습니다. 다시 시도해주세요.',
+      validation: {
+        name: '이름은 2자 이상이어야 합니다',
+        email: '유효하지 않은 이메일 주소',
+        message: '메시지는 10자 이상이어야 합니다',
+      },
+    },
+    footer: {
+      rights: '판권 소유.',
+      privacy: '개인 정보 보호 정책',
+      lattes: 'Lattes 이력서',
     },
     common: {
       loading: '로딩 중...',

@@ -1,11 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
-import {
-  Project,
-  Book,
-  MusicTrack,
-  ResumeItem,
-  // ContactSubmission, // Not used directly to avoid type mismatch with new fields
-} from '@/types'
+import { ITProject, Book, MusicTrack, ResumeItem } from '@/types'
 
 // Type definition for Contact Form Data that matches the new requirements
 export interface ContactPayload {
@@ -16,20 +10,20 @@ export interface ContactPayload {
   subject?: string
 }
 
-// Projects
+// Projects (Updated to use it_projects)
 export const getProjects = async () => {
   return await supabase
-    .from('projects')
+    .from('it_projects')
     .select('*')
     .order('created_at', { ascending: false })
-    .returns<Project[]>()
+    .returns<ITProject[]>()
 }
 
 // Latest Item (for Home)
 export const getLatestItem = async () => {
-  // Try to get latest project
+  // Try to get latest IT project
   const { data: project } = await supabase
-    .from('projects')
+    .from('it_projects')
     .select('*')
     .order('created_at', { ascending: false })
     .limit(1)
@@ -48,10 +42,10 @@ export const getLatestItem = async () => {
     const projectDate = new Date(project.created_at)
     const bookDate = new Date(book.created_at)
     return projectDate > bookDate
-      ? { type: 'project', item: project as Project }
+      ? { type: 'project', item: project as ITProject }
       : { type: 'book', item: book as Book }
   } else if (project) {
-    return { type: 'project', item: project as Project }
+    return { type: 'project', item: project as ITProject }
   } else if (book) {
     return { type: 'book', item: book as Book }
   }

@@ -84,7 +84,8 @@ export default function ResumePage() {
     field: string,
     fallback: string = '',
   ) => {
-    return item[`${field}_${language}`] || item[`${field}_en`] || fallback
+    const key = `${field}_${language}`
+    return item[key] || item[`${field}_en`] || fallback
   }
 
   const formatDate = (dateString: string) => {

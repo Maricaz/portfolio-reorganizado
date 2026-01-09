@@ -11,7 +11,7 @@ import { useAnalytics } from '@/hooks/use-analytics'
 import { cn } from '@/lib/utils'
 
 export default function Index() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const { trackResumeDownload } = useAnalytics()
   const [latest, setLatest] = useState<any>(null)
   const [settings, setSettings] = useState<Partial<SiteSettings>>({})
@@ -39,6 +39,21 @@ export default function Index() {
     trackResumeDownload()
     if (settings.resume_config?.url) {
       window.open(settings.resume_config.url, '_blank')
+    }
+  }
+
+  const getLatestDescription = (item: any, type: 'project' | 'book') => {
+    if (type === 'project') {
+      return (
+        item[`description_${language}`] ||
+        item.description_en ||
+        item.description_pt ||
+        ''
+      )
+    } else {
+      return (
+        item[`review_${language}`] || item.review_en || item.review_pt || ''
+      )
     }
   }
 
@@ -146,11 +161,21 @@ export default function Index() {
           <Card className="overflow-hidden hover:shadow-md transition-shadow">
             <div className="flex flex-col md:flex-row">
               <div className="md:w-1/3 h-64 md:h-auto relative">
-                <img
-                  src={latest.item.image_url}
-                  alt={latest.item.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+                {latest.item.image_url ? (
+                  <img
+                    src={latest.item.image_url}
+                    alt={latest.item.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 w-full h-full bg-muted flex items-center justify-center">
+                    {latest.type === 'project' ? (
+                      <Code className="h-12 w-12 text-muted-foreground/50" />
+                    ) : (
+                      <BookOpen className="h-12 w-12 text-muted-foreground/50" />
+                    )}
+                  </div>
+                )}
               </div>
               <div className="p-6 md:w-2/3 flex flex-col justify-center space-y-4">
                 <div className="text-sm font-medium text-primary uppercase tracking-wider">
@@ -158,9 +183,7 @@ export default function Index() {
                 </div>
                 <h3 className="text-2xl font-bold">{latest.item.title}</h3>
                 <p className="text-muted-foreground line-clamp-2">
-                  {latest.type === 'project'
-                    ? latest.item.description_en || latest.item.description_pt
-                    : latest.item.review_en || latest.item.review_pt}
+                  {getLatestDescription(latest.item, latest.type)}
                 </p>
                 <Button variant="outline" className="w-fit" asChild>
                   <Link to={latest.type === 'project' ? '/it' : '/books'}>

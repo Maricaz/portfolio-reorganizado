@@ -27,15 +27,6 @@ import { useToast } from '@/hooks/use-toast'
 import { useSEO } from '@/hooks/use-seo'
 import { useAnalytics } from '@/hooks/use-analytics'
 
-const contactSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
-  company: z.string().optional(), // Honeypot field
-})
-
-type ContactFormValues = z.infer<typeof contactSchema>
-
 export default function ContactPage() {
   const { t } = useLanguage()
   const { toast } = useToast()
@@ -44,9 +35,32 @@ export default function ContactPage() {
   const [isSuccess, setIsSuccess] = useState(false)
 
   useSEO({
-    title: `Contato — Mariana Azevedo`,
-    description: 'Entre em contato.',
+    title: `${t.contact.title} — Mariana Azevedo`,
+    description: t.contact.description,
   })
+
+  // Define schema inside component to use translations
+  const contactSchema = z.object({
+    name: z
+      .string()
+      .min(
+        2,
+        t.contact.validation?.name || 'Name must be at least 2 characters',
+      ),
+    email: z
+      .string()
+      .email(t.contact.validation?.email || 'Invalid email address'),
+    message: z
+      .string()
+      .min(
+        10,
+        t.contact.validation?.message ||
+          'Message must be at least 10 characters',
+      ),
+    company: z.string().optional(), // Honeypot field
+  })
+
+  type ContactFormValues = z.infer<typeof contactSchema>
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),

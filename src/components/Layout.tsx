@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { LanguageSwitch } from '@/components/LanguageSwitch'
-import { Menu, Github, Linkedin, Mail } from 'lucide-react'
+import { Menu, Github, Linkedin, Mail, FileText } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
@@ -24,6 +24,7 @@ const Layout = () => {
 
   const navItems = [
     { path: '/', label: t.nav.home },
+    { path: '/about', label: t.nav.about },
     { path: '/it', label: t.nav.projects },
     { path: '/resume', label: t.nav.resume },
     { path: '/books', label: t.nav.books },
@@ -46,7 +47,7 @@ const Layout = () => {
             to="/"
             className="text-xl font-bold tracking-tighter hover:opacity-80 transition-opacity"
           >
-            Portfolio
+            Mariana Azevedo
           </Link>
 
           {/* Desktop Navigation */}
@@ -111,13 +112,28 @@ const Layout = () => {
       </main>
 
       <footer className="border-t py-8 bg-muted/20">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Portfolio. All rights reserved.
-          </p>
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-center md:text-left space-y-2">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Mariana Azevedo. {t.footer.rights}
+            </p>
+            <div className="flex gap-4 justify-center md:justify-start text-xs text-muted-foreground">
+              <Link to="/privacy" className="hover:underline">
+                {t.footer.privacy}
+              </Link>
+              <a
+                href="http://lattes.cnpq.br/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline flex items-center gap-1"
+              >
+                {t.footer.lattes} <FileText className="h-3 w-3" />
+              </a>
+            </div>
+          </div>
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com"
+              href="https://github.com/Maricaz"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors"
@@ -125,7 +141,7 @@ const Layout = () => {
               <Github className="h-5 w-5" />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://linkedin.com/in/mariana-azevedo-52b637a6"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors"

@@ -6,11 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BookOpen, ChevronDown } from 'lucide-react'
 import { useSEO } from '@/hooks/use-seo'
-import { slugify, cn } from '@/lib/utils'
+import { slugify } from '@/lib/utils'
 import { useAnalytics } from '@/hooks/use-analytics'
 
 export default function BooksPage() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const { trackEvent } = useAnalytics()
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
@@ -55,6 +55,13 @@ export default function BooksPage() {
       book: bookTitle,
       state: isOpen ? 'open' : 'closed',
     })
+  }
+
+  const getSynopsis = (book: Book) => {
+    if (language === 'pt') return book.synopsis_pt || book.review_pt
+    if (language === 'en') return book.synopsis_en || book.review_en
+    if (language === 'ko') return book.synopsis_ko || book.review_ko
+    return book.synopsis_en || book.review_en
   }
 
   return (
@@ -129,9 +136,7 @@ export default function BooksPage() {
                       <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open/details:rotate-180" />
                     </summary>
                     <div className="mt-3 text-sm text-muted-foreground leading-relaxed animate-accordion-down overflow-hidden">
-                      {book.synopsis ||
-                        book.review_pt ||
-                        'No synopsis available.'}
+                      {getSynopsis(book) || 'No synopsis available.'}
                     </div>
                   </details>
                 </CardContent>

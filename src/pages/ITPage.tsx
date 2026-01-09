@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getITProjects, ITProject } from '@/services/it-projects'
+import { getITProjects } from '@/services/it-projects'
+import { ITProject } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -36,8 +37,10 @@ export default function ITPage() {
   }, [])
 
   const getDescription = (project: ITProject) => {
-    const key = `description_${language}` as keyof ITProject
-    return (project[key] as string) || project.description_en || ''
+    if (language === 'pt') return project.description_pt
+    if (language === 'en') return project.description_en
+    if (language === 'ko') return project.description_ko
+    return project.description_en || ''
   }
 
   const handleProjectClick = (title: string, link: string) => {

@@ -1,5 +1,19 @@
 export type Language = 'pt' | 'en' | 'ko'
 
+export interface SocialLink {
+  id: string
+  platform: string
+  url: string
+  created_at: string
+}
+
+export interface Skill {
+  id: string
+  label: string
+  value: number
+  created_at: string
+}
+
 export interface Project {
   id: string
   title: string
@@ -8,8 +22,19 @@ export interface Project {
   description_ko: string
   tags: string[]
   image_url: string
-  demo_url: string | null
-  github_url: string | null
+  demo_url?: string | null
+  github_url?: string | null
+  created_at: string
+}
+
+export interface ITProject {
+  id: string
+  title: string
+  description_pt: string | null
+  description_en: string | null
+  description_ko: string | null
+  tags: string[]
+  link: string | null
   created_at: string
 }
 
@@ -22,9 +47,11 @@ export interface Book {
   review_pt: string
   review_en: string
   review_ko: string
+  synopsis_pt?: string | null
+  synopsis_en?: string | null
+  synopsis_ko?: string | null
   image_url: string
   created_at: string
-  synopsis?: string
 }
 
 export interface MusicTrack {
@@ -38,13 +65,12 @@ export interface MusicTrack {
     deezer?: string
     apple?: string
     youtube?: string
-  }
+  } | null
   lyrics: {
     pt?: string
     en?: string
     ko?: string
-    [key: string]: string | undefined
-  }
+  } | null
   created_at: string
 }
 
@@ -54,44 +80,15 @@ export interface AlbumConcept {
     pt?: string
     en?: string
     ko?: string
-    [key: string]: string | undefined
   }
   description: {
     pt?: string
     en?: string
     ko?: string
-    [key: string]: string | undefined
   }
   video_url: string | null
   cover_url: string | null
   created_at: string
-}
-
-export interface ResumeItem {
-  id: string
-  role_pt: string
-  role_en: string
-  role_ko: string
-  company: string
-  type: string
-  start_date: string
-  end_date: string | null
-  description_pt: string
-  description_en: string
-  description_ko: string
-  created_at: string
-}
-
-export interface Skill {
-  id: string
-  label: string
-  value: number
-}
-
-export interface SocialLink {
-  id: string
-  platform: string
-  url: string
 }
 
 export interface SiteSettings {
@@ -103,11 +100,7 @@ export interface SiteSettings {
   }
 }
 
-export interface ContactSubmission {
+export interface ResumeItem {
   id: string
-  name: string
-  email: string
-  subject: string
-  message: string
   created_at: string
 }

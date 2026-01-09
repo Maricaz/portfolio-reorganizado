@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getProfileContent, getSocialLinks, getSkills } from '@/services/about'
+import { getSocialLinks, getSkills } from '@/services/about'
 import { SocialLink, Skill } from '@/types'
-import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 import {
@@ -18,14 +17,14 @@ import { Progress } from '@/components/ui/progress'
 import { PhotoCarousel } from '@/components/PhotoCarousel'
 
 export default function AboutPage() {
-  const { t, language } = useLanguage()
+  const { t } = useLanguage()
   const [socials, setSocials] = useState<SocialLink[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
   const [loading, setLoading] = useState(true)
 
   useSEO({
     title: `${t.about.title} - Portfolio`,
-    description: t.about.description,
+    description: t.about.paragraphs[0],
   })
 
   useEffect(() => {
@@ -57,19 +56,15 @@ export default function AboutPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6 animate-fade-in-down">
           <h1 className="text-4xl font-bold tracking-tight">{t.about.title}</h1>
-          <div className="prose dark:prose-invert">
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              {t.about.description}
-            </p>
-            {/* Hardcoded profile text for now as it's not in the new schema requirements */}
-            <p className="text-muted-foreground leading-relaxed mt-4">
-              {language === 'pt' &&
-                'Sou uma desenvolvedora apaixonada por tecnologia e música. Crio soluções digitais que conectam pessoas e ideias.'}
-              {language === 'en' &&
-                'I am a developer passionate about technology and music. I create digital solutions that connect people and ideas.'}
-              {language === 'ko' &&
-                '저는 기술과 음악에 열정적인 개발자입니다. 사람과 아이디어를 연결하는 디지털 솔루션을 만듭니다.'}
-            </p>
+          <div className="prose dark:prose-invert space-y-4">
+            {t.about.paragraphs.map((paragraph, index) => (
+              <p
+                key={index}
+                className="text-lg text-muted-foreground leading-relaxed"
+              >
+                {paragraph}
+              </p>
+            ))}
           </div>
 
           <div className="flex flex-wrap gap-4 pt-4">
@@ -98,7 +93,10 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <div className="animate-fade-in-up">
+        <div className="animate-fade-in-up space-y-2">
+          <p className="text-sm text-muted-foreground text-center italic">
+            {t.about.carousel_hint}
+          </p>
           <PhotoCarousel />
         </div>
       </div>
