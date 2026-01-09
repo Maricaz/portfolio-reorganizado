@@ -5,7 +5,6 @@ import { Book } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
   BookOpen,
   ChevronDown,
@@ -83,7 +82,7 @@ function BookCard({
           <div className="space-y-0.5">
             <span className="flex items-center gap-1 opacity-70">
               <PenTool className="h-3 w-3" />{' '}
-              {book.language === 'pt' ? 'Tradução' : 'Translation'}
+              {book.language_code === 'pt' ? 'Tradução' : 'Translation'}
             </span>
             <p className="font-medium truncate" title={book.translation || '—'}>
               {book.translation || '—'}
@@ -156,7 +155,7 @@ export default function BooksPage() {
     const fetchBooks = async () => {
       setLoading(true)
       try {
-        const { data } = await getBooks(language)
+        const data = await getBooks(language)
         if (data) setBooks(data)
         else setBooks([])
       } catch (err) {

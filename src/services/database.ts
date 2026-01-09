@@ -1,13 +1,12 @@
 import { supabase } from '@/lib/supabase/client'
-import { ContactFormData, Language } from '@/types'
+import { ContactFormData, Language, Book, Project } from '@/types'
 
 export async function submitContactForm(data: ContactFormData) {
-  // Using any cast to avoid type errors since we cannot update types.ts to include the new table
   return await (supabase as any).from('contact_submissions').insert(data)
 }
 
 export async function getLatestItem(language: Language = 'pt') {
-  // Using any cast for tables that might be missing in the provided types definition
+  // Fetch latest project
   const { data: project } = await (supabase as any)
     .from('projects')
     .select('*')
@@ -15,23 +14,24 @@ export async function getLatestItem(language: Language = 'pt') {
     .limit(1)
     .single()
 
-  // Filter books by language to show relevant latest book
+  // Fetch latest book for the specific language
   const { data: book } = await supabase
     .from('books')
     .select('*')
-    .eq('language', language)
+    .eq('language_code', language)
     .order('created_at', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (!project && !book) return null
 
+  // If we have both, compare dates to see which is newer
   if (
     !book ||
     (project && new Date(project.created_at) > new Date(book.created_at))
   ) {
-    return { type: 'project', item: project }
+    return { type: 'project', item: project as Project }
   }
 
-  return { type: 'book', item: book }
+  return { type: 'book', item: book as Book }
 }

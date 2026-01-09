@@ -1,98 +1,96 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
-import { useLanguage } from '@/contexts/LanguageContext'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { LanguageSwitch } from '@/components/LanguageSwitch'
-import { Menu, Github, Linkedin, Mail, FileText } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Menu, X, Github, Linkedin, Mail } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { LanguageSwitch } from '@/components/LanguageSwitch'
+import { cn } from '@/lib/utils'
 
-const Layout = () => {
+export default function Layout() {
   const { t } = useLanguage()
   const location = useLocation()
   const [isScrolled, setIsScrolled] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
+      setIsScrolled(window.scrollY > 10)
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsOpen(false)
+  }, [location.pathname])
+
   const navItems = [
-    { path: '/', label: t.nav.home },
-    { path: '/about', label: t.nav.about },
-    { path: '/it', label: t.nav.projects },
-    { path: '/resume', label: t.nav.resume },
-    { path: '/books', label: t.nav.books },
-    { path: '/music', label: t.nav.music },
-    { path: '/contact', label: t.nav.contact },
+    { href: '/', label: t.nav.home },
+    { href: '/about', label: t.nav.about },
+    { href: '/it', label: t.nav.projects },
+    { href: '/books', label: t.nav.books },
+    { href: '/music', label: t.nav.music },
+    { href: '/resume', label: t.nav.resume },
+    { href: '/contact', label: t.nav.contact },
   ]
 
   return (
-    <div className="min-h-screen bg-background font-sans antialiased flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <header
         className={cn(
-          'fixed top-0 w-full z-50 transition-all duration-300 border-b border-transparent',
+          'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
           isScrolled
-            ? 'bg-background/80 backdrop-blur-md border-border shadow-sm'
-            : 'bg-transparent',
+            ? 'bg-background/80 backdrop-blur-md border-b shadow-sm py-2'
+            : 'bg-transparent py-4',
         )}
       >
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link
-            to="/"
-            className="text-xl font-bold tracking-tighter hover:opacity-80 transition-opacity"
-          >
+        <div className="container px-4 mx-auto flex items-center justify-between">
+          <Link to="/" className="text-xl font-bold tracking-tight z-50">
             Mariana Azevedo
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  'text-sm font-medium transition-colors hover:text-primary',
-                  location.pathname === item.path
-                    ? 'text-primary'
-                    : 'text-muted-foreground',
-                )}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <div className="flex items-center gap-2 ml-4 border-l pl-4 border-border">
-              <ThemeToggle />
-              <LanguageSwitch />
-            </div>
-          </nav>
+          <div className="hidden md:flex items-center gap-6">
+            <nav className="flex items-center gap-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={cn(
+                    'text-sm font-medium transition-colors hover:text-primary',
+                    location.pathname === item.href
+                      ? 'text-primary'
+                      : 'text-muted-foreground',
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="h-4 w-px bg-border" />
+            <LanguageSwitch />
+          </div>
 
           {/* Mobile Navigation */}
-          <div className="md:hidden flex items-center gap-2">
-            <ThemeToggle />
+          <div className="md:hidden flex items-center gap-4">
             <LanguageSwitch />
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle menu</span>
+                <Button variant="ghost" size="icon" aria-label="Menu">
+                  <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[240px] sm:w-[300px]">
+              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <nav className="flex flex-col gap-4 mt-8">
                   {navItems.map((item) => (
                     <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setMobileMenuOpen(false)}
+                      key={item.href}
+                      to={item.href}
                       className={cn(
-                        'text-lg font-medium transition-colors hover:text-primary',
-                        location.pathname === item.path
+                        'text-lg font-medium py-2 border-b border-border/50 transition-colors',
+                        location.pathname === item.href
                           ? 'text-primary'
                           : 'text-muted-foreground',
                       )}
@@ -107,58 +105,47 @@ const Layout = () => {
         </div>
       </header>
 
-      <main className="flex-1 pt-16">
+      <main className="flex-1 pt-20">
         <Outlet />
       </main>
 
-      <footer className="border-t py-8 bg-muted/20">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-center md:text-left space-y-2">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Mariana Azevedo. {t.footer.rights}
+      <footer className="border-t bg-muted/30">
+        <div className="container px-4 py-8 mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground text-center md:text-left">
+              &copy; {new Date().getFullYear()} Mariana Azevedo.{' '}
+              {t.footer.rights}
             </p>
-            <div className="flex gap-4 justify-center md:justify-start text-xs text-muted-foreground">
-              <Link to="/privacy" className="hover:underline">
-                {t.footer.privacy}
-              </Link>
+            <div className="flex items-center gap-4">
               <a
-                href="http://lattes.cnpq.br/"
+                href="https://github.com"
                 target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline flex items-center gap-1"
+                rel="noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="GitHub"
               >
-                {t.footer.lattes} <FileText className="h-3 w-3" />
+                <Github className="h-5 w-5" />
+              </a>
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+              <a
+                href="mailto:contact@example.com"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Email"
+              >
+                <Mail className="h-5 w-5" />
               </a>
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <a
-              href="https://github.com/Maricaz"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Github className="h-5 w-5" />
-            </a>
-            <a
-              href="https://linkedin.com/in/mariana-azevedo-52b637a6"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Linkedin className="h-5 w-5" />
-            </a>
-            <a
-              href="mailto:contact@example.com"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Mail className="h-5 w-5" />
-            </a>
           </div>
         </div>
       </footer>
     </div>
   )
 }
-
-export default Layout
