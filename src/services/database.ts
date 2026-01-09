@@ -8,11 +8,13 @@ export interface ContactFormData {
 }
 
 export async function submitContactForm(data: ContactFormData) {
-  return await supabase.from('contact_messages').insert(data)
+  // Using any cast to avoid type errors since we cannot update types.ts to include the new table
+  return await (supabase as any).from('contact_messages').insert(data)
 }
 
 export async function getLatestItem() {
-  const { data: project } = await supabase
+  // Using any cast for tables that might be missing in the provided types definition
+  const { data: project } = await (supabase as any)
     .from('it_projects')
     .select('*')
     .order('created_at', { ascending: false })

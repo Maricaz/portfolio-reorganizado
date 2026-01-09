@@ -4,10 +4,20 @@ import { getBooks } from '@/services/books'
 import { Book } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { BookOpen, ChevronDown } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { BookOpen } from 'lucide-react'
 import { useSEO } from '@/hooks/use-seo'
 import { slugify } from '@/lib/utils'
 import { useAnalytics } from '@/hooks/use-analytics'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function BooksPage() {
   const { t, language } = useLanguage()
@@ -84,7 +94,6 @@ export default function BooksPage() {
       ) : books.length > 0 ? (
         <div className="grid grid-auto-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {books.map((book, index) => {
-            // Use original title for cover lookup to maintain consistency
             const coverUrl = getCoverImage(book.title)
             return (
               <Card
@@ -123,24 +132,41 @@ export default function BooksPage() {
                 </CardHeader>
 
                 <CardContent className="flex-1 pt-2">
-                  <details
-                    className="group/details"
-                    onToggle={(e) => {
-                      const target = e.target as HTMLDetailsElement
+                  <Dialog
+                    onOpenChange={(open) =>
                       trackBookSynopsisToggle(
                         getTitle(book),
-                        target.open ? 'open' : 'closed',
+                        open ? 'open' : 'closed',
                       )
-                    }}
+                    }
                   >
-                    <summary className="cursor-pointer list-none flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                      <span>{t.books.seeSynopsis}</span>
-                      <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open/details:rotate-180" />
-                    </summary>
-                    <div className="mt-3 text-sm text-muted-foreground leading-relaxed animate-accordion-down overflow-hidden">
-                      {getSynopsis(book) || 'No synopsis available.'}
-                    </div>
-                  </details>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start p-0 h-auto font-normal hover:bg-transparent hover:text-primary group/btn"
+                      >
+                        <span className="flex items-center gap-2 text-sm font-medium text-primary group-hover/btn:text-primary/80 transition-colors">
+                          <span>{t.books.seeSynopsis}</span>
+                          <BookOpen className="h-4 w-4" />
+                        </span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold leading-tight">
+                          {getTitle(book)}
+                        </DialogTitle>
+                        <DialogDescription className="text-base font-medium text-primary">
+                          {book.author}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <ScrollArea className="max-h-[60vh] mt-4 pr-4">
+                        <div className="text-muted-foreground leading-relaxed text-base whitespace-pre-line">
+                          {getSynopsis(book) || 'No synopsis available.'}
+                        </div>
+                      </ScrollArea>
+                    </DialogContent>
+                  </Dialog>
                 </CardContent>
               </Card>
             )
