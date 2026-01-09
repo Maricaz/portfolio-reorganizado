@@ -19,18 +19,18 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 )
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguageState] = useState<Language>('pt')
+  const [language, setLanguageState] = useState<Language>(() => {
+    const saved = localStorage.getItem('app_language')
+    return (saved as Language) || 'pt'
+  })
 
   useEffect(() => {
-    const savedLang = localStorage.getItem('app_language') as Language
-    if (savedLang && ['pt', 'en', 'ko'].includes(savedLang)) {
-      setLanguageState(savedLang)
-    }
-  }, [])
+    localStorage.setItem('app_language', language)
+    document.documentElement.lang = language
+  }, [language])
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
-    localStorage.setItem('app_language', lang)
   }
 
   const t = translations[language]

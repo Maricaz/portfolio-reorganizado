@@ -21,12 +21,18 @@ import {
 } from '@/components/ui/dialog'
 import { ExternalLink, Github } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useSEO } from '@/hooks/use-seo'
 
 export default function ITPage() {
   const { t, language } = useLanguage()
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
+
+  useSEO({
+    title: t.it.title,
+    description: 'My portfolio projects and technical achievements',
+  })
 
   useEffect(() => {
     getProjects().then(({ data }) => {

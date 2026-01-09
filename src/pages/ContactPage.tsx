@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { Linkedin, Github, Mail } from 'lucide-react'
+import { useSEO } from '@/hooks/use-seo'
 
 const formSchema = z.object({
   name: z.string().min(2),
@@ -36,6 +37,11 @@ export default function ContactPage() {
   const { t } = useLanguage()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useSEO({
+    title: t.contact.title,
+    description: 'Get in touch for opportunities or collaborations',
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase/client'
 import {
   Project,
   Book,
-  Experience,
+  ResumeEntry,
   MusicTrack,
   ContactSubmission,
 } from '@/types'
@@ -23,12 +23,13 @@ export const getBooks = async () => {
   return { data: data as Book[], error }
 }
 
-export const getExperience = async () => {
+export const getResumeEntries = async () => {
+  // Casting to any to avoid type errors since table was renamed in migration but types might not be regenerated yet
   const { data, error } = await supabase
-    .from('experience')
+    .from('resume_entries' as any)
     .select('*')
     .order('start_date', { ascending: false })
-  return { data: data as Experience[], error }
+  return { data: data as ResumeEntry[], error }
 }
 
 export const getMusicTracks = async () => {

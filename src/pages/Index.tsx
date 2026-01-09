@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getLatestItem } from '@/services/database'
 import { Project, Book as BookType } from '@/types'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useSEO } from '@/hooks/use-seo'
 
 const Typewriter = ({ texts }: { texts: string[] }) => {
   const [index, setIndex] = useState(0)
@@ -48,6 +49,11 @@ export default function Index() {
     item: Project | BookType
   } | null>(null)
   const [loading, setLoading] = useState(true)
+
+  useSEO({
+    title: t.nav.home,
+    description: t.about.bio,
+  })
 
   useEffect(() => {
     getLatestItem().then((res) => {
@@ -93,7 +99,7 @@ export default function Index() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground text-sm">
-                Explore my code, projects and technical skills.
+                {t.home.quick_nav} - IT
               </p>
             </CardContent>
           </Card>
@@ -106,7 +112,7 @@ export default function Index() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground text-sm">
-                Listen to my tracks and check out my musical journey.
+                {t.home.quick_nav} - Music
               </p>
             </CardContent>
           </Card>
@@ -119,7 +125,7 @@ export default function Index() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground text-sm">
-                Curated list of books that shaped my thinking.
+                {t.home.quick_nav} - Books
               </p>
             </CardContent>
           </Card>

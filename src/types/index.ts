@@ -26,7 +26,7 @@ export interface Book {
   created_at: string
 }
 
-export interface Experience {
+export interface ResumeEntry {
   id: string
   role_pt: string
   role_en: string

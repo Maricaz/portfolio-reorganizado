@@ -8,9 +8,15 @@ import {
 } from '@/components/ui/carousel'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { useSEO } from '@/hooks/use-seo'
 
 export default function AboutPage() {
   const { t } = useLanguage()
+
+  useSEO({
+    title: t.about.title,
+    description: t.about.bio,
+  })
 
   const photos = [
     'https://img.usecurling.com/ppl/large?gender=male&seed=1',

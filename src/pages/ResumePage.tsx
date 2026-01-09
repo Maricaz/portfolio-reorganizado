@@ -1,20 +1,26 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getExperience } from '@/services/database'
-import { Experience } from '@/types'
+import { getResumeEntries } from '@/services/database'
+import { ResumeEntry } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Download, Briefcase, GraduationCap, Calendar } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
+import { useSEO } from '@/hooks/use-seo'
 
 export default function ResumePage() {
   const { t, language } = useLanguage()
-  const [experience, setExperience] = useState<Experience[]>([])
+  const [experience, setExperience] = useState<ResumeEntry[]>([])
   const [loading, setLoading] = useState(true)
 
+  useSEO({
+    title: t.resume.title,
+    description: `My professional journey and experience`,
+  })
+
   useEffect(() => {
-    getExperience().then(({ data }) => {
+    getResumeEntries().then(({ data }) => {
       if (data) setExperience(data)
       setLoading(false)
     })

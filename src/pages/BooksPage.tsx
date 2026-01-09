@@ -3,7 +3,6 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { getBooks } from '@/services/database'
 import { Book } from '@/types'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
 import { Star } from 'lucide-react'
 import {
   HoverCard,
@@ -11,12 +10,18 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useSEO } from '@/hooks/use-seo'
 
 export default function BooksPage() {
   const { t, language } = useLanguage()
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+
+  useSEO({
+    title: t.books.title,
+    description: 'A curated list of books I recommend',
+  })
 
   useEffect(() => {
     getBooks().then(({ data }) => {

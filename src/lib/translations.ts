@@ -23,7 +23,7 @@ export const translations = {
       skills: 'Habilidades',
     },
     resume: {
-      title: 'Trajetória',
+      title: 'Trajetória Profissional',
       download: 'Baixar CV',
       present: 'Presente',
     },
@@ -79,7 +79,7 @@ export const translations = {
       skills: 'Skills',
     },
     resume: {
-      title: 'Journey',
+      title: 'Professional Journey',
       download: 'Download CV',
       present: 'Present',
     },

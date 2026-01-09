@@ -1,35 +1,59 @@
 import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getMusicTracks } from '@/services/database'
 import { MusicTrack, Language } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { PlayCircle } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useSEO } from '@/hooks/use-seo'
 
 export default function MusicPage() {
   const { t, language } = useLanguage()
+  const { trackId } = useParams()
+  const navigate = useNavigate()
+
   const [tracks, setTracks] = useState<MusicTrack[]>([])
   const [selectedTrack, setSelectedTrack] = useState<MusicTrack | null>(null)
   const [loading, setLoading] = useState(true)
   const [lyricsLang, setLyricsLang] = useState<Language>(language)
 
+  useSEO({
+    title: selectedTrack
+      ? `${selectedTrack.title} - ${t.music.title}`
+      : t.music.title,
+    description: selectedTrack
+      ? `Listen to ${selectedTrack.title} by ${selectedTrack.artist}`
+      : 'My music tracks and production portfolio',
+  })
+
   useEffect(() => {
     getMusicTracks().then(({ data }) => {
       if (data) {
         setTracks(data)
-        if (data.length > 0) setSelectedTrack(data[0])
+        if (trackId) {
+          const found = data.find((t) => t.id === trackId)
+          if (found) setSelectedTrack(found)
+          else if (data.length > 0) setSelectedTrack(data[0])
+        } else if (data.length > 0) {
+          setSelectedTrack(data[0])
+        }
       }
       setLoading(false)
     })
-  }, [])
+  }, [trackId])
 
   // Sync initial lyrics lang with page lang, but allow divergence
   useEffect(() => {
     setLyricsLang(language)
   }, [language])
+
+  const handleTrackSelect = (track: MusicTrack) => {
+    setSelectedTrack(track)
+    navigate(`/music/${track.id}`)
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[calc(100vh-8rem)]">
@@ -50,7 +74,7 @@ export default function MusicPage() {
                 {tracks.map((track) => (
                   <div
                     key={track.id}
-                    onClick={() => setSelectedTrack(track)}
+                    onClick={() => handleTrackSelect(track)}
                     className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${selectedTrack?.id === track.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-muted'}`}
                   >
                     <div className="h-10 w-10 bg-secondary rounded flex items-center justify-center">
