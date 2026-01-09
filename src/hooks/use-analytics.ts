@@ -48,6 +48,14 @@ export const useAnalytics = () => {
     })
   }
 
+  const trackITProjectClick = (projectTitle: string, link: string) => {
+    trackEvent('it_project_click', {
+      project_title: projectTitle,
+      link_url: link,
+      timestamp: new Date().toISOString(),
+    })
+  }
+
   useEffect(() => {
     const handleOutboundClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -70,5 +78,10 @@ export const useAnalytics = () => {
     return () => document.removeEventListener('click', handleOutboundClick)
   }, [])
 
-  return { trackEvent, trackContactSubmit, trackResumeDownload }
+  return {
+    trackEvent,
+    trackContactSubmit,
+    trackResumeDownload,
+    trackITProjectClick,
+  }
 }

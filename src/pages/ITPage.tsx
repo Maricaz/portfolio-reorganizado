@@ -1,38 +1,33 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getProjects } from '@/services/database'
-import { Project, Language } from '@/types'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { getITProjects, ITProject } from '@/services/it-projects'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Github, ExternalLink, Code2 } from 'lucide-react'
+import { ExternalLink, Cpu, Code2 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
+import { useAnalytics } from '@/hooks/use-analytics'
 
 export default function ITPage() {
   const { t, language } = useLanguage()
-  const [projects, setProjects] = useState<Project[]>([])
+  const { trackITProjectClick } = useAnalytics()
+  const [projects, setProjects] = useState<ITProject[]>([])
   const [loading, setLoading] = useState(true)
 
   useSEO({
-    title: `${t.projects.title} - Portfolio`,
-    description: t.projects.description,
+    title: 'Projetos de TI — Mariana Azevedo',
+    description: 'Projetos',
   })
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const { data, error } = await getProjects()
+        const { data, error } = await getITProjects()
         if (data) setProjects(data)
+        if (error) console.error('Failed to fetch IT projects', error)
       } catch (err) {
-        console.error('Failed to fetch projects', err)
+        console.error('Failed to fetch IT projects', err)
       } finally {
         setLoading(false)
       }
@@ -40,19 +35,23 @@ export default function ITPage() {
     fetchProjects()
   }, [])
 
-  const getDescription = (project: Project) => {
-    return (
-      project[`description_${language}` as keyof Project] ||
-      project.description_en ||
-      ''
-    )
+  const getDescription = (project: ITProject) => {
+    const key = `description_${language}` as keyof ITProject
+    return (project[key] as string) || project.description_en || ''
+  }
+
+  const handleProjectClick = (title: string, link: string) => {
+    trackITProjectClick(title, link)
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
-      <div className="space-y-4 text-center md:text-left animate-fade-in-down">
-        <h1 className="text-4xl font-bold tracking-tight">
-          {t.projects.title}
+    <div className="container mx-auto px-4 py-12 md:py-16 max-w-6xl space-y-12">
+      <div className="flex flex-col items-center text-center space-y-4 animate-fade-in-down">
+        <div className="p-4 bg-primary/10 rounded-full">
+          <Cpu className="w-10 h-10 text-primary" />
+        </div>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+          {t.it.title}
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl">
           {t.projects.description}
@@ -61,92 +60,62 @@ export default function ITPage() {
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="space-y-4">
-              <Skeleton className="h-48 w-full rounded-xl" />
-              <Skeleton className="h-4 w-2/3" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-full" />
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="space-y-4 h-full">
+              <Skeleton className="h-64 w-full rounded-xl" />
             </div>
           ))}
         </div>
       ) : projects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
           {projects.map((project, index) => (
             <Card
               key={project.id}
-              className="flex flex-col overflow-hidden h-full hover:shadow-lg transition-shadow duration-300 animate-fade-in-up"
+              className="flex flex-col h-full hover:shadow-lg transition-all duration-300 hover:border-primary/50 animate-fade-in-up group"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="relative aspect-video overflow-hidden bg-muted">
-                {project.image_url ? (
-                  <img
-                    src={project.image_url}
-                    alt={project.title}
-                    className="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-muted/50 text-muted-foreground">
-                    <Code2 className="h-12 w-12 opacity-20" />
-                  </div>
-                )}
-              </div>
               <CardHeader>
-                <CardTitle className="line-clamp-1">{project.title}</CardTitle>
+                <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors">
+                  {project.title}
+                </CardTitle>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {project.tech_stack?.map((tech) => (
-                    <Badge key={tech} variant="secondary" className="text-xs">
+                  {project.tags?.map((tech) => (
+                    <Badge
+                      key={tech}
+                      variant="outline"
+                      className="text-xs font-normal rounded-full border-primary/20 bg-primary/5"
+                    >
                       {tech}
                     </Badge>
                   ))}
                 </div>
               </CardHeader>
-              <CardContent className="flex-1">
-                <CardDescription className="line-clamp-3">
+              <CardContent className="flex-1 flex flex-col justify-between gap-6">
+                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-4">
                   {getDescription(project)}
-                </CardDescription>
-              </CardContent>
-              <CardFooter className="flex gap-2 pt-0">
-                {project.demo_url && (
+                </p>
+
+                {project.link && project.link !== '#' && (
                   <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
+                    variant="default"
+                    className="w-full mt-auto group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                     asChild
+                    onClick={() =>
+                      handleProjectClick(project.title, project.link!)
+                    }
                   >
-                    <a
-                      href={project.demo_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <a href={project.link} target="_blank" rel="noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
-                      {t.projects.view_demo}
+                      {t.it.view_project || 'Ver Projeto'}
                     </a>
                   </Button>
                 )}
-                {project.github_url && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    asChild
-                  >
-                    <a
-                      href={project.github_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Github className="mr-2 h-4 w-4" />
-                      {t.projects.view_code}
-                    </a>
-                  </Button>
-                )}
-              </CardFooter>
+              </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-muted/20 rounded-xl border border-dashed">
+        <div className="text-center py-20 bg-muted/20 rounded-xl border border-dashed animate-fade-in">
           <Code2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
           <p className="text-muted-foreground">{t.projects.no_projects}</p>
         </div>
