@@ -42,6 +42,12 @@ export const useAnalytics = () => {
     })
   }
 
+  const trackResumeDownload = () => {
+    trackEvent('resume_download', {
+      timestamp: new Date().toISOString(),
+    })
+  }
+
   useEffect(() => {
     const handleOutboundClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -64,5 +70,5 @@ export const useAnalytics = () => {
     return () => document.removeEventListener('click', handleOutboundClick)
   }, [])
 
-  return { trackEvent, trackContactSubmit }
+  return { trackEvent, trackContactSubmit, trackResumeDownload }
 }

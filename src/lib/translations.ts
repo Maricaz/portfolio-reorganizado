@@ -10,9 +10,19 @@ export const translations = {
       contact: 'Contato',
     },
     home: {
-      hero_title: 'Olá, eu sou o Developer',
-      hero_subtitle: 'Construindo experiências digitais modernas.',
+      hero_title: 'Mariana Azevedo',
+      hero_subtitle: 'Portfólio de TI, Música e Livros',
       cta: 'Ver Projetos',
+      cta_contact: 'Entre em Contato',
+      resume_btn: 'Baixar CV',
+      cards: {
+        it: 'Projetos e Tecnologias',
+        music: 'Música e Composições',
+        books: 'Leituras e Resenhas',
+        about: 'Sobre Mim',
+      },
+      latest: 'Últimas Atualizações',
+      explore: 'Explorar',
     },
     about: {
       title: 'Sobre Mim',
@@ -65,6 +75,10 @@ export const translations = {
       loading: 'Carregando...',
       error: 'Ocorreu um erro.',
     },
+    it: {
+      title: 'Tecnologia da Informação',
+      view_project: 'Ver Projeto',
+    },
   },
   en: {
     nav: {
@@ -77,9 +91,19 @@ export const translations = {
       contact: 'Contact',
     },
     home: {
-      hero_title: 'Hello, I am Developer',
-      hero_subtitle: 'Building modern digital experiences.',
+      hero_title: 'Mariana Azevedo',
+      hero_subtitle: 'IT, Music & Books Portfolio',
       cta: 'View Projects',
+      cta_contact: 'Get in Touch',
+      resume_btn: 'Download CV',
+      cards: {
+        it: 'Projects & Technologies',
+        music: 'Music & Compositions',
+        books: 'Readings & Reviews',
+        about: 'About Me',
+      },
+      latest: 'Latest Updates',
+      explore: 'Explore',
     },
     about: {
       title: 'About Me',
@@ -132,6 +156,10 @@ export const translations = {
       loading: 'Loading...',
       error: 'An error occurred.',
     },
+    it: {
+      title: 'Information Technology',
+      view_project: 'View Project',
+    },
   },
   ko: {
     nav: {
@@ -144,9 +172,19 @@ export const translations = {
       contact: '연락처',
     },
     home: {
-      hero_title: '안녕하세요, 개발자입니다',
-      hero_subtitle: '현대적인 디지털 경험을 구축합니다.',
+      hero_title: '마리아나 아제베도',
+      hero_subtitle: 'IT, 음악 및 도서 포트폴리오',
       cta: '프로젝트 보기',
+      cta_contact: '연락하기',
+      resume_btn: '이력서 다운로드',
+      cards: {
+        it: '프로젝트 및 기술',
+        music: '음악 및 작곡',
+        books: '독서 및 리뷰',
+        about: '내 소개',
+      },
+      latest: '최신 업데이트',
+      explore: '탐험',
     },
     about: {
       title: '소개',
@@ -198,6 +236,10 @@ export const translations = {
     common: {
       loading: '로딩 중...',
       error: '오류가 발생했습니다.',
+    },
+    it: {
+      title: '정보 기술',
+      view_project: '프로젝트 보기',
     },
   },
 }

@@ -1,7 +1,8 @@
-import { n as Download, t as GraduationCap } from "./graduation-cap-Baha68lj.js";
-import { C as require_jsx_runtime, M as require_react, N as __toESM, a as useLanguage, f as Linkedin, l as cn, m as createLucideIcon, n as Button, o as supabase, p as Github, t as Skeleton } from "./index-BcAFdKWP.js";
-import { n as CardContent, s as useSEO, t as Card } from "./card-CRvVL_bQ.js";
-import { t as Primitive } from "./dist-B8mPwQY0.js";
+import { t as Download } from "./download-BjklG-5b.js";
+import { t as GraduationCap } from "./graduation-cap-CLMxYDx9.js";
+import { C as require_jsx_runtime, M as require_react, N as __toESM, a as useLanguage, f as Linkedin, l as cn, m as createLucideIcon, n as Button, o as supabase, p as Github, t as Skeleton } from "./index-BuAa1Ya3.js";
+import { n as CardContent, s as useSEO, t as Card } from "./card-DEYCZrxD.js";
+import { t as Primitive } from "./dist-GoRCvmum.js";
 var FileText = createLucideIcon("file-text", [
 	["path", {
 		d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
@@ -2052,4 +2053,4 @@ function AboutPage() {
 }
 export { AboutPage as default };
 
-//# sourceMappingURL=AboutPage-Dci_Txj_.js.map
+//# sourceMappingURL=AboutPage-4j-19Ch6.js.map

@@ -1,7 +1,6 @@
-import { t as Music } from "./music-DF_XyT0B.js";
-import { A as useParams, C as require_jsx_runtime, M as require_react, N as __toESM, S as createContextScope, T as composeEventHandlers, _ as Presence, a as useLanguage, b as Primitive, c as useId, g as useControllableState, k as useNavigate, l as cn, m as createLucideIcon, t as Skeleton, v as useLayoutEffect2, w as useComposedRefs, x as createCollection, y as useCallbackRef } from "./index-BcAFdKWP.js";
-import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-CRvVL_bQ.js";
-import { n as getMusicTracks } from "./database-BQMAYcwt.js";
+import { A as useParams, C as require_jsx_runtime, M as require_react, N as __toESM, S as createContextScope, T as composeEventHandlers, _ as Presence, a as useLanguage, b as Primitive, c as useId, g as useControllableState, k as useNavigate, l as cn, m as createLucideIcon, t as Skeleton, v as useLayoutEffect2, w as useComposedRefs, x as createCollection, y as useCallbackRef } from "./index-BuAa1Ya3.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-DEYCZrxD.js";
+import { t as getMusicTracks } from "./database-CXBYUCSi.js";
 var CirclePlay = createLucideIcon("circle-play", [["path", {
 	d: "M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z",
 	key: "kmsa83"
@@ -20,6 +19,24 @@ var Clock = createLucideIcon("clock", [["path", {
 	r: "10",
 	key: "1mglay"
 }]]);
+var Music = createLucideIcon("music", [
+	["path", {
+		d: "M9 18V5l12-2v13",
+		key: "1jmyc2"
+	}],
+	["circle", {
+		cx: "6",
+		cy: "18",
+		r: "3",
+		key: "fqmcym"
+	}],
+	["circle", {
+		cx: "18",
+		cy: "16",
+		r: "3",
+		key: "1hluhg"
+	}]
+]);
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime(), 1);
 var DirectionContext = import_react.createContext(void 0);
@@ -1245,4 +1262,4 @@ function MusicPage() {
 }
 export { MusicPage as default };
 
-//# sourceMappingURL=MusicPage-DdPQuZDe.js.map
+//# sourceMappingURL=MusicPage-C-voC84U.js.map
