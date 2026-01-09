@@ -1,30 +1,29 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getResumeEntries } from '@/services/database'
-import { ResumeEntry } from '@/types'
+import { getResumeItems } from '@/services/database'
+import { ResumeItem } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Download, Briefcase, GraduationCap, Calendar } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
 import { useSEO } from '@/hooks/use-seo'
 
 export default function ResumePage() {
   const { t, language } = useLanguage()
-  const [experience, setExperience] = useState<ResumeEntry[]>([])
+  const [experience, setExperience] = useState<ResumeItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useSEO({
     title: t.resume.title,
-    description: `My professional journey and experience`,
+    description: t.resume.title,
   })
 
   useEffect(() => {
-    getResumeEntries().then(({ data }) => {
+    getResumeItems(language).then(({ data }) => {
       if (data) setExperience(data)
       setLoading(false)
     })
-  }, [])
+  }, [language])
 
   const handleDownload = () => {
     alert('PDF Download not implemented in this demo.')
@@ -58,12 +57,12 @@ export default function ResumePage() {
                 <div
                   className={cn(
                     'absolute -left-3 md:-left-[13px] top-1 h-6 w-6 rounded-full border-4 border-background flex items-center justify-center transition-colors duration-300',
-                    item.type === 'work'
+                    item.category === 'work'
                       ? 'bg-primary'
                       : 'bg-secondary-foreground',
                   )}
                 >
-                  {item.type === 'work' ? (
+                  {item.category === 'work' ? (
                     <Briefcase className="h-3 w-3 text-primary-foreground" />
                   ) : (
                     <GraduationCap className="h-3 w-3 text-secondary" />
@@ -71,27 +70,16 @@ export default function ResumePage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-                  <h3 className="text-xl font-bold">
-                    {item[`role_${language}`]}
-                  </h3>
-                  <span className="hidden sm:inline text-muted-foreground">
-                    •
-                  </span>
-                  <span className="text-lg text-primary font-medium">
-                    {item.company}
-                  </span>
+                  <h3 className="text-xl font-bold">{item.title}</h3>
                 </div>
 
                 <div className="flex items-center text-sm text-muted-foreground mb-4">
                   <Calendar className="h-3 w-3 mr-1" />
-                  {format(new Date(item.start_date), 'yyyy')} -{' '}
-                  {item.end_date
-                    ? format(new Date(item.end_date), 'yyyy')
-                    : t.resume.present}
+                  {item.period}
                 </div>
 
                 <p className="text-muted-foreground leading-relaxed">
-                  {item[`description_${language}`]}
+                  {item.description}
                 </p>
               </div>
             ))}

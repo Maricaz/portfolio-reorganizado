@@ -1,9 +1,8 @@
-import { t as Github } from "./github-H_gkyyb1.js";
-import { D as X, E as cn, V as require_jsx_runtime, X as __toESM, Y as require_react, c as Close, d as Overlay, f as Portal, h as Trigger, j as createLucideIcon, l as Content, m as Title, o as useLanguage, p as Root, s as Skeleton, u as Description, v as Button } from "./index-5XTFupmN.js";
-import { a as CardHeader, i as CardFooter, n as CardContent, o as CardTitle, t as Card } from "./card-CtO5ik88.js";
-import { t as Badge } from "./badge-BeLnP4qD.js";
-import { t as useSEO } from "./use-seo-BL1sjDwA.js";
-import { i as getProjects } from "./database-BEo7tORy.js";
+import { D as X, E as cn, V as require_jsx_runtime, X as __toESM, Y as require_react, c as Close, d as Overlay, f as Portal, h as Trigger, j as createLucideIcon, l as Content, m as Title, o as useLanguage, p as Root, s as Skeleton, u as Description, v as Button } from "./index-PX6pJ-En.js";
+import { a as CardHeader, i as CardFooter, n as CardContent, o as CardTitle, t as Card } from "./card-ChJu7ipj.js";
+import { t as Badge } from "./badge-DQ_2kv0f.js";
+import { t as useSEO } from "./use-seo-D1ycOCZJ.js";
+import { i as getProjects } from "./database-D0EtR00K.js";
 var ExternalLink = createLucideIcon("external-link", [
 	["path", {
 		d: "M15 3h6v6",
@@ -68,50 +67,31 @@ function ITPage() {
 	const { t, language } = useLanguage();
 	const [projects, setProjects] = (0, import_react.useState)([]);
 	const [loading, setLoading] = (0, import_react.useState)(true);
-	const [filter, setFilter] = (0, import_react.useState)("all");
 	useSEO({
 		title: t.it.title,
-		description: "My portfolio projects and technical achievements"
+		description: "My technical projects and portfolio"
 	});
 	(0, import_react.useEffect)(() => {
-		getProjects().then(({ data }) => {
+		getProjects(language).then(({ data }) => {
 			if (data) setProjects(data);
 			setLoading(false);
 		});
-	}, []);
-	const allTags = Array.from(new Set(projects.flatMap((p) => p.tags)));
-	const filteredProjects = filter === "all" ? projects : projects.filter((p) => p.tags.includes(filter));
+	}, [language]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-8",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold",
-				children: t.it.title
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-wrap gap-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					variant: filter === "all" ? "default" : "outline",
-					size: "sm",
-					onClick: () => setFilter("all"),
-					children: t.it.filter_all
-				}), allTags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					variant: filter === tag ? "default" : "outline",
-					size: "sm",
-					onClick: () => setFilter(tag),
-					children: tag
-				}, tag))]
-			})]
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "text-3xl font-bold",
+			children: t.it.title
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
-			children: loading ? Array.from({ length: 6 }).map((_, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+			children: loading ? Array.from({ length: 3 }).map((_, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 				className: "overflow-hidden",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-48 w-full" }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-6 w-3/4" }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-full mb-2" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-1/2" })] })
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-full" }) })
 				]
-			}, i)) : filteredProjects.map((project) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+			}, i)) : projects.map((project) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 				className: "group hover:shadow-xl transition-all duration-300 flex flex-col h-full",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -126,7 +106,7 @@ function ITPage() {
 								asChild: true,
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									variant: "secondary",
-									children: t.home.view_project
+									children: t.it.view_project
 								})
 							})
 						})]
@@ -139,50 +119,28 @@ function ITPage() {
 						className: "flex-1",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "text-sm text-muted-foreground line-clamp-3 mb-4",
-							children: project[`description_${language}`]
+							children: project.description
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "flex flex-wrap gap-1",
-							children: project.tags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+							children: project.tech_stack?.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: "secondary",
 								className: "font-mono text-xs",
 								children: tag
 							}, tag))
 						})]
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardFooter, {
-						className: "gap-2 pt-0",
-						children: [project.demo_url && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "outline",
-							size: "sm",
-							className: "w-full",
-							asChild: true,
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
-								href: project.demo_url,
-								target: "_blank",
-								rel: "noopener noreferrer",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "mr-2 h-3 w-3" }),
-									" ",
-									t.it.view_live
-								]
-							})
-						}), project.github_url && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "ghost",
-							size: "sm",
-							className: "w-full",
-							asChild: true,
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
-								href: project.github_url,
-								target: "_blank",
-								rel: "noopener noreferrer",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Github, { className: "mr-2 h-3 w-3" }),
-									" ",
-									t.it.github
-								]
-							})
-						})]
-					})
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, { children: project.link && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						size: "sm",
+						className: "w-full",
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+							href: project.link,
+							target: "_blank",
+							rel: "noopener noreferrer",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "mr-2 h-3 w-3" }), " Link"]
+						})
+					}) })
 				]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
 				className: "max-w-2xl",
@@ -196,31 +154,15 @@ function ITPage() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, {
 							className: "text-base text-foreground",
-							children: project[`description_${language}`]
+							children: project.description
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+							className: "font-semibold mb-2",
+							children: t.it.tech_stack
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "flex flex-wrap gap-2",
-							children: project.tags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, { children: tag }, tag))
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex gap-4",
-							children: [project.demo_url && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-									href: project.demo_url,
-									target: "_blank",
-									children: t.it.view_live
-								})
-							}), project.github_url && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								variant: "outline",
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-									href: project.github_url,
-									target: "_blank",
-									children: t.it.github
-								})
-							})]
-						})
+							children: project.tech_stack?.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, { children: tag }, tag))
+						})] })
 					]
 				})]
 			})] }, project.id))
@@ -229,4 +171,4 @@ function ITPage() {
 }
 export { ITPage as default };
 
-//# sourceMappingURL=ITPage-DsWKdNPf.js.map
+//# sourceMappingURL=ITPage-Dd0SAo4h.js.map

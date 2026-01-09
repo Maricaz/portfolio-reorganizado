@@ -1,4 +1,4 @@
-import { K as useLocation, V as require_jsx_runtime, X as __toESM, Y as require_react } from "./index-5XTFupmN.js";
+import { K as useLocation, V as require_jsx_runtime, X as __toESM, Y as require_react } from "./index-PX6pJ-En.js";
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime(), 1);
 var NotFound = () => {
@@ -31,4 +31,4 @@ var NotFound = () => {
 var NotFound_default = NotFound;
 export { NotFound_default as default };
 
-//# sourceMappingURL=NotFound-Btd2_ktj.js.map
+//# sourceMappingURL=NotFound--P7gKX9l.js.map

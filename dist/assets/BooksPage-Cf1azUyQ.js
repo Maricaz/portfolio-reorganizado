@@ -1,6 +1,6 @@
-import { B as createContextScope, C as Root2$1, E as cn, F as Portal, H as useComposedRefs, L as DismissableLayer, N as useControllableState, P as Presence, S as Content, U as composeEventHandlers, V as require_jsx_runtime, X as __toESM, Y as require_react, _ as Input, b as Anchor, j as createLucideIcon, o as useLanguage, s as Skeleton, w as createPopperScope, x as Arrow, z as Primitive } from "./index-5XTFupmN.js";
-import { t as useSEO } from "./use-seo-BL1sjDwA.js";
-import { t as getBooks } from "./database-BEo7tORy.js";
+import { B as createContextScope, C as Root2$1, E as cn, F as Portal, H as useComposedRefs, L as DismissableLayer, N as useControllableState, P as Presence, S as Content, U as composeEventHandlers, V as require_jsx_runtime, X as __toESM, Y as require_react, b as Anchor, j as createLucideIcon, o as useLanguage, s as Skeleton, w as createPopperScope, x as Arrow, z as Primitive } from "./index-PX6pJ-En.js";
+import { t as useSEO } from "./use-seo-D1ycOCZJ.js";
+import { t as getBooks } from "./database-D0EtR00K.js";
 var Star = createLucideIcon("star", [["path", {
 	d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
 	key: "r04s7s"
@@ -223,42 +223,32 @@ function BooksPage() {
 	const { t, language } = useLanguage();
 	const [books, setBooks] = (0, import_react.useState)([]);
 	const [loading, setLoading] = (0, import_react.useState)(true);
-	const [search, setSearch] = (0, import_react.useState)("");
 	useSEO({
 		title: t.books.title,
 		description: "A curated list of books I recommend"
 	});
 	(0, import_react.useEffect)(() => {
-		getBooks().then(({ data }) => {
+		getBooks(language).then(({ data }) => {
 			if (data) setBooks(data);
 			setLoading(false);
 		});
-	}, []);
-	const filteredBooks = books.filter((book) => book.title.toLowerCase().includes(search.toLowerCase()) || book.author.toLowerCase().includes(search.toLowerCase()));
+	}, [language]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-8",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex flex-col md:flex-row justify-between items-center gap-4",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold",
-				children: t.books.title
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-				placeholder: t.books.search,
-				className: "max-w-xs",
-				value: search,
-				onChange: (e) => setSearch(e.target.value)
-			})]
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "text-3xl font-bold",
+			children: t.books.title
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6",
 			children: loading ? Array.from({ length: 5 }).map((_, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "space-y-2",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-48 w-full rounded-md" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-3/4" })]
-			}, i)) : filteredBooks.map((book) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(HoverCard, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(HoverCardTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			}, i)) : books.map((book) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(HoverCard, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(HoverCardTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "group cursor-pointer space-y-3",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "relative aspect-[2/3] overflow-hidden rounded-md shadow-md transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-xl",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-						src: book.image_url,
+						src: book.cover_url,
 						alt: book.title,
 						className: "w-full h-full object-cover"
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -291,21 +281,13 @@ function BooksPage() {
 								children: [book.rating, "/5"]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Star, { className: "h-3 w-3 fill-current" })]
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm text-muted-foreground",
-							children: t.books.why_recommend
-						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-							className: "text-sm italic",
+							className: "text-sm text-muted-foreground italic",
 							children: [
 								"\"",
-								book[`review_${language}`],
+								book.review,
 								"\""
 							]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-xs bg-secondary px-2 py-1 rounded text-secondary-foreground",
-							children: book.category
 						})
 					]
 				})
@@ -315,4 +297,4 @@ function BooksPage() {
 }
 export { BooksPage as default };
 
-//# sourceMappingURL=BooksPage-BT-gPH3w.js.map
+//# sourceMappingURL=BooksPage-Cf1azUyQ.js.map

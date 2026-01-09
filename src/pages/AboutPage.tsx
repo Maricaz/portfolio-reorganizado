@@ -35,10 +35,6 @@ export default function AboutPage() {
       items: ['Node.js', 'Supabase', 'PostgreSQL', 'Python'],
     },
     { category: 'Tools', items: ['Git', 'Docker', 'Figma', 'VS Code'] },
-    {
-      category: 'Soft Skills',
-      items: ['Communication', 'Leadership', 'Problem Solving'],
-    },
   ]
 
   return (

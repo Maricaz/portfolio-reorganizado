@@ -1,8 +1,14 @@
-import { t as Github } from "./github-H_gkyyb1.js";
-import { E as cn, M as cva, V as require_jsx_runtime, W as useToast, X as __toESM, Y as require_react, _ as Input, g as Primitive, j as createLucideIcon, k as Mail, o as useLanguage, v as Button, y as Slot } from "./index-5XTFupmN.js";
-import { a as CardHeader, n as CardContent, o as CardTitle, r as CardDescription, t as Card } from "./card-CtO5ik88.js";
-import { t as useSEO } from "./use-seo-BL1sjDwA.js";
-import { o as submitContact } from "./database-BEo7tORy.js";
+import { E as cn, M as cva, V as require_jsx_runtime, W as useToast, X as __toESM, Y as require_react, _ as Input, g as Primitive, j as createLucideIcon, k as Mail, o as useLanguage, v as Button, y as Slot } from "./index-PX6pJ-En.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, r as CardDescription, t as Card } from "./card-ChJu7ipj.js";
+import { t as useSEO } from "./use-seo-D1ycOCZJ.js";
+import { o as submitContact } from "./database-D0EtR00K.js";
+var Github = createLucideIcon("github", [["path", {
+	d: "M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4",
+	key: "tonef"
+}], ["path", {
+	d: "M9 18c-4.51 2-5-2-7-2",
+	key: "9comsn"
+}]]);
 var Linkedin = createLucideIcon("linkedin", [
 	["path", {
 		d: "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z",
@@ -5034,10 +5040,9 @@ var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
 });
 Textarea.displayName = "Textarea";
 var formSchema = object({
-	name: string().min(2),
-	email: string().email(),
-	subject: string().min(5),
-	message: string().min(10)
+	name: string().min(2, "Name is too short"),
+	email: string().email("Invalid email address"),
+	message: string().min(10, "Message is too short")
 });
 function ContactPage() {
 	const { t: t$1 } = useLanguage();
@@ -5052,13 +5057,15 @@ function ContactPage() {
 		defaultValues: {
 			name: "",
 			email: "",
-			subject: "",
 			message: ""
 		}
 	});
 	const onSubmit = async (values) => {
 		setIsSubmitting(true);
-		const { error } = await submitContact(values);
+		const { error } = await submitContact({
+			...values,
+			subject: "Contact Form Submission"
+		});
 		setIsSubmitting(false);
 		if (error) toast({
 			variant: "destructive",
@@ -5076,48 +5083,38 @@ function ContactPage() {
 		className: "max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-start",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "space-y-8 animate-fade-in",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-4xl font-bold mb-4",
-					children: t$1.contact.title
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-muted-foreground text-lg",
-					children: "I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions."
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex gap-4",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "outline",
-							size: "icon",
-							className: "h-12 w-12 rounded-full border-2",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Linkedin, { className: "h-5 w-5" })
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "outline",
-							size: "icon",
-							className: "h-12 w-12 rounded-full border-2",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Github, { className: "h-5 w-5" })
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-							variant: "outline",
-							size: "icon",
-							className: "h-12 w-12 rounded-full border-2",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-5 w-5" })
-						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-					className: "bg-primary/5 border-none",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Contact Info" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-						className: "space-y-2 text-sm",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Email:" }), " hello@example.com"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Location:" }), " Sao Paulo, Brazil"] })]
-					})]
-				})
-			]
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-4xl font-bold mb-4",
+				children: t$1.contact.title
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground text-lg",
+				children: "I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions."
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex gap-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						size: "icon",
+						className: "h-12 w-12 rounded-full border-2",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Linkedin, { className: "h-5 w-5" })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						size: "icon",
+						className: "h-12 w-12 rounded-full border-2",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Github, { className: "h-5 w-5" })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						size: "icon",
+						className: "h-12 w-12 rounded-full border-2",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-5 w-5" })
+					})
+				]
+			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 			className: "shadow-lg border-t-4 border-t-primary animate-slide-up",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1.contact.send }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Fill out the form below and I'll get back to you soon." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Form, {
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t$1.contact.title }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Fill out the form below and I'll get back to you soon." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Form, {
 				...form,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
 					onSubmit: form.handleSubmit(onSubmit),
@@ -5142,18 +5139,6 @@ function ContactPage() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormLabel, { children: t$1.contact.email }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormControl, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 									placeholder: "john@example.com",
-									...field
-								}) }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormMessage, {})
-							] })
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormField, {
-							control: form.control,
-							name: "subject",
-							render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(FormItem, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormLabel, { children: t$1.contact.subject }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormControl, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									placeholder: "Project Proposal",
 									...field
 								}) }),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormMessage, {})
@@ -5186,4 +5171,4 @@ function ContactPage() {
 }
 export { ContactPage as default };
 
-//# sourceMappingURL=ContactPage--bA-MPmh.js.map
+//# sourceMappingURL=ContactPage-D2zGQmfD.js.map

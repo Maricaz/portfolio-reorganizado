@@ -1,13 +1,4 @@
-import {
-  Home,
-  User,
-  FileText,
-  Code,
-  BookOpen,
-  Music,
-  Mail,
-  Languages,
-} from 'lucide-react'
+import { Home, User, FileText, Code, BookOpen, Music, Mail } from 'lucide-react'
 import { useLocation, Link } from 'react-router-dom'
 import {
   Sidebar,

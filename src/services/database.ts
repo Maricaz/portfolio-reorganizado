@@ -2,37 +2,40 @@ import { supabase } from '@/lib/supabase/client'
 import {
   Project,
   Book,
-  ResumeEntry,
+  ResumeItem,
   MusicTrack,
   ContactSubmission,
 } from '@/types'
 
-export const getProjects = async () => {
+export const getProjects = async (language: string) => {
   const { data, error } = await supabase
     .from('projects')
     .select('*')
+    .eq('language', language)
     .order('created_at', { ascending: false })
   return { data: data as Project[], error }
 }
 
-export const getBooks = async () => {
+export const getBooks = async (language: string) => {
   const { data, error } = await supabase
     .from('books')
     .select('*')
+    .eq('language', language)
     .order('created_at', { ascending: false })
   return { data: data as Book[], error }
 }
 
-export const getResumeEntries = async () => {
-  // Casting to any to avoid type errors since table is named 'resume_entries' but types might not be regenerated
+export const getResumeItems = async (language: string) => {
   const { data, error } = await supabase
-    .from('resume_entries' as any)
+    .from('resume_items')
     .select('*')
-    .order('start_date', { ascending: false })
-  return { data: data as ResumeEntry[], error }
+    .eq('language', language)
+    .order('created_at', { ascending: false })
+  return { data: data as ResumeItem[], error }
 }
 
 export const getMusicTracks = async () => {
+  // Music tracks are shared but lyrics are multilingual columns
   const { data, error } = await supabase
     .from('music_tracks')
     .select('*')
@@ -50,15 +53,18 @@ export const submitContact = async (
   return { data, error }
 }
 
-export const getLatestItem = async () => {
+export const getLatestItem = async (language: string) => {
   const { data: projects } = await supabase
     .from('projects')
     .select('*')
+    .eq('language', language)
     .limit(1)
     .order('created_at', { ascending: false })
+
   const { data: books } = await supabase
     .from('books')
     .select('*')
+    .eq('language', language)
     .limit(1)
     .order('created_at', { ascending: false })
 

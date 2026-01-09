@@ -12,7 +12,7 @@ import { AuthProvider } from '@/hooks/use-auth'
 
 export default function Layout() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <LanguageProvider>
         <AuthProvider>
           <SidebarProvider>
@@ -23,7 +23,7 @@ export default function Layout() {
                 <div className="flex-1" />
                 <LanguageSwitcher />
               </header>
-              <main className="flex-1 overflow-hidden p-4 md:p-8 animate-fade-in relative">
+              <main className="flex-1 overflow-x-hidden p-4 md:p-8 animate-fade-in relative max-w-[1600px] mx-auto w-full">
                 <Outlet />
               </main>
             </SidebarInset>

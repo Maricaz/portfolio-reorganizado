@@ -27,10 +27,9 @@ import { Linkedin, Github, Mail } from 'lucide-react'
 import { useSEO } from '@/hooks/use-seo'
 
 const formSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  subject: z.string().min(5),
-  message: z.string().min(10),
+  name: z.string().min(2, 'Name is too short'),
+  email: z.string().email('Invalid email address'),
+  message: z.string().min(10, 'Message is too short'),
 })
 
 export default function ContactPage() {
@@ -45,12 +44,15 @@ export default function ContactPage() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: '', email: '', subject: '', message: '' },
+    defaultValues: { name: '', email: '', message: '' },
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true)
-    const { error } = await submitContact(values)
+    const { error } = await submitContact({
+      ...values,
+      subject: 'Contact Form Submission',
+    })
     setIsSubmitting(false)
 
     if (error) {
@@ -95,25 +97,11 @@ export default function ContactPage() {
             <Mail className="h-5 w-5" />
           </Button>
         </div>
-
-        <Card className="bg-primary/5 border-none">
-          <CardHeader>
-            <CardTitle>Contact Info</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <p>
-              <strong>Email:</strong> hello@example.com
-            </p>
-            <p>
-              <strong>Location:</strong> Sao Paulo, Brazil
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       <Card className="shadow-lg border-t-4 border-t-primary animate-slide-up">
         <CardHeader>
-          <CardTitle>{t.contact.send}</CardTitle>
+          <CardTitle>{t.contact.title}</CardTitle>
           <CardDescription>
             Fill out the form below and I'll get back to you soon.
           </CardDescription>
@@ -142,19 +130,6 @@ export default function ContactPage() {
                     <FormLabel>{t.contact.email}</FormLabel>
                     <FormControl>
                       <Input placeholder="john@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="subject"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.contact.subject}</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Project Proposal" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

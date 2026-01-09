@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getBooks } from '@/services/database'
 import { Book } from '@/types'
-import { Input } from '@/components/ui/input'
 import { Star } from 'lucide-react'
 import {
   HoverCard,
@@ -16,7 +15,6 @@ export default function BooksPage() {
   const { t, language } = useLanguage()
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
 
   useSEO({
     title: t.books.title,
@@ -24,29 +22,15 @@ export default function BooksPage() {
   })
 
   useEffect(() => {
-    getBooks().then(({ data }) => {
+    getBooks(language).then(({ data }) => {
       if (data) setBooks(data)
       setLoading(false)
     })
-  }, [])
-
-  const filteredBooks = books.filter(
-    (book) =>
-      book.title.toLowerCase().includes(search.toLowerCase()) ||
-      book.author.toLowerCase().includes(search.toLowerCase()),
-  )
+  }, [language])
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <h1 className="text-3xl font-bold">{t.books.title}</h1>
-        <Input
-          placeholder={t.books.search}
-          className="max-w-xs"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+      <h1 className="text-3xl font-bold">{t.books.title}</h1>
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
         {loading
@@ -56,13 +40,13 @@ export default function BooksPage() {
                 <Skeleton className="h-4 w-3/4" />
               </div>
             ))
-          : filteredBooks.map((book) => (
+          : books.map((book) => (
               <HoverCard key={book.id}>
                 <HoverCardTrigger>
                   <div className="group cursor-pointer space-y-3">
                     <div className="relative aspect-[2/3] overflow-hidden rounded-md shadow-md transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-xl">
                       <img
-                        src={book.image_url}
+                        src={book.cover_url}
                         alt={book.title}
                         className="w-full h-full object-cover"
                       />
@@ -94,15 +78,9 @@ export default function BooksPage() {
                       <span className="text-xs font-bold">{book.rating}/5</span>
                       <Star className="h-3 w-3 fill-current" />
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {t.books.why_recommend}
+                    <p className="text-sm text-muted-foreground italic">
+                      "{book.review}"
                     </p>
-                    <p className="text-sm italic">
-                      "{book[`review_${language}`]}"
-                    </p>
-                    <span className="text-xs bg-secondary px-2 py-1 rounded text-secondary-foreground">
-                      {book.category}
-                    </span>
                   </div>
                 </HoverCardContent>
               </HoverCard>

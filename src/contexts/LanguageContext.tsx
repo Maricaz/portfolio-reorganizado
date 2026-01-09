@@ -33,7 +33,8 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     setLanguageState(lang)
   }
 
-  const t = translations[language]
+  // Fallback to 'pt' if translation is missing for some reason
+  const t = translations[language] || translations.pt
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>

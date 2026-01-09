@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-BHNpNISh.js","assets/arrow-right-CzTaiPdT.js","assets/card-CtO5ik88.js","assets/use-seo-BL1sjDwA.js","assets/database-BEo7tORy.js","assets/AboutPage-CnDk7NhR.js","assets/badge-BeLnP4qD.js","assets/ResumePage-DpPQSLc8.js","assets/ITPage-DsWKdNPf.js","assets/github-H_gkyyb1.js","assets/BooksPage-BT-gPH3w.js","assets/MusicPage-QyU06Vz4.js","assets/ContactPage--bA-MPmh.js"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-8ZMkonfi.js","assets/arrow-right-PKpwrya5.js","assets/card-ChJu7ipj.js","assets/use-seo-D1ycOCZJ.js","assets/database-D0EtR00K.js","assets/AboutPage-BKQg1qPn.js","assets/badge-DQ_2kv0f.js","assets/ResumePage-C1Y2bqNb.js","assets/ITPage-Dd0SAo4h.js","assets/BooksPage-Cf1azUyQ.js","assets/MusicPage-B4zesXEW.js","assets/ContactPage-D2zGQmfD.js"])))=>i.map(i=>d[i]);
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -25530,17 +25530,15 @@ const translations = {
 			about: "Sobre",
 			resume: "Currículo",
 			it: "Tecnologia",
-			books: "Curadoria",
+			books: "Livros",
 			music: "Música",
 			contact: "Contato"
 		},
 		home: {
-			role_1: "Desenvolvedor",
-			role_2: "Músico",
-			role_3: "Leitor",
-			latest_update: "Última Atualização",
-			quick_nav: "Navegação Rápida",
-			view_project: "Ver Projeto"
+			hero_title: "Olá, eu sou Dev",
+			hero_subtitle: "Desenvolvedor • Músico • Leitor",
+			latest: "Últimas Atualizações",
+			explore: "Explorar"
 		},
 		about: {
 			title: "Sobre Mim",
@@ -25548,35 +25546,33 @@ const translations = {
 			skills: "Habilidades"
 		},
 		resume: {
-			title: "Trajetória Profissional",
-			download: "Baixar CV",
-			present: "Presente"
+			title: "Experiência Profissional",
+			download: "Baixar CV"
 		},
 		it: {
 			title: "Projetos",
-			view_live: "Ver Online",
-			github: "Código",
-			filter_all: "Todos"
+			view_project: "Ver Projeto",
+			tech_stack: "Tecnologias"
 		},
 		books: {
-			title: "Estante Virtual",
+			title: "Minha Estante",
 			rating: "Avaliação",
-			why_recommend: "Por que recomendo:",
-			search: "Buscar livros..."
+			review: "Resenha"
 		},
 		music: {
-			title: "Estúdio",
+			title: "Minhas Músicas",
+			original: "Músicas Originais",
+			favorites: "Favoritas (Deezer)",
 			lyrics: "Letra",
-			lyrics_lang: "Ver letra em:"
+			select_lang: "Idioma da Letra"
 		},
 		contact: {
 			title: "Contato",
 			name: "Nome",
 			email: "Email",
-			subject: "Assunto",
 			message: "Mensagem",
-			send: "Enviar Mensagem",
-			success: "Mensagem enviada com sucesso!",
+			send: "Enviar",
+			success: "Mensagem enviada!",
 			error: "Erro ao enviar mensagem."
 		}
 	},
@@ -25586,17 +25582,15 @@ const translations = {
 			about: "About",
 			resume: "Resume",
 			it: "Tech",
-			books: "Library",
+			books: "Books",
 			music: "Music",
 			contact: "Contact"
 		},
 		home: {
-			role_1: "Developer",
-			role_2: "Musician",
-			role_3: "Reader",
-			latest_update: "Latest Update",
-			quick_nav: "Quick Navigation",
-			view_project: "View Project"
+			hero_title: "Hello, I am Dev",
+			hero_subtitle: "Developer • Musician • Reader",
+			latest: "Latest Updates",
+			explore: "Explore"
 		},
 		about: {
 			title: "About Me",
@@ -25604,35 +25598,33 @@ const translations = {
 			skills: "Skills"
 		},
 		resume: {
-			title: "Professional Journey",
-			download: "Download CV",
-			present: "Present"
+			title: "Professional Experience",
+			download: "Download CV"
 		},
 		it: {
 			title: "Projects",
-			view_live: "View Live",
-			github: "Code",
-			filter_all: "All"
+			view_project: "View Project",
+			tech_stack: "Tech Stack"
 		},
 		books: {
-			title: "Virtual Shelf",
+			title: "My Bookshelf",
 			rating: "Rating",
-			why_recommend: "Why I recommend:",
-			search: "Search books..."
+			review: "Review"
 		},
 		music: {
-			title: "Studio",
+			title: "My Music",
+			original: "Original Tracks",
+			favorites: "Favorites (Deezer)",
 			lyrics: "Lyrics",
-			lyrics_lang: "See lyrics in:"
+			select_lang: "Lyrics Language"
 		},
 		contact: {
-			title: "Get in Touch",
+			title: "Contact",
 			name: "Name",
 			email: "Email",
-			subject: "Subject",
 			message: "Message",
-			send: "Send Message",
-			success: "Message sent successfully!",
+			send: "Send",
+			success: "Message sent!",
 			error: "Error sending message."
 		}
 	},
@@ -25642,17 +25634,15 @@ const translations = {
 			about: "소개",
 			resume: "이력서",
 			it: "기술",
-			books: "서재",
+			books: "도서",
 			music: "음악",
 			contact: "연락처"
 		},
 		home: {
-			role_1: "개발자",
-			role_2: "음악가",
-			role_3: "독서가",
-			latest_update: "최신 업데이트",
-			quick_nav: "빠른 탐색",
-			view_project: "프로젝트 보기"
+			hero_title: "안녕하세요, Dev입니다",
+			hero_subtitle: "개발자 • 음악가 • 독서가",
+			latest: "최신 업데이트",
+			explore: "탐험하기"
 		},
 		about: {
 			title: "소개",
@@ -25660,35 +25650,33 @@ const translations = {
 			skills: "기술"
 		},
 		resume: {
-			title: "여정",
-			download: "CV 다운로드",
-			present: "현재"
+			title: "경력",
+			download: "CV 다운로드"
 		},
 		it: {
 			title: "프로젝트",
-			view_live: "라이브 보기",
-			github: "코드",
-			filter_all: "전체"
+			view_project: "프로젝트 보기",
+			tech_stack: "기술 스택"
 		},
 		books: {
-			title: "가상 서재",
+			title: "내 서재",
 			rating: "평점",
-			why_recommend: "추천 이유:",
-			search: "책 검색..."
+			review: "리뷰"
 		},
 		music: {
-			title: "스튜디오",
+			title: "내 음악",
+			original: "오리지널 트랙",
+			favorites: "즐겨찾기 (Deezer)",
 			lyrics: "가사",
-			lyrics_lang: "가사 언어:"
+			select_lang: "가사 언어"
 		},
 		contact: {
 			title: "연락하기",
 			name: "이름",
 			email: "이메일",
-			subject: "제목",
 			message: "메시지",
-			send: "메시지 보내기",
-			success: "메시지가 성공적으로 전송되었습니다!",
+			send: "보내기",
+			success: "메시지가 전송되었습니다!",
 			error: "메시지 전송 오류."
 		}
 	}
@@ -25705,7 +25693,7 @@ const LanguageProvider = ({ children }) => {
 	const setLanguage = (lang) => {
 		setLanguageState(lang);
 	};
-	const t = translations[language];
+	const t = translations[language] || translations.pt;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LanguageContext.Provider, {
 		value: {
 			language,
@@ -35037,7 +35025,7 @@ const AuthProvider = ({ children }) => {
 };
 function Layout() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThemeProvider, {
-		defaultTheme: "system",
+		defaultTheme: "dark",
 		storageKey: "vite-ui-theme",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LanguageProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarProvider, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppSidebar, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarInset, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
 			className: "sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/60 px-4 backdrop-blur-md transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-14",
@@ -35047,7 +35035,7 @@ function Layout() {
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LanguageSwitcher, {})
 			]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("main", {
-			className: "flex-1 overflow-hidden p-4 md:p-8 animate-fade-in relative",
+			className: "flex-1 overflow-x-hidden p-4 md:p-8 animate-fade-in relative max-w-[1600px] mx-auto w-full",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {})
 		})] })] }) }) })
 	});
@@ -35057,15 +35045,29 @@ const useAnalytics = () => {
 	(0, import_react.useEffect)(() => {
 		if (window.gtag) window.gtag("config", "G-XXXXXXXXXX", { page_path: location.pathname + location.search });
 	}, [location]);
+	(0, import_react.useEffect)(() => {
+		const handleOutboundClick = (event) => {
+			const anchor = event.target.closest("a");
+			if (anchor && anchor.href && anchor.href.startsWith("http") && !anchor.href.includes(window.location.host)) {
+				if (window.gtag) window.gtag("event", "click", {
+					event_category: "outbound",
+					event_label: anchor.href,
+					transport_type: "beacon"
+				});
+			}
+		};
+		document.addEventListener("click", handleOutboundClick);
+		return () => document.removeEventListener("click", handleOutboundClick);
+	}, []);
 };
-var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-BHNpNISh.js"), __vite__mapDeps([0,1,2,3,4])));
-var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-CnDk7NhR.js"), __vite__mapDeps([5,1,6,2,3])));
-var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-DpPQSLc8.js"), __vite__mapDeps([7,3,4])));
-var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-DsWKdNPf.js"), __vite__mapDeps([8,9,6,2,3,4])));
-var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-BT-gPH3w.js"), __vite__mapDeps([10,3,4])));
-var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-QyU06Vz4.js"), __vite__mapDeps([11,2,3,4])));
-var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage--bA-MPmh.js"), __vite__mapDeps([12,9,2,3,4])));
-var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound-Btd2_ktj.js"), []));
+var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-8ZMkonfi.js"), __vite__mapDeps([0,1,2,3,4])));
+var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-BKQg1qPn.js"), __vite__mapDeps([5,1,6,2,3])));
+var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-C1Y2bqNb.js"), __vite__mapDeps([7,3,4])));
+var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-Dd0SAo4h.js"), __vite__mapDeps([8,6,2,3,4])));
+var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-Cf1azUyQ.js"), __vite__mapDeps([9,3,4])));
+var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-B4zesXEW.js"), __vite__mapDeps([10,2,3,4])));
+var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage-D2zGQmfD.js"), __vite__mapDeps([11,2,3,4])));
+var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound--P7gKX9l.js"), []));
 var PageLoader = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 	className: "p-8 space-y-4",
 	children: [
@@ -35160,4 +35162,4 @@ var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 export { Code as A, createContextScope as B, Root2$1 as C, X as D, cn as E, Portal as F, Link as G, useComposedRefs as H, useLayoutEffect2 as I, useParams as J, useLocation as K, DismissableLayer as L, cva as M, useControllableState as N, Music as O, Presence as P, useCallbackRef as R, Content$1 as S, useId as T, composeEventHandlers as U, require_jsx_runtime as V, useToast as W, __toESM as X, require_react as Y, Input as _, useDirection as a, Anchor as b, Close as c, Overlay as d, Portal$2 as f, Primitive$1 as g, Trigger$1 as h, createRovingFocusGroupScope as i, createLucideIcon as j, Mail as k, Content as l, Title as m, Item as n, useLanguage as o, Root$1 as p, useNavigate as q, Root as r, Skeleton as s, supabase as t, Description as u, Button as v, createPopperScope as w, Arrow as x, Slot$1 as y, Primitive as z };
 
-//# sourceMappingURL=index-5XTFupmN.js.map
+//# sourceMappingURL=index-PX6pJ-En.js.map

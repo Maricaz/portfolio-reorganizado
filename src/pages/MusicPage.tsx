@@ -6,7 +6,7 @@ import { MusicTrack, Language } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { PlayCircle } from 'lucide-react'
+import { PlayCircle, Clock } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 
@@ -45,10 +45,10 @@ export default function MusicPage() {
     })
   }, [trackId])
 
-  // Sync initial lyrics lang with page lang, but allow divergence
+  // Only set initial lyrics lang, do not sync automatically to allow independence
   useEffect(() => {
-    setLyricsLang(language)
-  }, [language])
+    // Optional: Reset to current lang on track change if desired, or keep user preference
+  }, [selectedTrack])
 
   const handleTrackSelect = (track: MusicTrack) => {
     setSelectedTrack(track)
@@ -60,7 +60,7 @@ export default function MusicPage() {
       {/* Track List */}
       <Card className="lg:col-span-1 h-full flex flex-col border-border/50">
         <CardHeader>
-          <CardTitle>{t.music.title}</CardTitle>
+          <CardTitle>{t.music.original}</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 overflow-hidden p-0">
           <ScrollArea className="h-full px-4">
@@ -77,12 +77,12 @@ export default function MusicPage() {
                     onClick={() => handleTrackSelect(track)}
                     className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${selectedTrack?.id === track.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-muted'}`}
                   >
-                    <div className="h-10 w-10 bg-secondary rounded flex items-center justify-center">
+                    <div className="h-10 w-10 bg-secondary rounded flex items-center justify-center shrink-0">
                       <PlayCircle
                         className={`h-6 w-6 ${selectedTrack?.id === track.id ? 'text-primary' : 'text-muted-foreground'}`}
                       />
                     </div>
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden flex-1">
                       <p
                         className={`font-medium truncate ${selectedTrack?.id === track.id ? 'text-primary' : ''}`}
                       >
@@ -92,6 +92,12 @@ export default function MusicPage() {
                         {track.artist}
                       </p>
                     </div>
+                    {track.duration && (
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {track.duration}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -104,16 +110,30 @@ export default function MusicPage() {
       <div className="lg:col-span-2 space-y-6 flex flex-col h-full overflow-hidden">
         {selectedTrack ? (
           <>
-            <div className="w-full bg-background rounded-xl overflow-hidden shadow-elevation border border-border/50">
-              <iframe
-                title="Deezer Widget"
-                src={`https://widget.deezer.com/widget/auto/track/${selectedTrack.deezer_id}`}
-                width="100%"
-                height="150"
-                frameBorder="0"
-                allowTransparency={true}
-                allow="encrypted-media; clipboard-write"
-              />
+            <div className="w-full bg-background rounded-xl overflow-hidden shadow-elevation border border-border/50 space-y-4 p-4">
+              <h2 className="text-xl font-bold">{selectedTrack.title}</h2>
+              {selectedTrack.audio_url ? (
+                <audio
+                  controls
+                  className="w-full"
+                  src={selectedTrack.audio_url}
+                >
+                  Your browser does not support the audio element.
+                </audio>
+              ) : selectedTrack.deezer_id ? (
+                <iframe
+                  title="Deezer Widget"
+                  src={`https://widget.deezer.com/widget/auto/track/${selectedTrack.deezer_id}`}
+                  width="100%"
+                  height="130"
+                  frameBorder="0"
+                  allowTransparency={true}
+                  allow="encrypted-media; clipboard-write"
+                  className="rounded-lg"
+                />
+              ) : (
+                <p className="text-muted-foreground">No audio available</p>
+              )}
             </div>
 
             <Card className="flex-1 overflow-hidden flex flex-col">
@@ -123,7 +143,7 @@ export default function MusicPage() {
                 </CardTitle>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="text-muted-foreground hidden sm:inline">
-                    {t.music.lyrics_lang}
+                    {t.music.select_lang}:
                   </span>
                   <Tabs
                     value={lyricsLang}

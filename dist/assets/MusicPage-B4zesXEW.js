@@ -1,10 +1,19 @@
-import { B as createContextScope, E as cn, H as useComposedRefs, I as useLayoutEffect2, J as useParams, N as useControllableState, P as Presence, R as useCallbackRef, T as useId, U as composeEventHandlers, V as require_jsx_runtime, X as __toESM, Y as require_react, a as useDirection, i as createRovingFocusGroupScope, j as createLucideIcon, n as Item, o as useLanguage, q as useNavigate, r as Root$1, s as Skeleton, z as Primitive } from "./index-5XTFupmN.js";
-import { a as CardHeader, n as CardContent, o as CardTitle, t as Card } from "./card-CtO5ik88.js";
-import { t as useSEO } from "./use-seo-BL1sjDwA.js";
-import { r as getMusicTracks } from "./database-BEo7tORy.js";
+import { B as createContextScope, E as cn, H as useComposedRefs, I as useLayoutEffect2, J as useParams, N as useControllableState, P as Presence, R as useCallbackRef, T as useId, U as composeEventHandlers, V as require_jsx_runtime, X as __toESM, Y as require_react, a as useDirection, i as createRovingFocusGroupScope, j as createLucideIcon, n as Item, o as useLanguage, q as useNavigate, r as Root$1, s as Skeleton, z as Primitive } from "./index-PX6pJ-En.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, t as Card } from "./card-ChJu7ipj.js";
+import { t as useSEO } from "./use-seo-D1ycOCZJ.js";
+import { r as getMusicTracks } from "./database-D0EtR00K.js";
 var CirclePlay = createLucideIcon("circle-play", [["path", {
 	d: "M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z",
 	key: "kmsa83"
+}], ["circle", {
+	cx: "12",
+	cy: "12",
+	r: "10",
+	key: "1mglay"
+}]]);
+var Clock = createLucideIcon("clock", [["path", {
+	d: "M12 6v6l4 2",
+	key: "mmk7yg"
 }], ["circle", {
 	cx: "12",
 	cy: "12",
@@ -869,9 +878,7 @@ function MusicPage() {
 			setLoading(false);
 		});
 	}, [trackId]);
-	(0, import_react.useEffect)(() => {
-		setLyricsLang(language);
-	}, [language]);
+	(0, import_react.useEffect)(() => {}, [selectedTrack]);
 	const handleTrackSelect = (track) => {
 		setSelectedTrack(track);
 		navigate(`/music/${track.id}`);
@@ -880,7 +887,7 @@ function MusicPage() {
 		className: "grid grid-cols-1 lg:grid-cols-3 gap-8 h-[calc(100vh-8rem)]",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 			className: "lg:col-span-1 h-full flex flex-col border-border/50",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t.music.title }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t.music.original }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
 				className: "flex-1 overflow-hidden p-0",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollArea, {
 					className: "h-full px-4",
@@ -892,36 +899,55 @@ function MusicPage() {
 						children: tracks.map((track) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							onClick: () => handleTrackSelect(track),
 							className: `flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${selectedTrack?.id === track.id ? "bg-primary/10 border border-primary/20" : "hover:bg-muted"}`,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "h-10 w-10 bg-secondary rounded flex items-center justify-center",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CirclePlay, { className: `h-6 w-6 ${selectedTrack?.id === track.id ? "text-primary" : "text-muted-foreground"}` })
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "overflow-hidden",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: `font-medium truncate ${selectedTrack?.id === track.id ? "text-primary" : ""}`,
-									children: track.title
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "text-xs text-muted-foreground truncate",
-									children: track.artist
-								})]
-							})]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "h-10 w-10 bg-secondary rounded flex items-center justify-center shrink-0",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CirclePlay, { className: `h-6 w-6 ${selectedTrack?.id === track.id ? "text-primary" : "text-muted-foreground"}` })
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "overflow-hidden flex-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: `font-medium truncate ${selectedTrack?.id === track.id ? "text-primary" : ""}`,
+										children: track.title
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-xs text-muted-foreground truncate",
+										children: track.artist
+									})]
+								}),
+								track.duration && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "text-xs text-muted-foreground flex items-center gap-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "h-3 w-3" }), track.duration]
+								})
+							]
 						}, track.id))
 					})
 				})
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "lg:col-span-2 space-y-6 flex flex-col h-full overflow-hidden",
-			children: selectedTrack ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "w-full bg-background rounded-xl overflow-hidden shadow-elevation border border-border/50",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("iframe", {
+			children: selectedTrack ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "w-full bg-background rounded-xl overflow-hidden shadow-elevation border border-border/50 space-y-4 p-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+					className: "text-xl font-bold",
+					children: selectedTrack.title
+				}), selectedTrack.audio_url ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("audio", {
+					controls: true,
+					className: "w-full",
+					src: selectedTrack.audio_url,
+					children: "Your browser does not support the audio element."
+				}) : selectedTrack.deezer_id ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("iframe", {
 					title: "Deezer Widget",
 					src: `https://widget.deezer.com/widget/auto/track/${selectedTrack.deezer_id}`,
 					width: "100%",
-					height: "150",
+					height: "130",
 					frameBorder: "0",
 					allowTransparency: true,
-					allow: "encrypted-media; clipboard-write"
-				})
+					allow: "encrypted-media; clipboard-write",
+					className: "rounded-lg"
+				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "No audio available"
+				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 				className: "flex-1 overflow-hidden flex flex-col",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
@@ -931,9 +957,9 @@ function MusicPage() {
 						children: t.music.lyrics
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex items-center gap-2 text-sm",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 							className: "text-muted-foreground hidden sm:inline",
-							children: t.music.lyrics_lang
+							children: [t.music.select_lang, ":"]
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tabs, {
 							value: lyricsLang,
 							onValueChange: (v) => setLyricsLang(v),
@@ -982,4 +1008,4 @@ function MusicPage() {
 }
 export { MusicPage as default };
 
-//# sourceMappingURL=MusicPage-QyU06Vz4.js.map
+//# sourceMappingURL=MusicPage-B4zesXEW.js.map

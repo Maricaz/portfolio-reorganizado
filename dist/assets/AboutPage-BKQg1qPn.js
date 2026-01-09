@@ -1,8 +1,8 @@
-import { t as ArrowRight } from "./arrow-right-CzTaiPdT.js";
-import { E as cn, V as require_jsx_runtime, X as __toESM, Y as require_react, j as createLucideIcon, o as useLanguage, v as Button } from "./index-5XTFupmN.js";
-import { n as CardContent, t as Card } from "./card-CtO5ik88.js";
-import { t as Badge } from "./badge-BeLnP4qD.js";
-import { t as useSEO } from "./use-seo-BL1sjDwA.js";
+import { t as ArrowRight } from "./arrow-right-PKpwrya5.js";
+import { E as cn, V as require_jsx_runtime, X as __toESM, Y as require_react, j as createLucideIcon, o as useLanguage, v as Button } from "./index-PX6pJ-En.js";
+import { n as CardContent, t as Card } from "./card-ChJu7ipj.js";
+import { t as Badge } from "./badge-DQ_2kv0f.js";
+import { t as useSEO } from "./use-seo-D1ycOCZJ.js";
 var ArrowLeft = createLucideIcon("arrow-left", [["path", {
 	d: "m12 19-7-7 7-7",
 	key: "1l729n"
@@ -1670,14 +1670,6 @@ function AboutPage() {
 								"Figma",
 								"VS Code"
 							]
-						},
-						{
-							category: "Soft Skills",
-							items: [
-								"Communication",
-								"Leadership",
-								"Problem Solving"
-							]
 						}
 					].map((skillGroup) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
 						className: "border-l-4 border-l-primary",
@@ -1702,4 +1694,4 @@ function AboutPage() {
 }
 export { AboutPage as default };
 
-//# sourceMappingURL=AboutPage-CnDk7NhR.js.map
+//# sourceMappingURL=AboutPage-BKQg1qPn.js.map
