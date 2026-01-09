@@ -11,12 +11,46 @@ import {
   User,
   Download,
   Mail,
+  LucideIcon,
 } from 'lucide-react'
 import { getLatestItem } from '@/services/database'
 import { getSiteSettings } from '@/services/settings'
 import { SiteSettings, Project, Book } from '@/types'
 import { useAnalytics } from '@/hooks/use-analytics'
 import { cn } from '@/lib/utils'
+
+interface NavCardProps {
+  to: string
+  icon: LucideIcon
+  title: string
+  colorClass: string
+  bgClass: string
+}
+
+const NavCard = ({
+  to,
+  icon: Icon,
+  title,
+  colorClass,
+  bgClass,
+}: NavCardProps) => (
+  <Link to={to} className="group">
+    <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-primary/50 group-hover:-translate-y-1">
+      <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full justify-center">
+        <div
+          className={cn(
+            'p-4 rounded-full group-hover:scale-110 transition-transform',
+            bgClass,
+            colorClass,
+          )}
+        >
+          <Icon className="h-8 w-8" />
+        </div>
+        <h3 className="font-bold text-lg">{title}</h3>
+      </CardContent>
+    </Card>
+  </Link>
+)
 
 export default function Index() {
   const { t, language } = useLanguage()
@@ -63,14 +97,11 @@ export default function Index() {
       return project.description_pt || ''
     } else {
       const book = item as Book
-      // Now books are row-based by language, so we just use synopsis
       return book.synopsis || ''
     }
   }
 
   const getLatestTitle = (item: any) => {
-    // For projects we might still have localized titles if implemented, but usually it's just 'title'
-    // For books, the title is already specific to the language row
     return item.title
   }
 
@@ -117,49 +148,34 @@ export default function Index() {
       {/* Cards Navigation */}
       <section className="container px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Link to="/it" className="group">
-            <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-primary/50 group-hover:-translate-y-1">
-              <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full justify-center">
-                <div className="p-4 rounded-full bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
-                  <Code className="h-8 w-8" />
-                </div>
-                <h3 className="font-bold text-lg">{t.home.cards.it}</h3>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link to="/music" className="group">
-            <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-primary/50 group-hover:-translate-y-1">
-              <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full justify-center">
-                <div className="p-4 rounded-full bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
-                  <Music className="h-8 w-8" />
-                </div>
-                <h3 className="font-bold text-lg">{t.home.cards.music}</h3>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link to="/books" className="group">
-            <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-primary/50 group-hover:-translate-y-1">
-              <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full justify-center">
-                <div className="p-4 rounded-full bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
-                  <BookOpen className="h-8 w-8" />
-                </div>
-                <h3 className="font-bold text-lg">{t.home.cards.books}</h3>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link to="/about" className="group">
-            <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-primary/50 group-hover:-translate-y-1">
-              <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full justify-center">
-                <div className="p-4 rounded-full bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
-                  <User className="h-8 w-8" />
-                </div>
-                <h3 className="font-bold text-lg">{t.home.cards.about}</h3>
-              </CardContent>
-            </Card>
-          </Link>
+          <NavCard
+            to="/it"
+            icon={Code}
+            title={t.home.cards.it}
+            colorClass="text-blue-600 dark:text-blue-400"
+            bgClass="bg-blue-100 dark:bg-blue-900/20"
+          />
+          <NavCard
+            to="/music"
+            icon={Music}
+            title={t.home.cards.music}
+            colorClass="text-purple-600 dark:text-purple-400"
+            bgClass="bg-purple-100 dark:bg-purple-900/20"
+          />
+          <NavCard
+            to="/books"
+            icon={BookOpen}
+            title={t.home.cards.books}
+            colorClass="text-amber-600 dark:text-amber-400"
+            bgClass="bg-amber-100 dark:bg-amber-900/20"
+          />
+          <NavCard
+            to="/about"
+            icon={User}
+            title={t.home.cards.about}
+            colorClass="text-green-600 dark:text-green-400"
+            bgClass="bg-green-100 dark:bg-green-900/20"
+          />
         </div>
       </section>
 

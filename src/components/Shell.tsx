@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { LanguageSwitch } from '@/components/LanguageSwitch'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -28,11 +28,7 @@ import {
   DrawerFooter,
 } from '@/components/ui/drawer'
 
-interface ShellProps {
-  children: React.ReactNode
-}
-
-export function Shell({ children }: ShellProps) {
+export default function Shell() {
   const { t } = useLanguage()
   const location = useLocation()
   const [open, setOpen] = useState(false)
@@ -178,7 +174,7 @@ export function Shell({ children }: ShellProps) {
 
       {/* Main Content */}
       <main className="flex-1 container max-w-screen-2xl mx-auto p-4 md:p-8 animate-fade-in">
-        {children}
+        <Outlet />
       </main>
 
       {/* Footer */}

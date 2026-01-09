@@ -3,10 +3,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import Layout from './components/Layout'
+import Shell from './components/Shell'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AnalyticsInit } from '@/components/AnalyticsInit'
 import { RouteChangeTracker } from '@/components/RouteChangeTracker'
+import { LanguageProvider } from '@/contexts/LanguageContext'
+import { ThemeProvider } from '@/components/theme-provider'
 
 // Lazy loaded pages
 const Index = lazy(() => import('./pages/Index'))
@@ -37,89 +39,93 @@ const App = () => (
   <BrowserRouter
     future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
   >
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AnalyticsInit />
-      <RouteChangeTracker />
-      <Routes>
-        <Route element={<Layout />}>
-          <Route
-            path="/"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <Index />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/about"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <AboutPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/resume"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <ResumePage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/it"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <ITPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/books"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <BooksPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/music"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <MusicPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/music/:trackId"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <MusicPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/contact"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <ContactPage />
-              </Suspense>
-            }
-          />
-          {/* Catch-all route inside Layout to maintain header/footer consistency */}
-          <Route
-            path="*"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <NotFound />
-              </Suspense>
-            }
-          />
-        </Route>
-      </Routes>
-    </TooltipProvider>
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <LanguageProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <AnalyticsInit />
+          <RouteChangeTracker />
+          <Routes>
+            <Route element={<Shell />}>
+              <Route
+                path="/"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <Index />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <AboutPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/resume"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <ResumePage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/it"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <ITPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/books"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <BooksPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/music"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <MusicPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/music/:trackId"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <MusicPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <ContactPage />
+                  </Suspense>
+                }
+              />
+              {/* Catch-all route inside Layout to maintain header/footer consistency */}
+              <Route
+                path="*"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <NotFound />
+                  </Suspense>
+                }
+              />
+            </Route>
+          </Routes>
+        </TooltipProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   </BrowserRouter>
 )
 

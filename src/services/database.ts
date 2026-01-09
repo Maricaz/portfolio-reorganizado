@@ -7,6 +7,7 @@ export async function submitContactForm(data: ContactFormData) {
 
 export async function getLatestItem(language: Language = 'pt') {
   // Fetch latest project
+  // Note: projects table might not have language rows, but descriptions are localized columns
   const { data: project } = await (supabase as any)
     .from('projects')
     .select('*')
