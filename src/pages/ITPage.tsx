@@ -17,8 +17,8 @@ export default function ITPage() {
   const [loading, setLoading] = useState(true)
 
   useSEO({
-    title: 'Projetos de TI — Mariana Azevedo',
-    description: 'Projetos',
+    title: `${t.projects.title} — Mariana Azevedo`,
+    description: t.projects.description,
   })
 
   useEffect(() => {
@@ -43,6 +43,11 @@ export default function ITPage() {
     return project.description_en || ''
   }
 
+  const getTitle = (project: ITProject) => {
+    if (language === 'ko' && project.title_ko) return project.title_ko
+    return project.title
+  }
+
   const handleProjectClick = (title: string, link: string) => {
     trackITProjectClick(title, link)
   }
@@ -54,7 +59,7 @@ export default function ITPage() {
           <Cpu className="w-10 h-10 text-primary" />
         </div>
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-          {t.it.title}
+          {t.projects.title}
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl">
           {t.projects.description}
@@ -79,7 +84,7 @@ export default function ITPage() {
             >
               <CardHeader>
                 <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors">
-                  {project.title}
+                  {getTitle(project)}
                 </CardTitle>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {project.tags?.map((tech) => (
@@ -104,7 +109,7 @@ export default function ITPage() {
                     className="w-full mt-auto group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                     asChild
                     onClick={() =>
-                      handleProjectClick(project.title, project.link!)
+                      handleProjectClick(getTitle(project), project.link!)
                     }
                   >
                     <a href={project.link} target="_blank" rel="noreferrer">

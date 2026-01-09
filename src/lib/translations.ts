@@ -229,12 +229,12 @@ export const translations = {
       resume: '이력서',
       books: '도서 큐레이션',
       music: '오리지널 음악',
-      contact: '연락처',
+      contact: '연락하기',
     },
     home: {
       hero_title: '마리아나 아제베도',
       hero_subtitle:
-        '저는 마리입니다. 🌿 호기심 많고 창의적이며, 코드, 악보, 책 페이지 사이를 오갑니다. 여기서 제 우주의 일부를 공유합니다.',
+        '저는 마리입니다. 🌿 호기심과 창조로 세밀함 속 의미를 찾고, 기술과 예술, 감성의 길을 엮어 갑니다.',
       cta: '연락하기',
       cta_contact: '연락하기',
       resume_btn: '이력서 다운로드',
@@ -303,9 +303,9 @@ export const translations = {
       email: '이메일',
       subject: '제목',
       message: '메시지',
-      send: '메시지 보내기',
-      success: '메시지가 성공적으로 전송되었습니다. 연락해주셔서 감사합니다.',
-      error: '메시지 전송 중 오류가 발생했습니다. 다시 시도해주세요.',
+      send: '메시지 전송',
+      success: '메시지가 성공적으로 전송되었습니다. 감사합니다.',
+      error: '지금은 전송할 수 없습니다. 잠시 후 다시 시도해 주세요.',
       validation: {
         name: '이름은 2자 이상이어야 합니다',
         email: '유효하지 않은 이메일 주소',

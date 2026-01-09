@@ -65,6 +65,13 @@ export default function Index() {
     }
   }
 
+  const getLatestTitle = (item: any) => {
+    if (language === 'ko' && item.title_ko) {
+      return item.title_ko
+    }
+    return item.title
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -189,7 +196,9 @@ export default function Index() {
                 <div className="text-sm font-medium text-primary uppercase tracking-wider">
                   {latest.type === 'project' ? t.nav.projects : t.nav.books}
                 </div>
-                <h3 className="text-2xl font-bold">{latest.item.title}</h3>
+                <h3 className="text-2xl font-bold">
+                  {getLatestTitle(latest.item)}
+                </h3>
                 <p className="text-muted-foreground line-clamp-2">
                   {getLatestDescription(latest.item, latest.type)}
                 </p>

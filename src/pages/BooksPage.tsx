@@ -16,8 +16,8 @@ export default function BooksPage() {
   const [loading, setLoading] = useState(true)
 
   useSEO({
-    title: 'Curadoria de Livros — Mariana Azevedo',
-    description: 'Leituras que moldam a sensibilidade.',
+    title: `${t.books.title} — Mariana Azevedo`,
+    description: t.books.description,
   })
 
   // Dynamic book cover mapping
@@ -48,6 +48,11 @@ export default function BooksPage() {
       path.toLowerCase().includes(slug),
     )
     return match ? match[1] : null
+  }
+
+  const getTitle = (book: Book) => {
+    if (language === 'ko' && book.title_ko) return book.title_ko
+    return book.title
   }
 
   const trackBookSynopsisToggle = (bookTitle: string, isOpen: boolean) => {
@@ -86,6 +91,7 @@ export default function BooksPage() {
       ) : books.length > 0 ? (
         <div className="grid grid-auto-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {books.map((book, index) => {
+            // Use original title for cover lookup to maintain consistency
             const coverUrl = getCoverImage(book.title)
             return (
               <Card
@@ -97,7 +103,7 @@ export default function BooksPage() {
                   {coverUrl ? (
                     <img
                       src={coverUrl}
-                      alt={book.title}
+                      alt={getTitle(book)}
                       loading="lazy"
                       className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                     />
@@ -114,9 +120,9 @@ export default function BooksPage() {
                 <CardHeader className="pb-2 space-y-1">
                   <CardTitle
                     className="text-lg leading-tight line-clamp-2"
-                    title={book.title}
+                    title={getTitle(book)}
                   >
-                    {book.title}
+                    {getTitle(book)}
                   </CardTitle>
                   <p className="text-sm text-muted-foreground line-clamp-1">
                     {book.author}
@@ -128,7 +134,7 @@ export default function BooksPage() {
                     className="group/details"
                     onToggle={(e) => {
                       const target = e.target as HTMLDetailsElement
-                      trackBookSynopsisToggle(book.title, target.open)
+                      trackBookSynopsisToggle(getTitle(book), target.open)
                     }}
                   >
                     <summary className="cursor-pointer list-none flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
