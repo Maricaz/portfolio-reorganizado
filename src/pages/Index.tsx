@@ -3,7 +3,15 @@ import { Link } from 'react-router-dom'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { ArrowRight, Code, Music, BookOpen, User, Download } from 'lucide-react'
+import {
+  ArrowRight,
+  Code,
+  Music,
+  BookOpen,
+  User,
+  Download,
+  Mail,
+} from 'lucide-react'
 import { getLatestItem } from '@/services/database'
 import { getSiteSettings } from '@/services/settings'
 import { SiteSettings } from '@/types'
@@ -72,16 +80,16 @@ export default function Index() {
               {t.home.hero_title}
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground">
+          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
             {t.home.hero_subtitle}
           </p>
         </div>
 
         <div className="flex flex-wrap gap-4 justify-center">
           <Button size="lg" asChild className="rounded-full px-8">
-            <Link to="/it">
+            <Link to="/contact">
+              <Mail className="mr-2 h-4 w-4" />
               {t.home.cta}
-              <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
           <Button

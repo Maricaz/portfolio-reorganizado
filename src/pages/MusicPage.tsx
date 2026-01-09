@@ -7,6 +7,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 import { TrackCard } from '@/components/music/TrackCard'
 import { SidePanel } from '@/components/music/SidePanel'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Info } from 'lucide-react'
 
 export default function MusicPage() {
   const { t, language } = useLanguage()
@@ -79,7 +81,7 @@ export default function MusicPage() {
       <div className="flex flex-col-reverse lg:grid lg:grid-cols-12 gap-8">
         {/* Main Content - Track List */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="space-y-2 mb-8">
+          <div className="space-y-2 mb-4">
             <h1 className="text-4xl font-bold tracking-tight">
               {t.music.title}
             </h1>
@@ -88,8 +90,15 @@ export default function MusicPage() {
             </p>
           </div>
 
+          <Alert className="bg-muted/50 border-primary/20">
+            <Info className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-sm text-muted-foreground">
+              {t.music.local_file_note}
+            </AlertDescription>
+          </Alert>
+
           {loading ? (
-            <div className="space-y-4">
+            <div className="space-y-4 mt-8">
               {[1, 2, 3].map((i) => (
                 <Skeleton key={i} className="h-40 w-full rounded-lg" />
               ))}

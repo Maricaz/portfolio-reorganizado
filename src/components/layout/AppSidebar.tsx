@@ -25,7 +25,7 @@ export function AppSidebar() {
     { title: t.nav.home, url: '/', icon: Home },
     { title: t.nav.about, url: '/about', icon: User },
     { title: t.nav.resume, url: '/resume', icon: FileText },
-    { title: t.nav.it, url: '/it', icon: Code },
+    { title: t.nav.projects, url: '/it', icon: Code },
     { title: t.nav.books, url: '/books', icon: BookOpen },
     { title: t.nav.music, url: '/music', icon: Music },
     { title: t.nav.contact, url: '/contact', icon: Mail },
@@ -39,10 +39,10 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-2 px-2">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold">P</span>
+            <span className="text-primary-foreground font-bold">M</span>
           </div>
           <span className="font-bold text-lg tracking-tight group-data-[collapsible=icon]:hidden">
-            Portfolio
+            Mariana
           </span>
         </div>
       </SidebarHeader>
