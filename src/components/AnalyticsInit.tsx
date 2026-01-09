@@ -1,9 +1,7 @@
 import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
 
 export const AnalyticsInit = () => {
-  const location = useLocation()
-  const GA_ID = import.meta.env.VITE_GA_ID
+  const GA_ID = import.meta.env.VITE_GA_ID || 'G-84ND40DRT6'
 
   useEffect(() => {
     if (!GA_ID) return
@@ -22,7 +20,7 @@ export const AnalyticsInit = () => {
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', '${GA_ID}');
+        gtag('config', '${GA_ID}', { 'send_page_view': false });
       `
       document.head.appendChild(script2)
     }
@@ -37,14 +35,6 @@ export const AnalyticsInit = () => {
       document.head.appendChild(meta)
     }
   }, [GA_ID])
-
-  useEffect(() => {
-    if (GA_ID && window.gtag) {
-      window.gtag('config', GA_ID, {
-        page_path: location.pathname + location.search,
-      })
-    }
-  }, [location, GA_ID])
 
   return null
 }

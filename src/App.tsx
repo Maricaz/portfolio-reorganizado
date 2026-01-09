@@ -6,6 +6,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import Layout from './components/Layout'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AnalyticsInit } from '@/components/AnalyticsInit'
+import { RouteChangeTracker } from '@/components/RouteChangeTracker'
 
 // Lazy loaded pages
 const Index = lazy(() => import('./pages/Index'))
@@ -40,6 +41,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AnalyticsInit />
+      <RouteChangeTracker />
       <Routes>
         <Route element={<Layout />}>
           <Route

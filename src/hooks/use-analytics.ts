@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
 
 declare global {
   interface Window {
@@ -8,7 +7,6 @@ declare global {
 }
 
 export const useAnalytics = () => {
-  const location = useLocation()
   const GA_ID = import.meta.env.VITE_GA_ID
 
   const gtagSafe = (command: string, ...args: any[]) => {
@@ -21,14 +19,8 @@ export const useAnalytics = () => {
     }
   }
 
-  // Initialize page view tracking
-  useEffect(() => {
-    if (GA_ID) {
-      gtagSafe('config', GA_ID, {
-        page_path: location.pathname + location.search,
-      })
-    }
-  }, [location, GA_ID])
+  // NOTE: Page view tracking is now handled by RouteChangeTracker component
+  // to support hash tracking and centralized logic.
 
   const trackEvent = (
     eventName: string,
