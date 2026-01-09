@@ -110,7 +110,11 @@
 
 @layer components {
   .btn-neon {
-    @apply bg-white text-indigo-600 dark:bg-indigo-600 dark:text-white transition-all duration-300;
+    @apply bg-white text-indigo-600 dark:bg-indigo-600 dark:text-white transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2;
+  }
+
+  .btn-neon-ghost {
+    @apply bg-transparent border border-primary/20 hover:border-primary/50 text-muted-foreground hover:text-foreground hover:bg-muted/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2;
   }
 
   .glass-soft {
@@ -127,6 +131,15 @@
 }
 
 @layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   @keyframes accordion-down {
     from {
       height: 0;

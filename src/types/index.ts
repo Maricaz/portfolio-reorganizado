@@ -42,10 +42,11 @@ export interface MusicTrack {
 
 export interface ResumeItem {
   id: string
-  category: string
+  category: 'experience' | 'education' | 'skills' | string
   title_pt: string | null
   title_en: string | null
   title_ko: string | null
+  institution: string | null
   period: string | null
   description_pt: string | null
   description_en: string | null

@@ -16,6 +16,39 @@ export const getProjects = async () => {
     .returns<Project[]>()
 }
 
+// Latest Item (for Home)
+export const getLatestItem = async () => {
+  // Try to get latest project
+  const { data: project } = await supabase
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  // Try to get latest book
+  const { data: book } = await supabase
+    .from('books')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  // Compare dates and return the latest
+  if (project && book) {
+    const projectDate = new Date(project.created_at)
+    const bookDate = new Date(book.created_at)
+    return projectDate > bookDate
+      ? { type: 'project', item: project as Project }
+      : { type: 'book', item: book as Book }
+  } else if (project) {
+    return { type: 'project', item: project as Project }
+  } else if (book) {
+    return { type: 'book', item: book as Book }
+  }
+  return null
+}
+
 // Books
 export const getBooks = async () => {
   return await supabase
@@ -45,9 +78,9 @@ export const getMusicTrackById = async (id: string) => {
 // Resume
 export const getResumeData = async () => {
   return await supabase
-    .from('resume_data')
+    .from('resume_items')
     .select('*')
-    .order('created_at', { ascending: false }) // Most recent first assumption
+    .order('created_at', { ascending: false })
     .returns<ResumeItem[]>()
 }
 
