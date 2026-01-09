@@ -7,8 +7,7 @@ export interface Project {
   description_en: string | null
   description_ko: string | null
   tech_stack: string[]
-  link: string | null
-  image_url: string
+  image_url: string | null
   demo_url: string | null
   github_url: string | null
   created_at: string
@@ -27,19 +26,6 @@ export interface Book {
   created_at: string
 }
 
-export interface ResumeData {
-  id: string
-  category: 'work' | 'education'
-  title_pt: string | null
-  title_en: string | null
-  title_ko: string | null
-  period: string
-  description_pt: string | null
-  description_en: string | null
-  description_ko: string | null
-  created_at: string
-}
-
 export interface MusicTrack {
   id: string
   title: string
@@ -54,11 +40,24 @@ export interface MusicTrack {
   created_at: string
 }
 
+export interface ResumeItem {
+  id: string
+  category: string
+  title_pt: string | null
+  title_en: string | null
+  title_ko: string | null
+  period: string | null
+  description_pt: string | null
+  description_en: string | null
+  description_ko: string | null
+  created_at: string
+}
+
 export interface ContactSubmission {
-  id?: string
+  id: string
   name: string
   email: string
   message: string
-  subject?: string
-  created_at?: string
+  subject: string
+  created_at: string
 }

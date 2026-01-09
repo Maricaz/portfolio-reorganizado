@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { useLanguage } from '@/contexts/LanguageContext'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { submitContact } from '@/services/database'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { submitContactForm } from '@/services/database'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Form,
   FormControl,
@@ -13,187 +15,186 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/components/ui/card'
+import { Mail, Send, Loader2, CheckCircle2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { Linkedin, Github, Mail, Send } from 'lucide-react'
 import { useSEO } from '@/hooks/use-seo'
 
-const formSchema = z.object({
-  name: z.string().min(2, 'Name is too short'),
+const contactSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  message: z.string().min(10, 'Message is too short'),
+  subject: z.string().min(5, 'Subject must be at least 5 characters'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
 })
+
+type ContactFormValues = z.infer<typeof contactSchema>
 
 export default function ContactPage() {
   const { t } = useLanguage()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
 
   useSEO({
-    title: t.contact.title,
-    description: 'Get in touch for opportunities or collaborations',
+    title: `${t.contact.title} - Portfolio`,
+    description: t.contact.description,
   })
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { name: '', email: '', message: '' },
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+    },
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: ContactFormValues) => {
     setIsSubmitting(true)
-    const { error } = await submitContact({
-      ...values,
-      subject: 'Contact Form Submission',
-    })
-    setIsSubmitting(false)
+    try {
+      const { error } = await submitContactForm(values)
+      if (error) throw error
 
-    if (error) {
-      toast({ variant: 'destructive', title: t.contact.error })
-    } else {
-      toast({ title: t.contact.success, className: 'bg-green-500 text-white' })
+      setIsSuccess(true)
+      toast({
+        title: t.contact.success,
+        variant: 'default',
+      })
       form.reset()
+    } catch (error) {
+      console.error(error)
+      toast({
+        title: t.contact.error,
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
-    <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center py-8">
-      <div className="space-y-8 animate-fade-in">
-        <div>
-          <h1 className="text-5xl font-bold mb-6">{t.contact.title}</h1>
-          <p className="text-muted-foreground text-xl leading-relaxed">
-            I'm always open to discussing new projects, creative ideas or
-            opportunities to be part of your visions. Let's create something
-            amazing together.
-          </p>
-        </div>
-
-        <div className="flex gap-4 pt-4">
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-14 w-14 rounded-full border-2 hover:border-primary hover:text-primary transition-all"
-            asChild
-          >
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Linkedin className="h-6 w-6" />
-            </a>
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-14 w-14 rounded-full border-2 hover:border-primary hover:text-primary transition-all"
-            asChild
-          >
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Github className="h-6 w-6" />
-            </a>
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-14 w-14 rounded-full border-2 hover:border-primary hover:text-primary transition-all"
-            asChild
-          >
-            <a href="mailto:contact@example.com">
-              <Mail className="h-6 w-6" />
-            </a>
-          </Button>
-        </div>
+    <div className="container mx-auto px-4 py-12 max-w-2xl">
+      <div className="space-y-4 text-center mb-8 animate-fade-in-down">
+        <h1 className="text-4xl font-bold tracking-tight">{t.contact.title}</h1>
+        <p className="text-lg text-muted-foreground">{t.contact.description}</p>
       </div>
 
-      <Card className="shadow-2xl border-t-4 border-t-primary animate-slide-up bg-card/50 backdrop-blur-sm">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">{t.contact.title}</CardTitle>
+      <Card className="animate-fade-in-up shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="h-5 w-5" />
+            {t.contact.title}
+          </CardTitle>
           <CardDescription>
-            Fill out the form below and I'll get back to you soon.
+            Fill out the form below to get in touch.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.contact.name}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="John Doe"
-                        {...field}
-                        className="bg-background/50"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.contact.email}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="john@example.com"
-                        {...field}
-                        className="bg-background/50"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="message"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.contact.message}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Hello..."
-                        className="min-h-[150px] bg-background/50 resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="submit"
-                className="w-full"
-                size="lg"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  'Sending...'
-                ) : (
-                  <>
-                    {t.contact.send} <Send className="ml-2 h-4 w-4" />
-                  </>
-                )}
+          {isSuccess ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center space-y-4 animate-fade-in">
+              <div className="h-16 w-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-bold text-green-800">
+                {t.contact.success}
+              </h3>
+              <Button variant="outline" onClick={() => setIsSuccess(false)}>
+                Send another message
               </Button>
-            </form>
-          </Form>
+            </div>
+          ) : (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.contact.name}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.contact.email}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="john@example.com"
+                          type="email"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="subject"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.contact.subject}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Project Inquiry" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.contact.message}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="How can I help you?"
+                          className="min-h-[120px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="mr-2 h-4 w-4" />
+                      {t.contact.send}
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Form>
+          )}
         </CardContent>
       </Card>
     </div>

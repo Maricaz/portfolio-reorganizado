@@ -2,76 +2,62 @@ import { supabase } from '@/lib/supabase/client'
 import {
   Project,
   Book,
-  ResumeData,
   MusicTrack,
+  ResumeItem,
   ContactSubmission,
 } from '@/types'
 
+// Projects
 export const getProjects = async () => {
-  const { data, error } = await supabase
+  return await supabase
     .from('projects')
     .select('*')
     .order('created_at', { ascending: false })
-  return { data: data as Project[], error }
+    .returns<Project[]>()
 }
 
+// Books
 export const getBooks = async () => {
-  const { data, error } = await supabase
+  return await supabase
     .from('books')
     .select('*')
-    .order('created_at', { ascending: false })
-  return { data: data as Book[], error }
+    .order('rating', { ascending: false }) // Show highest rated first
+    .returns<Book[]>()
 }
 
-export const getResumeData = async () => {
-  const { data, error } = await supabase
-    .from('resume_data')
-    .select('*')
-    .order('created_at', { ascending: false })
-  return { data: data as ResumeData[], error }
-}
-
+// Music
 export const getMusicTracks = async () => {
-  const { data, error } = await supabase
+  return await supabase
     .from('music_tracks')
     .select('*')
     .order('created_at', { ascending: false })
-  return { data: data as MusicTrack[], error }
+    .returns<MusicTrack[]>()
 }
 
-export const submitContact = async (submission: ContactSubmission) => {
-  const { data, error } = await supabase
+export const getMusicTrackById = async (id: string) => {
+  return await supabase
+    .from('music_tracks')
+    .select('*')
+    .eq('id', id)
+    .single<MusicTrack>()
+}
+
+// Resume
+export const getResumeData = async () => {
+  return await supabase
+    .from('resume_data')
+    .select('*')
+    .order('created_at', { ascending: false }) // Most recent first assumption
+    .returns<ResumeItem[]>()
+}
+
+// Contact
+export const submitContactForm = async (
+  data: Omit<ContactSubmission, 'id' | 'created_at'>,
+) => {
+  return await supabase
     .from('contact_submissions')
-    .insert([submission])
+    .insert([data])
     .select()
-  return { data, error }
-}
-
-export const getLatestItem = async () => {
-  const { data: projects } = await supabase
-    .from('projects')
-    .select('*')
-    .limit(1)
-    .order('created_at', { ascending: false })
-
-  const { data: books } = await supabase
-    .from('books')
-    .select('*')
-    .limit(1)
-    .order('created_at', { ascending: false })
-
-  const project = projects?.[0] as Project
-  const book = books?.[0] as Book
-
-  if (project && book) {
-    return new Date(project.created_at) > new Date(book.created_at)
-      ? { type: 'project', item: project }
-      : { type: 'book', item: book }
-  } else if (project) {
-    return { type: 'project', item: project }
-  } else if (book) {
-    return { type: 'book', item: book }
-  }
-
-  return null
+    .single()
 }
