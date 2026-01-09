@@ -24,7 +24,7 @@ export const getBooks = async () => {
 }
 
 export const getResumeEntries = async () => {
-  // Casting to any to avoid type errors since table was renamed in migration but types might not be regenerated yet
+  // Casting to any to avoid type errors since table is named 'resume_entries' but types might not be regenerated
   const { data, error } = await supabase
     .from('resume_entries' as any)
     .select('*')
@@ -51,7 +51,6 @@ export const submitContact = async (
 }
 
 export const getLatestItem = async () => {
-  // Try fetching one project and one book to see which is newer
   const { data: projects } = await supabase
     .from('projects')
     .select('*')
