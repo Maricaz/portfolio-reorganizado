@@ -3,8 +3,8 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
-import { Menu, X, Github, Linkedin, Mail } from 'lucide-react'
+import { LanguageSwitch } from '@/components/LanguageSwitch'
+import { Menu, Github, Linkedin, Mail } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
@@ -67,14 +67,14 @@ const Layout = () => {
             ))}
             <div className="flex items-center gap-2 ml-4 border-l pl-4 border-border">
               <ThemeToggle />
-              <LanguageSwitcher />
+              <LanguageSwitch />
             </div>
           </nav>
 
           {/* Mobile Navigation */}
           <div className="md:hidden flex items-center gap-2">
             <ThemeToggle />
-            <LanguageSwitcher />
+            <LanguageSwitch />
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">

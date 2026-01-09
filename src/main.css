@@ -108,6 +108,12 @@
   }
 }
 
+@layer components {
+  .btn-neon {
+    @apply bg-white text-indigo-600 dark:bg-indigo-600 dark:text-white transition-all duration-300;
+  }
+}
+
 @layer utilities {
   @keyframes accordion-down {
     from {

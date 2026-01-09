@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { LanguageSwitch } from '@/components/LanguageSwitch'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -121,7 +121,7 @@ export function Shell({ children }: ShellProps) {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <LanguageSwitcher />
+              <LanguageSwitch />
             </div>
 
             {/* Mobile Menu Drawer */}
