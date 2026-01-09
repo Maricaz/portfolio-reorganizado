@@ -4,8 +4,8 @@ import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import Layout from './components/Layout'
-import { useAnalytics } from '@/hooks/use-analytics'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AnalyticsInit } from '@/components/AnalyticsInit'
 
 // Lazy loaded pages
 const Index = lazy(() => import('./pages/Index'))
@@ -32,11 +32,6 @@ const PageLoader = () => (
   </div>
 )
 
-const AnalyticsWrapper = () => {
-  useAnalytics()
-  return null
-}
-
 const App = () => (
   <BrowserRouter
     future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -44,7 +39,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <AnalyticsWrapper />
+      <AnalyticsInit />
       <Routes>
         <Route element={<Layout />}>
           <Route

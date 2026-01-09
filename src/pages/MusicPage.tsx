@@ -20,14 +20,34 @@ export default function MusicPage() {
   const [loading, setLoading] = useState(true)
   const [lyricsLang, setLyricsLang] = useState<Language>(language)
 
+  // Construct JSON-LD for the album "Luz & Eco"
+  const albumJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'MusicAlbum',
+    name: 'Luz & Eco',
+    byArtist: {
+      '@type': 'MusicGroup',
+      name: 'Mariana Azevedo',
+    },
+    image: '/og-image.png',
+    numTracks: tracks.length,
+    track: tracks.map((track) => ({
+      '@type': 'MusicRecording',
+      name: track.title,
+      duration: track.duration,
+      url: `${window.location.origin}/music/${track.id}`,
+    })),
+  }
+
   useSEO({
     title: selectedTrack
       ? `${selectedTrack.title} - ${t.music.title}`
       : t.music.title,
     description: selectedTrack
       ? `Listen to ${selectedTrack.title} by ${selectedTrack.artist}`
-      : 'My music tracks and production portfolio',
+      : 'My music tracks and production portfolio - Luz & Eco Album',
     type: 'music.song',
+    jsonLd: albumJsonLd,
   })
 
   // Sync default lyrics language when global language changes

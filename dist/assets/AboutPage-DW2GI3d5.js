@@ -1,8 +1,8 @@
-import { t as ArrowRight } from "./arrow-right-Cg61Wb8q.js";
-import { H as require_jsx_runtime, M as createLucideIcon, Q as __toESM, T as cn, Z as require_react, m as Button, v as useLanguage } from "./index-BvwkRJRs.js";
-import { n as CardContent, t as Card } from "./card-6MhxgsR0.js";
-import { t as Badge } from "./badge-CPBL9Sbw.js";
-import { t as useSEO } from "./use-seo-BIaJr0en.js";
+import { t as ArrowRight } from "./arrow-right-CCdE3ZgZ.js";
+import { H as require_jsx_runtime, M as createLucideIcon, Q as __toESM, T as cn, Z as require_react, m as Button, v as useLanguage } from "./index-Ds-e-iqc.js";
+import { n as CardContent, t as Card } from "./card-BJyPoc7s.js";
+import { t as Badge } from "./badge-D1uXnICh.js";
+import { t as useSEO } from "./use-seo-CoDIxpgc.js";
 var ArrowLeft = createLucideIcon("arrow-left", [["path", {
 	d: "m12 19-7-7 7-7",
 	key: "1l729n"
@@ -1694,4 +1694,4 @@ function AboutPage() {
 }
 export { AboutPage as default };
 
-//# sourceMappingURL=AboutPage-uL-fGKqV.js.map
+//# sourceMappingURL=AboutPage-DW2GI3d5.js.map

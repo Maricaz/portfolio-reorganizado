@@ -1,7 +1,7 @@
-import { B as Primitive, D as Music, F as Presence, H as require_jsx_runtime, J as useNavigate, L as useLayoutEffect2, M as createLucideIcon, P as useControllableState, Q as __toESM, T as cn, U as useComposedRefs, V as createContextScope, W as composeEventHandlers, Y as useParams, Z as require_react, d as Root$1, f as createRovingFocusGroupScope, p as useDirection, t as Skeleton, u as Item, v as useLanguage, w as useId, z as useCallbackRef } from "./index-BvwkRJRs.js";
-import { a as CardHeader, n as CardContent, o as CardTitle, t as Card } from "./card-6MhxgsR0.js";
-import { t as useSEO } from "./use-seo-BIaJr0en.js";
-import { r as getMusicTracks } from "./database-DQO5v4G_.js";
+import { B as Primitive, D as Music, F as Presence, H as require_jsx_runtime, J as useNavigate, L as useLayoutEffect2, M as createLucideIcon, P as useControllableState, Q as __toESM, T as cn, U as useComposedRefs, V as createContextScope, W as composeEventHandlers, Y as useParams, Z as require_react, d as Root$1, f as createRovingFocusGroupScope, p as useDirection, t as Skeleton, u as Item, v as useLanguage, w as useId, z as useCallbackRef } from "./index-Ds-e-iqc.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, t as Card } from "./card-BJyPoc7s.js";
+import { t as useSEO } from "./use-seo-CoDIxpgc.js";
+import { r as getMusicTracks } from "./database-BUT6nTPG.js";
 var CirclePlay = createLucideIcon("circle-play", [["path", {
 	d: "M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z",
 	key: "kmsa83"
@@ -861,10 +861,28 @@ function MusicPage() {
 	const [selectedTrack, setSelectedTrack] = (0, import_react.useState)(null);
 	const [loading, setLoading] = (0, import_react.useState)(true);
 	const [lyricsLang, setLyricsLang] = (0, import_react.useState)(language);
+	const albumJsonLd = {
+		"@context": "https://schema.org",
+		"@type": "MusicAlbum",
+		name: "Luz & Eco",
+		byArtist: {
+			"@type": "MusicGroup",
+			name: "Mariana Azevedo"
+		},
+		image: "/og-image.png",
+		numTracks: tracks.length,
+		track: tracks.map((track) => ({
+			"@type": "MusicRecording",
+			name: track.title,
+			duration: track.duration,
+			url: `${window.location.origin}/music/${track.id}`
+		}))
+	};
 	useSEO({
 		title: selectedTrack ? `${selectedTrack.title} - ${t.music.title}` : t.music.title,
-		description: selectedTrack ? `Listen to ${selectedTrack.title} by ${selectedTrack.artist}` : "My music tracks and production portfolio",
-		type: "music.song"
+		description: selectedTrack ? `Listen to ${selectedTrack.title} by ${selectedTrack.artist}` : "My music tracks and production portfolio - Luz & Eco Album",
+		type: "music.song",
+		jsonLd: albumJsonLd
 	});
 	(0, import_react.useEffect)(() => {
 		setLyricsLang(language);
@@ -1040,4 +1058,4 @@ function MusicPage() {
 }
 export { MusicPage as default };
 
-//# sourceMappingURL=MusicPage-Dojq2vdS.js.map
+//# sourceMappingURL=MusicPage-aZTZVvCf.js.map

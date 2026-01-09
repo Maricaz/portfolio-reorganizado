@@ -1,4 +1,4 @@
-import { H as require_jsx_runtime, N as cva, Q as __toESM, T as cn, Z as require_react } from "./index-BvwkRJRs.js";
+import { H as require_jsx_runtime, N as cva, Q as __toESM, T as cn, Z as require_react } from "./index-Ds-e-iqc.js";
 require_react();
 var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime(), 1);
 var badgeVariants = cva("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2", {
@@ -18,4 +18,4 @@ function Badge({ className, variant, ...props }) {
 }
 export { Badge as t };
 
-//# sourceMappingURL=badge-CPBL9Sbw.js.map
+//# sourceMappingURL=badge-D1uXnICh.js.map

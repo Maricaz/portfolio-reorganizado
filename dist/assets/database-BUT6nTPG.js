@@ -1,4 +1,4 @@
-import { _ as supabase } from "./index-BvwkRJRs.js";
+import { _ as supabase } from "./index-Ds-e-iqc.js";
 const getProjects = async () => {
 	const { data, error } = await supabase.from("projects").select("*").order("created_at", { ascending: false });
 	return {
@@ -58,4 +58,4 @@ const getLatestItem = async () => {
 };
 export { getResumeData as a, getProjects as i, getLatestItem as n, submitContact as o, getMusicTracks as r, getBooks as t };
 
-//# sourceMappingURL=database-DQO5v4G_.js.map
+//# sourceMappingURL=database-BUT6nTPG.js.map

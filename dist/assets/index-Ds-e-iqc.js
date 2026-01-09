@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-Dt0y_7hf.js","assets/arrow-right-Cg61Wb8q.js","assets/card-6MhxgsR0.js","assets/use-seo-BIaJr0en.js","assets/database-DQO5v4G_.js","assets/AboutPage-uL-fGKqV.js","assets/badge-CPBL9Sbw.js","assets/ResumePage-Bo4qFoSM.js","assets/ITPage-F1-C7jIT.js","assets/BooksPage-36H9yePC.js","assets/MusicPage-Dojq2vdS.js","assets/ContactPage-DJFaf2se.js"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-l0e8oGy9.js","assets/arrow-right-CCdE3ZgZ.js","assets/card-BJyPoc7s.js","assets/use-seo-CoDIxpgc.js","assets/database-BUT6nTPG.js","assets/AboutPage-DW2GI3d5.js","assets/badge-D1uXnICh.js","assets/ResumePage-CvZeXqob.js","assets/ITPage-BY0_N1bW.js","assets/BooksPage-BfDFlktO.js","assets/MusicPage-aZTZVvCf.js","assets/ContactPage-3HfErY2c.js"])))=>i.map(i=>d[i]);
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -36043,14 +36043,45 @@ function Skeleton({ className, ...props }) {
 		...props
 	});
 }
-var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-Dt0y_7hf.js"), __vite__mapDeps([0,1,2,3,4])));
-var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-uL-fGKqV.js"), __vite__mapDeps([5,1,6,2,3])));
-var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-Bo4qFoSM.js"), __vite__mapDeps([7,3,4])));
-var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-F1-C7jIT.js"), __vite__mapDeps([8,6,2,3,4])));
-var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-36H9yePC.js"), __vite__mapDeps([9,3,4])));
-var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-Dojq2vdS.js"), __vite__mapDeps([10,2,3,4])));
-var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage-DJFaf2se.js"), __vite__mapDeps([11,2,3,4])));
-var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound-UKryiv5q.js"), []));
+const AnalyticsInit = () => {
+	const location = useLocation();
+	(0, import_react.useEffect)(() => {
+		if (!document.getElementById("ga-script")) {
+			const script1 = document.createElement("script");
+			script1.id = "ga-script";
+			script1.async = true;
+			script1.src = "https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX";
+			document.head.appendChild(script1);
+			const script2 = document.createElement("script");
+			script2.id = "ga-init";
+			script2.innerHTML = `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+      `;
+			document.head.appendChild(script2);
+		}
+		if (!document.querySelector("meta[http-equiv=\"Content-Security-Policy\"]")) {
+			const meta = document.createElement("meta");
+			meta.httpEquiv = "Content-Security-Policy";
+			meta.content = "default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https: data:; frame-src 'self' https:;";
+			document.head.appendChild(meta);
+		}
+	}, []);
+	(0, import_react.useEffect)(() => {
+		if (window.gtag) window.gtag("config", "G-XXXXXXXXXX", { page_path: location.pathname + location.search });
+	}, [location]);
+	return null;
+};
+var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-l0e8oGy9.js"), __vite__mapDeps([0,1,2,3,4])));
+var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-DW2GI3d5.js"), __vite__mapDeps([5,1,6,2,3])));
+var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-CvZeXqob.js"), __vite__mapDeps([7,3,4])));
+var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-BY0_N1bW.js"), __vite__mapDeps([8,6,2,3,4])));
+var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-BfDFlktO.js"), __vite__mapDeps([9,3,4])));
+var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-aZTZVvCf.js"), __vite__mapDeps([10,2,3,4])));
+var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage-3HfErY2c.js"), __vite__mapDeps([11,2,3,4])));
+var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound-BQCzq5wO.js"), []));
 var PageLoader = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 	className: "p-8 space-y-4 max-w-4xl mx-auto",
 	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-12 w-1/3 mb-8" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -36066,10 +36097,6 @@ var PageLoader = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		})]
 	})]
 });
-var AnalyticsWrapper = () => {
-	useAnalytics();
-	return null;
-};
 var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 	future: {
 		v7_startTransition: true,
@@ -36078,7 +36105,7 @@ var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 	children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TooltipProvider, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster$1, {}),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AnalyticsWrapper, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AnalyticsInit, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Routes, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Route, {
 			element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Layout, {}),
 			children: [
@@ -36152,4 +36179,4 @@ var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 export { Github as A, Primitive as B, createPopperScope as C, Music as D, X as E, Presence as F, useToast as G, require_jsx_runtime as H, Portal$1 as I, useNavigate as J, Link as K, useLayoutEffect2 as L, createLucideIcon as M, cva as N, Mail as O, useControllableState$1 as P, __toESM as Q, DismissableLayer as R, Root2$1 as S, cn as T, useComposedRefs$1 as U, createContextScope as V, composeEventHandlers as W, require_react_dom as X, useParams as Y, require_react as Z, supabase as _, Overlay$1 as a, Arrow as b, Title as c, Root$2 as d, createRovingFocusGroupScope as f, createSlot$1 as g, Slot$2 as h, Description as i, Code as j, Linkedin as k, Trigger as l, Button as m, Close as n, Portal$2 as o, useDirection as p, useLocation as q, Content$1 as r, Root$1 as s, Skeleton as t, Item as u, useLanguage as v, useId as w, Content$2 as x, Anchor as y, useCallbackRef$1 as z };
 
-//# sourceMappingURL=index-BvwkRJRs.js.map
+//# sourceMappingURL=index-Ds-e-iqc.js.map
