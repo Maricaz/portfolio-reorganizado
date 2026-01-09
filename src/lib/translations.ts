@@ -17,6 +17,9 @@ export const translations = {
     about: {
       title: 'Sobre Mim',
       description: 'Conheça um pouco mais sobre minha jornada.',
+      carousel_hint: 'Nenhuma imagem encontrada em src/media/sobre.',
+      carousel_prev: 'Foto anterior',
+      carousel_next: 'Próxima foto',
     },
     projects: {
       title: 'Projetos',
@@ -80,6 +83,9 @@ export const translations = {
     about: {
       title: 'About Me',
       description: 'Learn a bit more about my journey.',
+      carousel_hint: 'No images found in src/media/sobre.',
+      carousel_prev: 'Previous photo',
+      carousel_next: 'Next photo',
     },
     projects: {
       title: 'Projects',
@@ -143,6 +149,9 @@ export const translations = {
     about: {
       title: '소개',
       description: '저의 여정에 대해 더 알아보세요.',
+      carousel_hint: 'src/media/sobre 에서 이미지를 찾을 수 없습니다.',
+      carousel_prev: '이전 사진',
+      carousel_next: '다음 사진',
     },
     projects: {
       title: '프로젝트',

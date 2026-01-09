@@ -1,14 +1,8 @@
 import { useLanguage } from '@/contexts/LanguageContext'
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useSEO } from '@/hooks/use-seo'
+import { AboutGallery } from '@/components/AboutGallery'
 
 export default function AboutPage() {
   const { t } = useLanguage()
@@ -17,13 +11,6 @@ export default function AboutPage() {
     title: t.about.title,
     description: t.about.bio,
   })
-
-  const photos = [
-    'https://img.usecurling.com/ppl/large?gender=female&seed=1',
-    'https://img.usecurling.com/p/600/600?q=coding%20setup&color=blue',
-    'https://img.usecurling.com/p/600/600?q=guitar%20playing&color=black',
-    'https://img.usecurling.com/p/600/600?q=library%20reading',
-  ]
 
   const skills = [
     {
@@ -46,28 +33,8 @@ export default function AboutPage() {
         </p>
       </div>
 
-      <div className="relative px-12 animate-fade-in-up">
-        <Carousel className="w-full">
-          <CarouselContent>
-            {photos.map((photo, index) => (
-              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                <div className="p-1">
-                  <Card>
-                    <CardContent className="flex aspect-square items-center justify-center p-0 overflow-hidden rounded-lg">
-                      <img
-                        src={photo}
-                        alt={`Photo ${index + 1}`}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+      <div className="relative animate-fade-in-up">
+        <AboutGallery />
       </div>
 
       <div className="space-y-6 animate-fade-in">
