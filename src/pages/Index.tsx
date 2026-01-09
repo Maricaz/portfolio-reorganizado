@@ -14,25 +14,29 @@ import {
 } from 'lucide-react'
 import { getLatestItem } from '@/services/database'
 import { getSiteSettings } from '@/services/settings'
-import { SiteSettings } from '@/types'
+import { SiteSettings, Project, Book } from '@/types'
 import { useAnalytics } from '@/hooks/use-analytics'
 import { cn } from '@/lib/utils'
 
 export default function Index() {
   const { t, language } = useLanguage()
   const { trackResumeDownload } = useAnalytics()
-  const [latest, setLatest] = useState<any>(null)
+  const [latest, setLatest] = useState<{
+    type: 'project' | 'book'
+    item: Project | Book
+  } | null>(null)
   const [settings, setSettings] = useState<Partial<SiteSettings>>({})
   const [gradient, setGradient] = useState('from-indigo-500 to-fuchsia-500')
 
   useEffect(() => {
     async function loadData() {
+      // Pass language to ensure we get relevant content (e.g. book in correct language)
       const [latestItem, siteSettings] = await Promise.all([
-        getLatestItem(),
+        getLatestItem(language),
         getSiteSettings(),
       ])
 
-      if (latestItem) setLatest(latestItem)
+      if (latestItem) setLatest(latestItem as any)
       if (siteSettings) {
         setSettings(siteSettings)
         if (siteSettings.brand_config?.primary_gradient) {
@@ -41,7 +45,7 @@ export default function Index() {
       }
     }
     loadData()
-  }, [])
+  }, [language])
 
   const handleDownloadResume = () => {
     trackResumeDownload()
@@ -52,23 +56,21 @@ export default function Index() {
 
   const getLatestDescription = (item: any, type: 'project' | 'book') => {
     if (type === 'project') {
-      return (
-        item[`description_${language}`] ||
-        item.description_en ||
-        item.description_pt ||
-        ''
-      )
+      const project = item as Project
+      if (language === 'pt') return project.description_pt
+      if (language === 'en') return project.description_en
+      if (language === 'ko') return project.description_ko
+      return project.description_pt || ''
     } else {
-      return (
-        item[`review_${language}`] || item.review_en || item.review_pt || ''
-      )
+      const book = item as Book
+      // Now books are row-based by language, so we just use synopsis
+      return book.synopsis || ''
     }
   }
 
   const getLatestTitle = (item: any) => {
-    if (language === 'ko' && item.title_ko) {
-      return item.title_ko
-    }
+    // For projects we might still have localized titles if implemented, but usually it's just 'title'
+    // For books, the title is already specific to the language row
     return item.title
   }
 
