@@ -1,4 +1,4 @@
-import { A as require_react, E as useLocation, j as __toESM, x as require_jsx_runtime } from "./index-D3SFnwNh.js";
+import { A as require_react, E as useLocation, j as __toESM, x as require_jsx_runtime } from "./index-BI0uBU5Q.js";
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime(), 1);
 var NotFound = () => {
@@ -31,4 +31,4 @@ var NotFound = () => {
 var NotFound_default = NotFound;
 export { NotFound_default as default };
 
-//# sourceMappingURL=NotFound-DC6p8mnM.js.map
+//# sourceMappingURL=NotFound-DRA-edyx.js.map

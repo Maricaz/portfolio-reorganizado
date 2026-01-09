@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-BgrvA5_0.js","assets/book-bya8LgkV.js","assets/music-BjFyhhzq.js","assets/use-seo-CszuZLRy.js","assets/database-BUdGOmQT.js","assets/AboutPage-DVixZcQQ.js","assets/badge-CEIxqgCh.js","assets/ResumePage-C0-Of7CZ.js","assets/ITPage-Bu-VFFw6.js","assets/BooksPage-sJ4KPa6k.js","assets/MusicPage-BZVqI90X.js","assets/ContactPage-C8cJXF2g.js"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-D7xTJliU.js","assets/book-B3MWAKCm.js","assets/music-B24soOh-.js","assets/card-BBYpdB2D.js","assets/database-CzueZ4jy.js","assets/AboutPage-CJfP64dT.js","assets/dist-D8-pVfa9.js","assets/graduation-cap-CQNtyss2.js","assets/ResumePage-CXrI6FqU.js","assets/ITPage-21xzb0Oe.js","assets/BooksPage-DTvv7nK2.js","assets/MusicPage-DW6O5CJS.js","assets/ContactPage-C55FhEjq.js"])))=>i.map(i=>d[i]);
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -33183,14 +33183,14 @@ const AnalyticsInit = () => {
 	}, [location]);
 	return null;
 };
-var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-BgrvA5_0.js"), __vite__mapDeps([0,1,2,3,4])));
-var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-DVixZcQQ.js"), __vite__mapDeps([5,6,3])));
-var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-C0-Of7CZ.js"), __vite__mapDeps([7,3,4])));
-var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-Bu-VFFw6.js"), __vite__mapDeps([8,6,3,4])));
-var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-sJ4KPa6k.js"), __vite__mapDeps([9,1,3,4])));
-var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-BZVqI90X.js"), __vite__mapDeps([10,2,3,4])));
-var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage-C8cJXF2g.js"), __vite__mapDeps([11,3,4])));
-var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound-DC6p8mnM.js"), []));
+var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-D7xTJliU.js"), __vite__mapDeps([0,1,2,3,4])));
+var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-CJfP64dT.js"), __vite__mapDeps([5,6,7,3])));
+var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-CXrI6FqU.js"), __vite__mapDeps([8,7,3,4])));
+var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-21xzb0Oe.js"), __vite__mapDeps([9,3,4])));
+var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-DTvv7nK2.js"), __vite__mapDeps([10,1,3,4])));
+var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-DW6O5CJS.js"), __vite__mapDeps([11,2,3,4])));
+var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage-C55FhEjq.js"), __vite__mapDeps([12,6,3,4])));
+var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound-DRA-edyx.js"), []));
 var PageLoader = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 	className: "p-8 space-y-4 max-w-4xl mx-auto",
 	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-12 w-1/3 mb-8" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -33286,6 +33286,6 @@ var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 });
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
-export { require_react as A, composeEventHandlers as C, useNavigate as D, useLocation as E, useParams as O, useComposedRefs as S, Link as T, useCallbackRef$1 as _, useLanguage as a, createContextScope as b, useId as c, Github as d, createLucideIcon as f, useLayoutEffect2 as g, Presence as h, createSlot$1 as i, __toESM as j, require_react_dom as k, cn as l, useControllableState as m, Button as n, supabase as o, cva as p, Slot$1 as r, useAnalytics as s, Skeleton as t, Mail as u, Primitive as v, useToast as w, require_jsx_runtime as x, createCollection as y };
+export { require_react as A, composeEventHandlers as C, useNavigate as D, useLocation as E, useParams as O, useComposedRefs as S, Link as T, useCallbackRef$1 as _, useLanguage as a, createContextScope as b, cn as c, Github as d, createLucideIcon as f, useLayoutEffect2 as g, Presence as h, createSlot$1 as i, __toESM as j, require_react_dom as k, Mail as l, useControllableState as m, Button as n, supabase as o, cva as p, Slot$1 as r, useId as s, Skeleton as t, Linkedin as u, Primitive as v, useToast as w, require_jsx_runtime as x, createCollection as y };
 
-//# sourceMappingURL=index-D3SFnwNh.js.map
+//# sourceMappingURL=index-BI0uBU5Q.js.map

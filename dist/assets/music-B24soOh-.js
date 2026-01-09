@@ -1,4 +1,4 @@
-import { f as createLucideIcon } from "./index-D3SFnwNh.js";
+import { f as createLucideIcon } from "./index-BI0uBU5Q.js";
 var Music = createLucideIcon("music", [
 	["path", {
 		d: "M9 18V5l12-2v13",
@@ -19,4 +19,4 @@ var Music = createLucideIcon("music", [
 ]);
 export { Music as t };
 
-//# sourceMappingURL=music-BjFyhhzq.js.map
+//# sourceMappingURL=music-B24soOh-.js.map

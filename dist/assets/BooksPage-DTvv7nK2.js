@@ -1,7 +1,7 @@
-import { t as Book } from "./book-bya8LgkV.js";
-import { A as require_react, a as useLanguage, f as createLucideIcon, j as __toESM, t as Skeleton, x as require_jsx_runtime } from "./index-D3SFnwNh.js";
-import { n as Card, o as CardHeader, r as CardContent, s as CardTitle, t as useSEO } from "./use-seo-CszuZLRy.js";
-import { t as getBooks } from "./database-BUdGOmQT.js";
+import { t as Book } from "./book-B3MWAKCm.js";
+import { A as require_react, a as useLanguage, f as createLucideIcon, j as __toESM, t as Skeleton, x as require_jsx_runtime } from "./index-BI0uBU5Q.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-BBYpdB2D.js";
+import { t as getBooks } from "./database-CzueZ4jy.js";
 var Star = createLucideIcon("star", [["path", {
 	d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
 	key: "r04s7s"
@@ -116,4 +116,4 @@ function BooksPage() {
 }
 export { BooksPage as default };
 
-//# sourceMappingURL=BooksPage-sJ4KPa6k.js.map
+//# sourceMappingURL=BooksPage-DTvv7nK2.js.map

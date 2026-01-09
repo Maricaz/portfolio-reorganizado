@@ -1,4 +1,4 @@
-import { o as supabase } from "./index-D3SFnwNh.js";
+import { o as supabase } from "./index-BI0uBU5Q.js";
 const getProjects = async () => {
 	return await supabase.from("projects").select("*").order("created_at", { ascending: false }).returns();
 };
@@ -36,4 +36,4 @@ const submitContactForm = async (data) => {
 };
 export { getResumeData as a, getProjects as i, getLatestItem as n, submitContactForm as o, getMusicTracks as r, getBooks as t };
 
-//# sourceMappingURL=database-BUdGOmQT.js.map
+//# sourceMappingURL=database-CzueZ4jy.js.map

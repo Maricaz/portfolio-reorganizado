@@ -1,6 +1,7 @@
-import { A as require_react, a as useLanguage, f as createLucideIcon, j as __toESM, l as cn, n as Button, t as Skeleton, x as require_jsx_runtime } from "./index-D3SFnwNh.js";
-import { n as Card, o as CardHeader, r as CardContent, s as CardTitle, t as useSEO } from "./use-seo-CszuZLRy.js";
-import { a as getResumeData } from "./database-BUdGOmQT.js";
+import { n as Download, t as GraduationCap } from "./graduation-cap-CQNtyss2.js";
+import { A as require_react, a as useLanguage, c as cn, f as createLucideIcon, j as __toESM, n as Button, t as Skeleton, x as require_jsx_runtime } from "./index-BI0uBU5Q.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-BBYpdB2D.js";
+import { a as getResumeData } from "./database-CzueZ4jy.js";
 var Briefcase = createLucideIcon("briefcase", [["path", {
 	d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16",
 	key: "jecpp"
@@ -12,34 +13,6 @@ var Briefcase = createLucideIcon("briefcase", [["path", {
 	rx: "2",
 	key: "i6l2r4"
 }]]);
-var Download = createLucideIcon("download", [
-	["path", {
-		d: "M12 15V3",
-		key: "m9g1x1"
-	}],
-	["path", {
-		d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4",
-		key: "ih7n3h"
-	}],
-	["path", {
-		d: "m7 10 5 5 5-5",
-		key: "brsn70"
-	}]
-]);
-var GraduationCap = createLucideIcon("graduation-cap", [
-	["path", {
-		d: "M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z",
-		key: "j76jl0"
-	}],
-	["path", {
-		d: "M22 10v6",
-		key: "1lu8f3"
-	}],
-	["path", {
-		d: "M6 12.5V16a6 3 0 0 0 12 0v-3.5",
-		key: "1r8lef"
-	}]
-]);
 var Trophy = createLucideIcon("trophy", [
 	["path", {
 		d: "M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978",
@@ -253,4 +226,4 @@ function ResumePage() {
 }
 export { ResumePage as default };
 
-//# sourceMappingURL=ResumePage-C0-Of7CZ.js.map
+//# sourceMappingURL=ResumePage-CXrI6FqU.js.map

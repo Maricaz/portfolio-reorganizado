@@ -1,7 +1,6 @@
-import { A as require_react, a as useLanguage, d as Github, f as createLucideIcon, j as __toESM, n as Button, t as Skeleton, x as require_jsx_runtime } from "./index-D3SFnwNh.js";
-import { a as CardFooter, i as CardDescription, n as Card, o as CardHeader, r as CardContent, s as CardTitle, t as useSEO } from "./use-seo-CszuZLRy.js";
-import { t as Badge } from "./badge-CEIxqgCh.js";
-import { i as getProjects } from "./database-BUdGOmQT.js";
+import { A as require_react, a as useLanguage, c as cn, d as Github, f as createLucideIcon, j as __toESM, n as Button, p as cva, t as Skeleton, x as require_jsx_runtime } from "./index-BI0uBU5Q.js";
+import { a as CardHeader, i as CardFooter, n as CardContent, o as CardTitle, r as CardDescription, s as useSEO, t as Card } from "./card-BBYpdB2D.js";
+import { i as getProjects } from "./database-CzueZ4jy.js";
 var CodeXml = createLucideIcon("code-xml", [
 	["path", {
 		d: "m18 16 4-4-4-4",
@@ -32,6 +31,21 @@ var ExternalLink = createLucideIcon("external-link", [
 ]);
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime(), 1);
+var badgeVariants = cva("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2", {
+	variants: { variant: {
+		default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+		secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+		destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+		outline: "text-foreground"
+	} },
+	defaultVariants: { variant: "default" }
+});
+function Badge({ className, variant, ...props }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: cn(badgeVariants({ variant }), className),
+		...props
+	});
+}
 function ITPage() {
 	const { t, language } = useLanguage();
 	const [projects, setProjects] = (0, import_react.useState)([]);
@@ -156,4 +170,4 @@ function ITPage() {
 }
 export { ITPage as default };
 
-//# sourceMappingURL=ITPage-Bu-VFFw6.js.map
+//# sourceMappingURL=ITPage-21xzb0Oe.js.map

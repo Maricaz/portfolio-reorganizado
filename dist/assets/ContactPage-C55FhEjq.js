@@ -1,6 +1,7 @@
-import { A as require_react, a as useLanguage, f as createLucideIcon, i as createSlot, j as __toESM, k as require_react_dom, l as cn, n as Button, p as cva, r as Slot, u as Mail, w as useToast, x as require_jsx_runtime } from "./index-D3SFnwNh.js";
-import { i as CardDescription, n as Card, o as CardHeader, r as CardContent, s as CardTitle, t as useSEO } from "./use-seo-CszuZLRy.js";
-import { o as submitContactForm } from "./database-BUdGOmQT.js";
+import { A as require_react, a as useLanguage, c as cn, f as createLucideIcon, j as __toESM, l as Mail, n as Button, p as cva, r as Slot, w as useToast, x as require_jsx_runtime } from "./index-BI0uBU5Q.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, r as CardDescription, s as useSEO, t as Card } from "./card-BBYpdB2D.js";
+import { t as Primitive } from "./dist-D8-pVfa9.js";
+import { o as submitContactForm } from "./database-CzueZ4jy.js";
 var CircleCheck = createLucideIcon("circle-check", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -4939,42 +4940,6 @@ var Textarea = import_react.forwardRef(({ className, ...props }, ref) => {
 	});
 });
 Textarea.displayName = "Textarea";
-require_react_dom();
-var Primitive = [
-	"a",
-	"button",
-	"div",
-	"form",
-	"h2",
-	"h3",
-	"img",
-	"input",
-	"label",
-	"li",
-	"nav",
-	"ol",
-	"p",
-	"select",
-	"span",
-	"svg",
-	"ul"
-].reduce((primitive, node) => {
-	const Slot$1 = createSlot(`Primitive.${node}`);
-	const Node = import_react.forwardRef((props, forwardedRef) => {
-		const { asChild, ...primitiveProps } = props;
-		const Comp = asChild ? Slot$1 : node;
-		if (typeof window !== "undefined") window[Symbol.for("radix-ui")] = true;
-		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Comp, {
-			...primitiveProps,
-			ref: forwardedRef
-		});
-	});
-	Node.displayName = `Primitive.${node}`;
-	return {
-		...primitive,
-		[node]: Node
-	};
-}, {});
 var NAME = "Label";
 var Label$1 = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.label, {
@@ -5225,4 +5190,4 @@ function ContactPage() {
 }
 export { ContactPage as default };
 
-//# sourceMappingURL=ContactPage-C8cJXF2g.js.map
+//# sourceMappingURL=ContactPage-C55FhEjq.js.map

@@ -140,6 +140,10 @@
     scrollbar-width: none;
   }
 
+  .indent-pt {
+    text-indent: 2rem;
+  }
+
   @keyframes accordion-down {
     from {
       height: 0;

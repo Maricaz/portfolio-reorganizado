@@ -1,14 +1,29 @@
-import { A as require_react, a as useLanguage, f as createLucideIcon, j as __toESM, l as cn, n as Button, s as useAnalytics, x as require_jsx_runtime } from "./index-D3SFnwNh.js";
-import { n as Card, r as CardContent, t as useSEO } from "./use-seo-CszuZLRy.js";
-import { t as Badge } from "./badge-CEIxqgCh.js";
-var ChevronLeft = createLucideIcon("chevron-left", [["path", {
-	d: "m15 18-6-6 6-6",
-	key: "1wnfg3"
-}]]);
-var ChevronRight = createLucideIcon("chevron-right", [["path", {
-	d: "m9 18 6-6-6-6",
-	key: "mthhwq"
-}]]);
+import { n as Download, t as GraduationCap } from "./graduation-cap-CQNtyss2.js";
+import { A as require_react, a as useLanguage, c as cn, d as Github, f as createLucideIcon, j as __toESM, n as Button, o as supabase, t as Skeleton, u as Linkedin, x as require_jsx_runtime } from "./index-BI0uBU5Q.js";
+import { n as CardContent, s as useSEO, t as Card } from "./card-BBYpdB2D.js";
+import { t as Primitive } from "./dist-D8-pVfa9.js";
+var FileText = createLucideIcon("file-text", [
+	["path", {
+		d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
+		key: "1oefj6"
+	}],
+	["path", {
+		d: "M14 2v5a1 1 0 0 0 1 1h5",
+		key: "wfsgrz"
+	}],
+	["path", {
+		d: "M10 9H8",
+		key: "b1mrlr"
+	}],
+	["path", {
+		d: "M16 13H8",
+		key: "t4e002"
+	}],
+	["path", {
+		d: "M16 17H8",
+		key: "z1uh3a"
+	}]
+]);
 var Image = createLucideIcon("image", [
 	["rect", {
 		width: "18",
@@ -28,6 +43,28 @@ var Image = createLucideIcon("image", [
 	["path", {
 		d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21",
 		key: "1xmnt7"
+	}]
+]);
+var Instagram = createLucideIcon("instagram", [
+	["rect", {
+		width: "20",
+		height: "20",
+		x: "2",
+		y: "2",
+		rx: "5",
+		ry: "5",
+		key: "2e1cvw"
+	}],
+	["path", {
+		d: "M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z",
+		key: "9exkf1"
+	}],
+	["line", {
+		x1: "17.5",
+		x2: "17.51",
+		y1: "6.5",
+		y2: "6.5",
+		key: "r4j83e"
 	}]
 ]);
 var import_react = /* @__PURE__ */ __toESM(require_react());
@@ -65,7 +102,7 @@ function arePluginsEqual(pluginsA, pluginsB) {
 		return areOptionsEqual(optionA, optionB);
 	});
 }
-function isNumber(subject) {
+function isNumber$1(subject) {
 	return typeof subject === "number";
 }
 function isString(subject) {
@@ -833,7 +870,7 @@ function SlideFocus(root, slides, slideRegistry, scrollTo, scrollBody, eventStor
 			eventHandler.emit("slideFocusStart");
 			root.scrollLeft = 0;
 			const group = slideRegistry.findIndex((group$1) => group$1.includes(index));
-			if (!isNumber(group)) return;
+			if (!isNumber$1(group)) return;
 			scrollBody.useDuration(0);
 			scrollTo.index(group, 0);
 			eventHandler.emit("slideFocus");
@@ -865,7 +902,7 @@ function Vector1D(initialValue) {
 		value -= normalizeInput(n);
 	}
 	function normalizeInput(n) {
-		return isNumber(n) ? n : n.get();
+		return isNumber$1(n) ? n : n.get();
 	}
 	return {
 		get,
@@ -1084,7 +1121,7 @@ function SlideSizes(axis, containerRect, slideRects, slides, readEdgeGap, ownerW
 }
 function SlidesToScroll(axis, viewSize, slidesToScroll, loop, containerRect, slideRects, startGap, endGap, pixelTolerance) {
 	const { startEdge, endEdge, direction } = axis;
-	const groupByNumber = isNumber(slidesToScroll);
+	const groupByNumber = isNumber$1(slidesToScroll);
 	function byNumber(array, groupSize) {
 		return arrayKeys(array).filter((i) => i % groupSize === 0).map((i) => array.slice(i, i + groupSize));
 	}
@@ -1635,19 +1672,16 @@ function Autoplay(userOptions = {}) {
 }
 Autoplay.globalOptions = void 0;
 var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime(), 1);
-function AboutGallery() {
-	const { t } = useLanguage();
-	const { trackEvent } = useAnalytics();
+function PhotoCarousel({ auto = true, delay = 4e3 }) {
 	const [images, setImages] = (0, import_react.useState)([]);
 	const [selectedIndex, setSelectedIndex] = (0, import_react.useState)(0);
-	const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({
-		delay: 4e3,
+	const plugins = [];
+	if (auto) plugins.push(Autoplay({
+		delay,
 		stopOnInteraction: true,
 		stopOnMouseEnter: true
-	})]);
-	(0, import_react.useEffect)(() => {
-		if (window.matchMedia("(prefers-reduced-motion: reduce)").matches && emblaApi) emblaApi.plugins().autoplay?.stop();
-	}, [emblaApi]);
+	}));
+	const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, plugins);
 	(0, import_react.useEffect)(() => {
 		setImages(Object.entries({}).map(([path, mod]) => {
 			const filename = path.split("/").pop() || "";
@@ -1672,172 +1706,350 @@ function AboutGallery() {
 			emblaApi.off("reInit", onSelect);
 		};
 	}, [emblaApi, onSelect]);
-	const scrollPrev = (0, import_react.useCallback)(() => {
-		if (emblaApi) {
-			emblaApi.scrollPrev();
-			trackEvent("carousel_nav", { direction: "prev" });
-		}
-	}, [emblaApi, trackEvent]);
-	const scrollNext = (0, import_react.useCallback)(() => {
-		if (emblaApi) {
-			emblaApi.scrollNext();
-			trackEvent("carousel_nav", { direction: "next" });
-		}
-	}, [emblaApi, trackEvent]);
-	const scrollTo = (0, import_react.useCallback)((index) => {
-		if (emblaApi) {
-			emblaApi.scrollTo(index);
-			trackEvent("carousel_nav", {
-				direction: "dot",
-				index
-			});
-		}
-	}, [emblaApi, trackEvent]);
-	const handleKeyDown = (0, import_react.useCallback)((event) => {
-		if (event.key === "ArrowLeft") scrollPrev();
-		if (event.key === "ArrowRight") scrollNext();
-	}, [scrollPrev, scrollNext]);
 	if (images.length === 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-		className: "neon-card glass-soft w-full max-w-2xl mx-auto",
+		className: "neon-card glass-soft w-full h-full min-h-[300px] flex items-center justify-center",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-			className: "flex flex-col items-center justify-center p-12 text-center text-muted-foreground space-y-4",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, { className: "w-16 h-16 opacity-50" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: t.about.carousel_hint })]
+			className: "flex flex-col items-center justify-center p-6 text-center text-muted-foreground space-y-4",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, { className: "w-12 h-12 opacity-50" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "No photos found" })]
 		})
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "relative w-full max-w-5xl mx-auto glass-soft rounded-2xl p-4 sm:p-6 overflow-hidden neon-border",
-		role: "region",
-		"aria-roledescription": "carousel",
-		onKeyDown: handleKeyDown,
-		tabIndex: 0,
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "overflow-hidden rounded-xl",
-				ref: emblaRef,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "flex touch-pan-y",
-					children: images.map((image, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "relative flex-[0_0_100%] min-w-0 pl-4 first:pl-0 h-[40vh] sm:h-[50vh] md:h-[60vh] max-h-[560px] flex items-center justify-center",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: cn("w-full h-full relative transition-opacity duration-500 ease-out", Math.abs(selectedIndex - index) <= 1 ? "opacity-100" : "opacity-0"),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-								src: image.src,
-								alt: image.alt,
-								className: "w-full h-full object-contain"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-center text-sm backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity duration-300",
-								children: image.alt
-							})]
+		className: "relative w-full overflow-hidden rounded-2xl neon-border glass-soft",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "overflow-hidden",
+			ref: emblaRef,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex touch-pan-y",
+				children: images.map((image, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "relative flex-[0_0_100%] min-w-0 h-[400px] sm:h-[500px] flex items-center justify-center bg-black/5",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+						src: image.src,
+						alt: image.alt,
+						className: "w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 pt-12",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-white font-medium text-lg",
+							children: image.alt
 						})
-					}, image.id))
-				})
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				variant: "ghost",
-				size: "icon",
-				className: "absolute left-2 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 rounded-full shadow-lg backdrop-blur-sm transition-all",
-				onClick: scrollPrev,
-				"aria-label": t.about.carousel_prev,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronLeft, { className: "h-6 w-6" })
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				variant: "ghost",
-				size: "icon",
-				className: "absolute right-2 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 rounded-full shadow-lg backdrop-blur-sm transition-all",
-				onClick: scrollNext,
-				"aria-label": t.about.carousel_next,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { className: "h-6 w-6" })
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10",
-				children: images.map((_, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-					className: cn("w-2.5 h-2.5 rounded-full transition-all duration-300 shadow-sm", index === selectedIndex ? "bg-primary scale-110" : "bg-primary/30 hover:bg-primary/50"),
-					onClick: () => scrollTo(index),
-					"aria-label": `Go to slide ${index + 1}`
-				}, index))
+					})]
+				}, image.id))
 			})
-		]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10",
+			children: images.map((_, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: cn("w-2 h-2 rounded-full transition-all duration-300", index === selectedIndex ? "bg-white w-6" : "bg-white/50") }, index))
+		})]
 	});
 }
+function createContextScope(scopeName, createContextScopeDeps = []) {
+	let defaultContexts = [];
+	function createContext3(rootComponentName, defaultContext) {
+		const BaseContext = import_react.createContext(defaultContext);
+		BaseContext.displayName = rootComponentName + "Context";
+		const index = defaultContexts.length;
+		defaultContexts = [...defaultContexts, defaultContext];
+		const Provider = (props) => {
+			const { scope, children, ...context } = props;
+			const Context = scope?.[scopeName]?.[index] || BaseContext;
+			const value = import_react.useMemo(() => context, Object.values(context));
+			return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Context.Provider, {
+				value,
+				children
+			});
+		};
+		Provider.displayName = rootComponentName + "Provider";
+		function useContext2(consumerName, scope) {
+			const Context = scope?.[scopeName]?.[index] || BaseContext;
+			const context = import_react.useContext(Context);
+			if (context) return context;
+			if (defaultContext !== void 0) return defaultContext;
+			throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
+		}
+		return [Provider, useContext2];
+	}
+	const createScope = () => {
+		const scopeContexts = defaultContexts.map((defaultContext) => {
+			return import_react.createContext(defaultContext);
+		});
+		return function useScope(scope) {
+			const contexts = scope?.[scopeName] || scopeContexts;
+			return import_react.useMemo(() => ({ [`__scope${scopeName}`]: {
+				...scope,
+				[scopeName]: contexts
+			} }), [scope, contexts]);
+		};
+	};
+	createScope.scopeName = scopeName;
+	return [createContext3, composeContextScopes(createScope, ...createContextScopeDeps)];
+}
+function composeContextScopes(...scopes) {
+	const baseScope = scopes[0];
+	if (scopes.length === 1) return baseScope;
+	const createScope = () => {
+		const scopeHooks = scopes.map((createScope2) => ({
+			useScope: createScope2(),
+			scopeName: createScope2.scopeName
+		}));
+		return function useComposedScopes(overrideScopes) {
+			const nextScopes = scopeHooks.reduce((nextScopes2, { useScope, scopeName }) => {
+				const currentScope = useScope(overrideScopes)[`__scope${scopeName}`];
+				return {
+					...nextScopes2,
+					...currentScope
+				};
+			}, {});
+			return import_react.useMemo(() => ({ [`__scope${baseScope.scopeName}`]: nextScopes }), [nextScopes]);
+		};
+	};
+	createScope.scopeName = baseScope.scopeName;
+	return createScope;
+}
+var PROGRESS_NAME = "Progress";
+var DEFAULT_MAX = 100;
+var [createProgressContext, createProgressScope] = createContextScope(PROGRESS_NAME);
+var [ProgressProvider, useProgressContext] = createProgressContext(PROGRESS_NAME);
+var Progress$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeProgress, value: valueProp = null, max: maxProp, getValueLabel = defaultGetValueLabel, ...progressProps } = props;
+	if ((maxProp || maxProp === 0) && !isValidMaxNumber(maxProp)) console.error(getInvalidMaxError(`${maxProp}`, "Progress"));
+	const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+	if (valueProp !== null && !isValidValueNumber(valueProp, max)) console.error(getInvalidValueError(`${valueProp}`, "Progress"));
+	const value = isValidValueNumber(valueProp, max) ? valueProp : null;
+	const valueLabel = isNumber(value) ? getValueLabel(value, max) : void 0;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ProgressProvider, {
+		scope: __scopeProgress,
+		value,
+		max,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			"aria-valuemax": max,
+			"aria-valuemin": 0,
+			"aria-valuenow": isNumber(value) ? value : void 0,
+			"aria-valuetext": valueLabel,
+			role: "progressbar",
+			"data-state": getProgressState(value, max),
+			"data-value": value ?? void 0,
+			"data-max": max,
+			...progressProps,
+			ref: forwardedRef
+		})
+	});
+});
+Progress$1.displayName = PROGRESS_NAME;
+var INDICATOR_NAME = "ProgressIndicator";
+var ProgressIndicator = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeProgress, ...indicatorProps } = props;
+	const context = useProgressContext(INDICATOR_NAME, __scopeProgress);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		"data-state": getProgressState(context.value, context.max),
+		"data-value": context.value ?? void 0,
+		"data-max": context.max,
+		...indicatorProps,
+		ref: forwardedRef
+	});
+});
+ProgressIndicator.displayName = INDICATOR_NAME;
+function defaultGetValueLabel(value, max) {
+	return `${Math.round(value / max * 100)}%`;
+}
+function getProgressState(value, maxValue) {
+	return value == null ? "indeterminate" : value === maxValue ? "complete" : "loading";
+}
+function isNumber(value) {
+	return typeof value === "number";
+}
+function isValidMaxNumber(max) {
+	return isNumber(max) && !isNaN(max) && max > 0;
+}
+function isValidValueNumber(value, max) {
+	return isNumber(value) && !isNaN(value) && value <= max && value >= 0;
+}
+function getInvalidMaxError(propValue, componentName) {
+	return `Invalid prop \`max\` of value \`${propValue}\` supplied to \`${componentName}\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`;
+}
+function getInvalidValueError(propValue, componentName) {
+	return `Invalid prop \`value\` of value \`${propValue}\` supplied to \`${componentName}\`. The \`value\` prop must be:
+  - a positive number
+  - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)
+  - \`null\` or \`undefined\` if the progress is indeterminate.
+
+Defaulting to \`null\`.`;
+}
+var Root = Progress$1;
+var Indicator = ProgressIndicator;
+var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root, {
+	ref,
+	className: cn("relative h-4 w-full overflow-hidden rounded-full bg-secondary", className),
+	...props,
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Indicator, {
+		className: "h-full w-full flex-1 bg-primary transition-all",
+		style: { transform: `translateX(-${100 - (value || 0)}%)` }
+	})
+}));
+Progress.displayName = Root.displayName;
+const getProfileContent = async () => {
+	const { data, error } = await supabase.from("profile_content").select("*").single();
+	if (error) {
+		console.error("Error fetching profile content:", error);
+		return null;
+	}
+	return data;
+};
+const getSocialLinks = async () => {
+	const { data, error } = await supabase.from("social_links").select("*").order("created_at", { ascending: true });
+	if (error) {
+		console.error("Error fetching social links:", error);
+		return [];
+	}
+	return data;
+};
+const getProfessionalSkills = async () => {
+	const { data, error } = await supabase.from("professional_skills").select("*").order("proficiency", { ascending: false }).limit(4);
+	if (error) {
+		console.error("Error fetching professional skills:", error);
+		return [];
+	}
+	return data;
+};
+var IconMap = {
+	instagram: Instagram,
+	linkedin: Linkedin,
+	github: Github,
+	lattes: GraduationCap,
+	resume: FileText
+};
+var Paragraphs = ({ text }) => {
+	if (!text) return null;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "space-y-4",
+		children: text.split("\n\n").map((paragraph, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			className: "text-lg leading-relaxed text-muted-foreground indent-pt",
+			children: paragraph
+		}, index))
+	});
+};
 function AboutPage() {
-	const { t } = useLanguage();
+	const { language } = useLanguage();
+	const [profile, setProfile] = (0, import_react.useState)(null);
+	const [socials, setSocials] = (0, import_react.useState)([]);
+	const [skills, setSkills] = (0, import_react.useState)([]);
+	const [loading, setLoading] = (0, import_react.useState)(true);
 	useSEO({
-		title: t.about.title,
-		description: t.about.bio
+		title: "Sobre Mariana Azevedo",
+		description: profile ? profile[`bio_${language}`]?.slice(0, 160) : "About Mariana Azevedo"
+	});
+	(0, import_react.useEffect)(() => {
+		const fetchData = async () => {
+			try {
+				const [profileData, socialData, skillsData] = await Promise.all([
+					getProfileContent(),
+					getSocialLinks(),
+					getProfessionalSkills()
+				]);
+				setProfile(profileData);
+				setSocials(socialData);
+				setSkills(skillsData);
+			} catch (error) {
+				console.error("Error loading about page data:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchData();
+	}, []);
+	const getIcon = (platform) => {
+		const NormalizedPlatform = platform.toLowerCase();
+		if (IconMap[NormalizedPlatform]) return IconMap[NormalizedPlatform];
+		return IconMap["resume"];
+	};
+	if (loading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "container mx-auto px-4 py-12 space-y-8",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-12 w-1/3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "grid grid-cols-1 md:grid-cols-2 gap-12",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-full" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-full" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-5/6" })
+				]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-[400px] w-full rounded-2xl" })]
+		})]
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "max-w-4xl mx-auto space-y-12",
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "space-y-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-					className: "text-4xl font-bold",
-					children: t.about.title
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "text-xl text-muted-foreground leading-relaxed",
-					children: t.about.bio
-				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "relative animate-fade-in-up",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AboutGallery, {})
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "space-y-6 animate-fade-in",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-					className: "text-2xl font-bold",
-					children: t.about.skills
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "grid grid-cols-1 md:grid-cols-2 gap-6",
-					children: [
-						{
-							category: "Frontend",
-							items: [
-								"React",
-								"TypeScript",
-								"TailwindCSS",
-								"Next.js"
-							]
-						},
-						{
-							category: "Backend",
-							items: [
-								"Node.js",
-								"Supabase",
-								"PostgreSQL",
-								"Python"
-							]
-						},
-						{
-							category: "Tools",
-							items: [
-								"Git",
-								"Docker",
-								"Figma",
-								"VS Code"
-							]
-						}
-					].map((skillGroup) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-						className: "border-l-4 border-l-primary",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-							className: "pt-6",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-								className: "font-semibold mb-3",
-								children: skillGroup.category
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "flex flex-wrap gap-2",
-								children: skillGroup.items.map((skill) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-									variant: "secondary",
-									children: skill
-								}, skill))
-							})]
+		className: "container mx-auto px-4 py-12",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "text-4xl font-bold mb-8 animate-fade-in",
+			children: "Sobre Mariana Azevedo"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "grid grid-cols-1 md:grid-cols-2 gap-12 items-start",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "space-y-8 order-2 md:order-1 animate-fade-in-up",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "prose dark:prose-invert max-w-none",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Paragraphs, { text: profile ? profile[`bio_${language}`] : "" })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex flex-wrap gap-4",
+						children: socials.map((link) => {
+							const Icon = getIcon(link.platform);
+							const isResume = link.platform === "resume";
+							return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								asChild: true,
+								className: cn("transition-all duration-300", isResume ? "btn-primary" : "glass-soft hover:bg-primary/10 text-foreground"),
+								variant: isResume ? "default" : "outline",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+									href: link.url,
+									target: "_blank",
+									rel: "noreferrer",
+									download: isResume,
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { className: "mr-2 h-4 w-4" }),
+										link.platform === "lattes" ? "Lattes" : link.platform.charAt(0).toUpperCase() + link.platform.slice(1),
+										isResume && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "ml-2 h-3 w-3" })
+									]
+								})
+							}, link.id);
 						})
-					}, skillGroup.category))
-				})]
-			})
-		]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+							className: "text-2xl font-bold",
+							children: "Top Skills"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+							children: skills.map((skill) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+								className: "neon-card bg-card/50",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+									className: "p-4 space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex justify-between items-center mb-1",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-medium",
+											children: skill.name
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+											className: "text-sm text-muted-foreground",
+											children: [skill.proficiency, "%"]
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Progress, {
+										value: skill.proficiency,
+										className: "h-2"
+									})]
+								})
+							}, skill.id))
+						})]
+					})
+				]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "order-1 md:order-2 animate-fade-in delay-200",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PhotoCarousel, {
+					auto: true,
+					delay: 4200
+				})
+			})]
+		})]
 	});
 }
 export { AboutPage as default };
 
-//# sourceMappingURL=AboutPage-DVixZcQQ.js.map
+//# sourceMappingURL=AboutPage-CJfP64dT.js.map
