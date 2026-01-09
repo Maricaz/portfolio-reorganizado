@@ -56,6 +56,14 @@ export const useAnalytics = () => {
     })
   }
 
+  const trackMusicPlay = (trackId: string, platform: string = 'native') => {
+    trackEvent('music_play', {
+      track_id: trackId,
+      platform,
+      timestamp: new Date().toISOString(),
+    })
+  }
+
   useEffect(() => {
     const handleOutboundClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -83,5 +91,6 @@ export const useAnalytics = () => {
     trackContactSubmit,
     trackResumeDownload,
     trackITProjectClick,
+    trackMusicPlay,
   }
 }

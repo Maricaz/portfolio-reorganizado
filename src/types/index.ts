@@ -35,6 +35,24 @@ export interface MusicTrack {
   lyrics_pt: string | null
   lyrics_en: string | null
   lyrics_ko: string | null
+  // New fields
+  audio_url: string | null
+  spotify_track_id: string | null
+  deezer_track_id: string | null
+  apple_music_id: string | null
+  youtube_video_id: string | null
+  lyrics: Record<string, string> // JSONB
+  created_at: string
+}
+
+export interface AlbumSettings {
+  id: string
+  title: string
+  description_pt: string
+  description_en: string
+  description_ko: string
+  video_url: string | null
+  cover_url: string | null
   created_at: string
 }
 

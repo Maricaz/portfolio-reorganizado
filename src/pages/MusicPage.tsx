@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getMusicTracks } from '@/services/database'
-import { MusicTrack, Language } from '@/types'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { PlayCircle, Clock, Music as MusicIcon } from 'lucide-react'
+import { getMusicTracks, getAlbumSettings } from '@/services/music'
+import { MusicTrack, AlbumSettings } from '@/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
+import { TrackCard } from '@/components/music/TrackCard'
+import { SidePanel } from '@/components/music/SidePanel'
 
 export default function MusicPage() {
   const { t, language } = useLanguage()
@@ -16,28 +14,9 @@ export default function MusicPage() {
   const navigate = useNavigate()
 
   const [tracks, setTracks] = useState<MusicTrack[]>([])
+  const [albumSettings, setAlbumSettings] = useState<AlbumSettings | null>(null)
   const [selectedTrack, setSelectedTrack] = useState<MusicTrack | null>(null)
   const [loading, setLoading] = useState(true)
-  const [lyricsLang, setLyricsLang] = useState<Language>(language)
-
-  // Construct JSON-LD for the album "Luz & Eco"
-  const albumJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'MusicAlbum',
-    name: 'Luz & Eco',
-    byArtist: {
-      '@type': 'MusicGroup',
-      name: 'Mariana Azevedo',
-    },
-    image: '/og-image.png',
-    numTracks: tracks.length,
-    track: tracks.map((track) => ({
-      '@type': 'MusicRecording',
-      name: track.title,
-      duration: track.duration,
-      url: `${window.location.origin}/music/${track.id}`,
-    })),
-  }
 
   useSEO({
     title: selectedTrack
@@ -45,203 +24,119 @@ export default function MusicPage() {
       : t.music.title,
     description: selectedTrack
       ? `Listen to ${selectedTrack.title} by ${selectedTrack.artist}`
-      : 'My music tracks and production portfolio - Luz & Eco Album',
+      : 'My music tracks and production portfolio',
     type: 'music.song',
-    jsonLd: albumJsonLd,
   })
 
-  // Sync default lyrics language when global language changes
+  // Fetch data
   useEffect(() => {
-    setLyricsLang(language)
-  }, [language])
+    const fetchData = async () => {
+      setLoading(true)
+      const [tracksRes, albumRes] = await Promise.all([
+        getMusicTracks(),
+        getAlbumSettings(),
+      ])
 
-  useEffect(() => {
-    getMusicTracks().then(({ data }) => {
-      if (data) {
-        setTracks(data)
-        if (trackId) {
-          const found = data.find((t) => t.id === trackId)
-          if (found) setSelectedTrack(found)
-          else if (data.length > 0) setSelectedTrack(data[0])
-        } else if (data.length > 0) {
-          setSelectedTrack(data[0])
-        }
+      if (tracksRes.data) {
+        setTracks(tracksRes.data)
+      }
+      if (albumRes.data) {
+        setAlbumSettings(albumRes.data)
       }
       setLoading(false)
-    })
-  }, [trackId])
+    }
+    fetchData()
+  }, [])
 
-  const handleTrackSelect = (track: MusicTrack) => {
-    setSelectedTrack(track)
-    navigate(`/music/${track.id}`)
-  }
+  // Handle URL param
+  useEffect(() => {
+    if (tracks.length > 0 && trackId) {
+      const found = tracks.find((t) => t.id === trackId)
+      if (found) {
+        setSelectedTrack(found)
+        // Scroll to track
+        setTimeout(() => {
+          const el = document.getElementById(`track-${trackId}`)
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+        }, 100)
+      }
+    }
+  }, [tracks, trackId])
 
-  const getLyrics = () => {
-    if (!selectedTrack) return ''
-    return (
-      selectedTrack[`lyrics_${lyricsLang}` as keyof MusicTrack] ||
-      selectedTrack.lyrics_en ||
-      'Lyrics not available.'
-    )
+  const handleTrackPlay = (track: MusicTrack) => {
+    if (selectedTrack?.id !== track.id) {
+      setSelectedTrack(track)
+      navigate(`/music/${track.id}`, { replace: true })
+    }
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-10rem)] min-h-[600px]">
-      {/* Track List */}
-      <Card className="lg:col-span-4 h-full flex flex-col border-border/50 shadow-md">
-        <CardHeader className="pb-3 border-b bg-muted/20">
-          <CardTitle className="flex items-center gap-2">
-            <MusicIcon className="h-5 w-5 text-primary" />
-            {t.music.original}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 overflow-hidden p-0">
-          <ScrollArea className="h-full">
-            {loading ? (
-              <div className="space-y-4 p-4">
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                {tracks.map((track) => (
-                  <button
-                    key={track.id}
-                    onClick={() => handleTrackSelect(track)}
-                    className={`flex items-center gap-4 p-4 text-left transition-all border-l-4 hover:bg-muted/50 ${
-                      selectedTrack?.id === track.id
-                        ? 'bg-primary/5 border-l-primary'
-                        : 'border-l-transparent'
-                    }`}
-                  >
-                    <div
-                      className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                        selectedTrack?.id === track.id
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-secondary text-muted-foreground'
-                      }`}
-                    >
-                      <PlayCircle className="h-6 w-6" />
-                    </div>
-                    <div className="overflow-hidden flex-1">
-                      <p
-                        className={`font-bold truncate ${selectedTrack?.id === track.id ? 'text-primary' : ''}`}
-                      >
-                        {track.title}
-                      </p>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {track.artist}
-                      </p>
-                    </div>
-                    {track.duration && (
-                      <div className="text-xs text-muted-foreground flex items-center gap-1 bg-muted px-2 py-1 rounded">
-                        <Clock className="h-3 w-3" />
-                        {track.duration}
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </ScrollArea>
-        </CardContent>
-      </Card>
+    <div className="container mx-auto px-4 py-8 min-h-screen space-y-12">
+      <div className="flex flex-col-reverse lg:grid lg:grid-cols-12 gap-8">
+        {/* Main Content - Track List */}
+        <div className="lg:col-span-7 space-y-6">
+          <div className="space-y-2 mb-8">
+            <h1 className="text-4xl font-bold tracking-tight">
+              {t.music.title}
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              {t.music.description}
+            </p>
+          </div>
 
-      {/* Player and Lyrics */}
-      <div className="lg:col-span-8 flex flex-col gap-6 h-full overflow-hidden">
-        {selectedTrack ? (
-          <>
-            <div className="w-full bg-card rounded-xl overflow-hidden shadow-lg border border-border/50 p-6 flex flex-col gap-4 animate-fade-in">
-              <div>
-                <h2 className="text-2xl font-bold">{selectedTrack.title}</h2>
-                <p className="text-muted-foreground">{selectedTrack.artist}</p>
-              </div>
-
-              {selectedTrack.audio_url ? (
-                <div className="bg-secondary/30 p-4 rounded-lg">
-                  <audio
-                    controls
-                    className="w-full focus:outline-none"
-                    src={selectedTrack.audio_url}
-                  >
-                    Your browser does not support the audio element.
-                  </audio>
-                </div>
-              ) : selectedTrack.deezer_id ? (
-                <iframe
-                  title="Deezer Widget"
-                  src={`https://widget.deezer.com/widget/auto/track/${selectedTrack.deezer_id}`}
-                  width="100%"
-                  height="130"
-                  frameBorder="0"
-                  allowTransparency={true}
-                  allow="encrypted-media; clipboard-write"
-                  className="rounded-lg shadow-sm"
+          {loading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-40 w-full rounded-lg" />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-6 pb-20">
+              {tracks.map((track) => (
+                <TrackCard
+                  key={track.id}
+                  track={track}
+                  isActive={selectedTrack?.id === track.id}
+                  onPlay={handleTrackPlay}
                 />
-              ) : selectedTrack.spotify_id ? (
-                <iframe
-                  title="Spotify Widget"
-                  src={`https://open.spotify.com/embed/track/${selectedTrack.spotify_id}`}
-                  width="100%"
-                  height="152"
-                  frameBorder="0"
-                  allowTransparency={true}
-                  allow="encrypted-media"
-                  className="rounded-lg shadow-sm"
-                />
-              ) : (
-                <div className="h-24 flex items-center justify-center bg-muted/30 rounded-lg text-muted-foreground">
-                  No audio source available
+              ))}
+              {tracks.length === 0 && (
+                <div className="text-center py-10 text-muted-foreground">
+                  No tracks available at the moment.
                 </div>
               )}
             </div>
+          )}
+        </div>
 
-            <Card className="flex-1 overflow-hidden flex flex-col shadow-md border-border/50 animate-slide-up">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 py-4 px-6 border-b bg-muted/10">
-                <CardTitle className="text-lg font-medium">
-                  {t.music.lyrics}
-                </CardTitle>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-semibold text-muted-foreground hidden sm:inline uppercase tracking-wider">
-                    {t.music.select_lang}
-                  </span>
-                  <Tabs
-                    value={lyricsLang}
-                    onValueChange={(v) => setLyricsLang(v as Language)}
-                    className="h-8"
-                  >
-                    <TabsList className="h-9">
-                      <TabsTrigger value="pt" className="text-xs px-3">
-                        PT
-                      </TabsTrigger>
-                      <TabsTrigger value="en" className="text-xs px-3">
-                        EN
-                      </TabsTrigger>
-                      <TabsTrigger value="ko" className="text-xs px-3">
-                        KO
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-y-auto p-8">
-                <div className="max-w-2xl mx-auto text-center">
-                  <div className="animate-fade-in key={lyricsLang} whitespace-pre-line text-lg leading-loose text-foreground/90 font-medium">
-                    {getLyrics()}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </>
-        ) : (
-          <div className="h-full flex items-center justify-center text-muted-foreground bg-muted/10 rounded-xl border border-dashed">
-            <div className="text-center">
-              <MusicIcon className="h-12 w-12 mx-auto mb-4 opacity-20" />
-              <p>Select a track to start listening</p>
-            </div>
+        {/* Side Panel - Sticky on Desktop */}
+        <div className="lg:col-span-5">
+          <div className="lg:sticky lg:top-24">
+            <SidePanel
+              track={selectedTrack}
+              albumSettings={albumSettings}
+              globalLanguage={language}
+            />
           </div>
-        )}
+        </div>
+      </div>
+
+      {/* Footer Playlist */}
+      <div className="mt-12 border-t pt-8">
+        <h3 className="text-xl font-semibold mb-4">More on Deezer</h3>
+        <div className="rounded-xl overflow-hidden shadow-lg border border-border/50">
+          <iframe
+            title="Deezer Playlist"
+            src="https://widget.deezer.com/widget/auto/playlist/1479458365"
+            width="100%"
+            height="300"
+            frameBorder="0"
+            allowTransparency={true}
+            allow="encrypted-media; clipboard-write"
+          />
+        </div>
       </div>
     </div>
   )
