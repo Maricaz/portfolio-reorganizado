@@ -24,6 +24,7 @@ export interface Book {
   review_ko: string
   image_url: string
   created_at: string
+  synopsis?: string
 }
 
 export interface MusicTrack {
@@ -39,15 +40,16 @@ export interface MusicTrack {
 
 export interface ResumeItem {
   id: string
-  category: 'experience' | 'education' | 'skills'
-  title_pt: string | null
-  title_en: string | null
-  title_ko: string | null
-  institution: string | null
-  period: string | null
-  description_pt: string | null
-  description_en: string | null
-  description_ko: string | null
+  role_pt: string
+  role_en: string
+  role_ko: string
+  company: string
+  type: string
+  start_date: string
+  end_date: string | null
+  description_pt: string
+  description_en: string
+  description_ko: string
   created_at: string
 }
 
@@ -57,29 +59,5 @@ export interface ContactSubmission {
   email: string
   subject: string
   message: string
-  created_at: string
-}
-
-export interface ProfileContent {
-  id: string
-  bio_pt: string
-  bio_en: string
-  bio_ko: string
-  created_at: string
-}
-
-export interface SocialLink {
-  id: string
-  platform: 'instagram' | 'linkedin' | 'github' | 'lattes' | 'resume'
-  url: string
-  icon?: string
-  created_at: string
-}
-
-export interface ProfessionalSkill {
-  id: string
-  name: string
-  proficiency: number
-  category?: string
   created_at: string
 }

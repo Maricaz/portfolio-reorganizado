@@ -1,21 +1,32 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getBooks } from '@/services/database'
-import { Book, Language } from '@/types'
+import { getBooks } from '@/services/books'
+import { Book } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Star, Book as BookIcon } from 'lucide-react'
+import { BookOpen, ChevronDown } from 'lucide-react'
 import { useSEO } from '@/hooks/use-seo'
+import { slugify, cn } from '@/lib/utils'
+import { useAnalytics } from '@/hooks/use-analytics'
 
 export default function BooksPage() {
-  const { t, language } = useLanguage()
+  const { t } = useLanguage()
+  const { trackEvent } = useAnalytics()
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
 
   useSEO({
-    title: `${t.books.title} - Portfolio`,
-    description: t.books.description,
+    title: 'Curadoria de Livros — Mariana Azevedo',
+    description: 'Leituras que moldam a sensibilidade.',
   })
+
+  // Dynamic book cover mapping
+  const bookImages = useMemo(() => {
+    return import.meta.glob('../media/books/*.{png,jpg,jpeg,webp}', {
+      eager: true,
+      as: 'url',
+    })
+  }, [])
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -31,8 +42,19 @@ export default function BooksPage() {
     fetchBooks()
   }, [])
 
-  const getReview = (book: Book) => {
-    return book[`review_${language}` as keyof Book] || book.review_en || ''
+  const getCoverImage = (title: string) => {
+    const slug = slugify(title)
+    const match = Object.entries(bookImages).find(([path]) =>
+      path.toLowerCase().includes(slug),
+    )
+    return match ? match[1] : null
+  }
+
+  const trackBookSynopsisToggle = (bookTitle: string, isOpen: boolean) => {
+    trackEvent('book_synopsis_toggle', {
+      book: bookTitle,
+      state: isOpen ? 'open' : 'closed',
+    })
   }
 
   return (
@@ -48,60 +70,79 @@ export default function BooksPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="space-y-4">
-              <Skeleton className="h-64 w-full rounded-xl" />
+              <Skeleton className="aspect-[3/4] w-full rounded-xl" />
               <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
             </div>
           ))}
         </div>
       ) : books.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {books.map((book, index) => (
-            <Card
-              key={book.id}
-              className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full flex flex-col animate-fade-in-up"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <div className="aspect-[2/3] relative overflow-hidden bg-muted group">
-                {book.cover_url ? (
-                  <img
-                    src={book.cover_url}
-                    alt={book.title}
-                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-muted/50 text-muted-foreground">
-                    <BookIcon className="h-12 w-12 opacity-20" />
-                  </div>
-                )}
-                <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                  <Star className="h-3 w-3 fill-primary text-primary" />
-                  <span className="text-xs font-bold">{book.rating}/5</span>
+        <div className="grid grid-auto-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {books.map((book, index) => {
+            const coverUrl = getCoverImage(book.title)
+            return (
+              <Card
+                key={book.id}
+                className="overflow-hidden glass-soft border-primary/10 hover:border-primary/30 transition-all duration-300 h-full flex flex-col animate-fade-in-up group"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className="aspect-[3/4] relative overflow-hidden bg-muted/30">
+                  {coverUrl ? (
+                    <img
+                      src={coverUrl}
+                      alt={book.title}
+                      loading="lazy"
+                      className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-muted/50 text-muted-foreground p-4 text-center space-y-2">
+                      <BookOpen className="h-12 w-12 opacity-20" />
+                      <span className="text-xs opacity-50">
+                        {t.books.seeSynopsis}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <CardHeader className="pb-2">
-                <CardTitle
-                  className="text-lg leading-tight line-clamp-2"
-                  title={book.title}
-                >
-                  {book.title}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground line-clamp-1">
-                  {book.author}
-                </p>
-              </CardHeader>
-              <CardContent className="flex-1">
-                <p className="text-sm text-muted-foreground line-clamp-4 italic">
-                  "{getReview(book)}"
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+
+                <CardHeader className="pb-2 space-y-1">
+                  <CardTitle
+                    className="text-lg leading-tight line-clamp-2"
+                    title={book.title}
+                  >
+                    {book.title}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground line-clamp-1">
+                    {book.author}
+                  </p>
+                </CardHeader>
+
+                <CardContent className="flex-1 pt-2">
+                  <details
+                    className="group/details"
+                    onToggle={(e) => {
+                      const target = e.target as HTMLDetailsElement
+                      trackBookSynopsisToggle(book.title, target.open)
+                    }}
+                  >
+                    <summary className="cursor-pointer list-none flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                      <span>{t.books.seeSynopsis}</span>
+                      <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open/details:rotate-180" />
+                    </summary>
+                    <div className="mt-3 text-sm text-muted-foreground leading-relaxed animate-accordion-down overflow-hidden">
+                      {book.synopsis ||
+                        book.review_pt ||
+                        'No synopsis available.'}
+                    </div>
+                  </details>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       ) : (
-        <div className="text-center py-20 bg-muted/20 rounded-xl border border-dashed">
-          <BookIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">No books found.</p>
+        <div className="text-center py-20 bg-muted/20 rounded-xl border border-dashed border-primary/20">
+          <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+          <p className="text-muted-foreground">{t.projects.no_projects}</p>
         </div>
       )}
     </div>

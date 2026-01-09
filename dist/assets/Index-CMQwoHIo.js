@@ -1,14 +1,17 @@
-import { t as Book } from "./book-B3MWAKCm.js";
-import { t as Music } from "./music-B24soOh-.js";
-import { A as require_react, T as Link, a as useLanguage, f as createLucideIcon, j as __toESM, n as Button, t as Skeleton, x as require_jsx_runtime } from "./index-BI0uBU5Q.js";
-import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-BBYpdB2D.js";
-import { n as getLatestItem } from "./database-CzueZ4jy.js";
+import { t as Music } from "./music-CTHUed4Q.js";
+import { C as require_jsx_runtime, D as Link, M as require_react, N as __toESM, a as useLanguage, m as createLucideIcon, n as Button, t as Skeleton } from "./index-DDHUyA49.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-C8ef2dxk.js";
+import { t as getLatestItem } from "./database-CMVGGNzl.js";
 var ArrowRight = createLucideIcon("arrow-right", [["path", {
 	d: "M5 12h14",
 	key: "1ays0h"
 }], ["path", {
 	d: "m12 5 7 7-7 7",
 	key: "xquz4c"
+}]]);
+var Book = createLucideIcon("book", [["path", {
+	d: "M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20",
+	key: "k3hazp"
 }]]);
 var Code = createLucideIcon("code", [["path", {
 	d: "m16 18 6-6-6-6",
@@ -191,4 +194,4 @@ function Index() {
 }
 export { Index as default };
 
-//# sourceMappingURL=Index-D7xTJliU.js.map
+//# sourceMappingURL=Index-CMQwoHIo.js.map

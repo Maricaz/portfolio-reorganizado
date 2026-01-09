@@ -41,6 +41,7 @@ export const translations = {
       description: 'Livros que li e recomendo.',
       rating: 'Avaliação',
       author: 'Autor',
+      seeSynopsis: 'Ver sinopse',
     },
     music: {
       title: 'Música',
@@ -107,6 +108,7 @@ export const translations = {
       description: 'Books I have read and recommend.',
       rating: 'Rating',
       author: 'Author',
+      seeSynopsis: 'See synopsis',
     },
     music: {
       title: 'Music',
@@ -173,6 +175,7 @@ export const translations = {
       description: '읽고 추천하는 책들.',
       rating: '평점',
       author: '저자',
+      seeSynopsis: '시놉시스 보기',
     },
     music: {
       title: '음악',

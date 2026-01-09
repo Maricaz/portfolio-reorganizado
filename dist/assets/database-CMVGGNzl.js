@@ -1,4 +1,4 @@
-import { o as supabase } from "./index-BI0uBU5Q.js";
+import { o as supabase } from "./index-DDHUyA49.js";
 const getProjects = async () => {
 	return await supabase.from("projects").select("*").order("created_at", { ascending: false }).returns();
 };
@@ -22,9 +22,6 @@ const getLatestItem = async () => {
 	};
 	return null;
 };
-const getBooks = async () => {
-	return await supabase.from("books").select("*").order("rating", { ascending: false }).returns();
-};
 const getMusicTracks = async () => {
 	return await supabase.from("music_tracks").select("*").order("created_at", { ascending: false }).returns();
 };
@@ -34,6 +31,6 @@ const getResumeData = async () => {
 const submitContactForm = async (data) => {
 	return await supabase.from("contact_submissions").insert([data]).select().single();
 };
-export { getResumeData as a, getProjects as i, getLatestItem as n, submitContactForm as o, getMusicTracks as r, getBooks as t };
+export { submitContactForm as a, getResumeData as i, getMusicTracks as n, getProjects as r, getLatestItem as t };
 
-//# sourceMappingURL=database-CzueZ4jy.js.map
+//# sourceMappingURL=database-CMVGGNzl.js.map
