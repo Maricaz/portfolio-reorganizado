@@ -1,11 +1,18 @@
 import { useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
+interface JsonLdProps {
+  '@context': string
+  '@type': string
+  [key: string]: any
+}
+
 interface SeoProps {
   title?: string
   description?: string
   image?: string
   type?: string
+  jsonLd?: JsonLdProps
 }
 
 export const useSEO = ({
@@ -13,6 +20,7 @@ export const useSEO = ({
   description,
   image = '/og-image.png',
   type = 'website',
+  jsonLd,
 }: SeoProps) => {
   const { language } = useLanguage()
 
@@ -54,5 +62,18 @@ export const useSEO = ({
 
     // Set HTML Lang Attribute
     document.documentElement.lang = language
-  }, [title, description, image, type, language])
+
+    // JSON-LD
+    if (jsonLd) {
+      let script = document.querySelector('script[type="application/ld+json"]')
+      if (!script) {
+        script = document.createElement('script')
+        script.setAttribute('type', 'application/ld+json')
+        document.head.appendChild(script)
+      }
+      script.textContent = JSON.stringify(jsonLd)
+    }
+
+    // CSP is handled in index.html, but we should ensure valid meta tags
+  }, [title, description, image, type, language, jsonLd])
 }

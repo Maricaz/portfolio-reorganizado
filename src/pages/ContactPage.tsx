@@ -23,7 +23,7 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
-import { Linkedin, Github, Mail } from 'lucide-react'
+import { Linkedin, Github, Mail, Send } from 'lucide-react'
 import { useSEO } from '@/hooks/use-seo'
 
 const formSchema = z.object({
@@ -64,44 +64,62 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+    <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center py-8">
       <div className="space-y-8 animate-fade-in">
         <div>
-          <h1 className="text-4xl font-bold mb-4">{t.contact.title}</h1>
-          <p className="text-muted-foreground text-lg">
+          <h1 className="text-5xl font-bold mb-6">{t.contact.title}</h1>
+          <p className="text-muted-foreground text-xl leading-relaxed">
             I'm always open to discussing new projects, creative ideas or
-            opportunities to be part of your visions.
+            opportunities to be part of your visions. Let's create something
+            amazing together.
           </p>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 pt-4">
           <Button
             variant="outline"
             size="icon"
-            className="h-12 w-12 rounded-full border-2"
+            className="h-14 w-14 rounded-full border-2 hover:border-primary hover:text-primary transition-all"
+            asChild
           >
-            <Linkedin className="h-5 w-5" />
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Linkedin className="h-6 w-6" />
+            </a>
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="h-12 w-12 rounded-full border-2"
+            className="h-14 w-14 rounded-full border-2 hover:border-primary hover:text-primary transition-all"
+            asChild
           >
-            <Github className="h-5 w-5" />
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Github className="h-6 w-6" />
+            </a>
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="h-12 w-12 rounded-full border-2"
+            className="h-14 w-14 rounded-full border-2 hover:border-primary hover:text-primary transition-all"
+            asChild
           >
-            <Mail className="h-5 w-5" />
+            <a href="mailto:contact@example.com">
+              <Mail className="h-6 w-6" />
+            </a>
           </Button>
         </div>
       </div>
 
-      <Card className="shadow-lg border-t-4 border-t-primary animate-slide-up">
-        <CardHeader>
-          <CardTitle>{t.contact.title}</CardTitle>
+      <Card className="shadow-2xl border-t-4 border-t-primary animate-slide-up bg-card/50 backdrop-blur-sm">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl">{t.contact.title}</CardTitle>
           <CardDescription>
             Fill out the form below and I'll get back to you soon.
           </CardDescription>
@@ -116,7 +134,11 @@ export default function ContactPage() {
                   <FormItem>
                     <FormLabel>{t.contact.name}</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input
+                        placeholder="John Doe"
+                        {...field}
+                        className="bg-background/50"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -129,7 +151,11 @@ export default function ContactPage() {
                   <FormItem>
                     <FormLabel>{t.contact.email}</FormLabel>
                     <FormControl>
-                      <Input placeholder="john@example.com" {...field} />
+                      <Input
+                        placeholder="john@example.com"
+                        {...field}
+                        className="bg-background/50"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -144,7 +170,7 @@ export default function ContactPage() {
                     <FormControl>
                       <Textarea
                         placeholder="Hello..."
-                        className="min-h-[120px]"
+                        className="min-h-[150px] bg-background/50 resize-none"
                         {...field}
                       />
                     </FormControl>
@@ -152,8 +178,19 @@ export default function ContactPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Sending...' : t.contact.send}
+              <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  'Sending...'
+                ) : (
+                  <>
+                    {t.contact.send} <Send className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </form>
           </Form>

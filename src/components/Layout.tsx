@@ -1,33 +1,17 @@
 import { Outlet } from 'react-router-dom'
-import {
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarInset,
-} from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/layout/AppSidebar'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { ThemeProvider } from '@/components/theme-provider'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { AuthProvider } from '@/hooks/use-auth'
+import { Shell } from '@/components/Shell'
 
 export default function Layout() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <LanguageProvider>
         <AuthProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/60 px-4 backdrop-blur-md transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-14">
-                <SidebarTrigger />
-                <div className="flex-1" />
-                <LanguageSwitcher />
-              </header>
-              <main className="flex-1 overflow-x-hidden p-4 md:p-8 animate-fade-in relative max-w-[1600px] mx-auto w-full">
-                <Outlet />
-              </main>
-            </SidebarInset>
-          </SidebarProvider>
+          <Shell>
+            <Outlet />
+          </Shell>
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>

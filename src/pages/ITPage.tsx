@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getProjects } from '@/services/database'
-import { Project } from '@/types'
+import { getITProjects } from '@/services/database'
+import { ITProject } from '@/types'
 import {
   Card,
   CardContent,
@@ -25,7 +25,7 @@ import { useSEO } from '@/hooks/use-seo'
 
 export default function ITPage() {
   const { t, language } = useLanguage()
-  const [projects, setProjects] = useState<Project[]>([])
+  const [projects, setProjects] = useState<ITProject[]>([])
   const [loading, setLoading] = useState(true)
 
   useSEO({
@@ -34,7 +34,7 @@ export default function ITPage() {
   })
 
   useEffect(() => {
-    getProjects(language).then(({ data }) => {
+    getITProjects(language).then(({ data }) => {
       if (data) setProjects(data)
       setLoading(false)
     })
@@ -42,9 +42,9 @@ export default function ITPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">{t.it.title}</h1>
+      <h1 className="text-4xl font-bold border-b pb-4">{t.it.title}</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {loading
           ? Array.from({ length: 3 }).map((_, i) => (
               <Card key={i} className="overflow-hidden">
@@ -59,49 +59,59 @@ export default function ITPage() {
             ))
           : projects.map((project) => (
               <Dialog key={project.id}>
-                <Card className="group hover:shadow-xl transition-all duration-300 flex flex-col h-full">
-                  <div className="relative h-48 overflow-hidden rounded-t-lg">
+                <Card className="group hover:shadow-xl transition-all duration-300 flex flex-col h-full overflow-hidden border-border/60">
+                  <div className="relative h-48 overflow-hidden bg-muted">
                     <img
                       src={project.image_url}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
                       <DialogTrigger asChild>
-                        <Button variant="secondary">{t.it.view_project}</Button>
+                        <Button
+                          variant="outline"
+                          className="text-white border-white hover:bg-white hover:text-black"
+                        >
+                          {t.it.view_project}
+                        </Button>
                       </DialogTrigger>
                     </div>
                   </div>
 
                   <CardHeader>
-                    <CardTitle className="line-clamp-1">
+                    <CardTitle className="line-clamp-1 text-xl">
                       {project.title}
                     </CardTitle>
                   </CardHeader>
 
                   <CardContent className="flex-1">
-                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed">
                       {project.description}
                     </p>
-                    <div className="flex flex-wrap gap-1">
-                      {project.tech_stack?.map((tag) => (
+                    <div className="flex flex-wrap gap-1.5">
+                      {project.tech_stack?.slice(0, 4).map((tag) => (
                         <Badge
                           key={tag}
                           variant="secondary"
-                          className="font-mono text-xs"
+                          className="font-mono text-[10px] px-2"
                         >
                           {tag}
                         </Badge>
                       ))}
+                      {project.tech_stack?.length > 4 && (
+                        <Badge variant="outline" className="text-[10px] px-2">
+                          +{project.tech_stack.length - 4}
+                        </Badge>
+                      )}
                     </div>
                   </CardContent>
 
-                  <CardFooter>
+                  <CardFooter className="pt-0">
                     {project.link && (
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="w-full"
+                        className="w-full gap-2"
                         asChild
                       >
                         <a
@@ -109,33 +119,57 @@ export default function ITPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <ExternalLink className="mr-2 h-3 w-3" /> Link
+                          <ExternalLink className="h-4 w-4" /> Link
                         </a>
                       </Button>
                     )}
                   </CardFooter>
                 </Card>
 
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-3xl">
                   <DialogHeader>
-                    <DialogTitle>{project.title}</DialogTitle>
+                    <DialogTitle className="text-2xl">
+                      {project.title}
+                    </DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-4">
-                    <img
-                      src={project.image_url}
-                      alt={project.title}
-                      className="w-full h-64 object-cover rounded-lg"
-                    />
-                    <DialogDescription className="text-base text-foreground">
-                      {project.description}
-                    </DialogDescription>
-                    <div>
-                      <h4 className="font-semibold mb-2">{t.it.tech_stack}</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {project.tech_stack?.map((tag) => (
-                          <Badge key={tag}>{tag}</Badge>
-                        ))}
+                  <div className="grid md:grid-cols-2 gap-6 mt-4">
+                    <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                      <img
+                        src={project.image_url}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="space-y-6">
+                      <DialogDescription className="text-base text-foreground leading-relaxed">
+                        {project.description}
+                      </DialogDescription>
+
+                      <div>
+                        <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                          {t.it.tech_stack}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {project.tech_stack?.map((tag) => (
+                            <Badge key={tag} className="text-sm py-1 px-3">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
+
+                      {project.link && (
+                        <Button className="w-full md:w-auto" asChild>
+                          <a
+                            href={project.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" /> Visit
+                            Project
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </DialogContent>

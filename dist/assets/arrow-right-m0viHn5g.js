@@ -1,4 +1,4 @@
-import { j as createLucideIcon } from "./index-PX6pJ-En.js";
+import { M as createLucideIcon } from "./index-Cd67lrX4.js";
 var ArrowRight = createLucideIcon("arrow-right", [["path", {
 	d: "M5 12h14",
 	key: "1ays0h"
@@ -8,4 +8,4 @@ var ArrowRight = createLucideIcon("arrow-right", [["path", {
 }]]);
 export { ArrowRight as t };
 
-//# sourceMappingURL=arrow-right-PKpwrya5.js.map
+//# sourceMappingURL=arrow-right-m0viHn5g.js.map

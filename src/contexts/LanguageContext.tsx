@@ -7,6 +7,7 @@ import React, {
 } from 'react'
 import { Language } from '@/types'
 import { translations } from '@/lib/translations'
+import { useAnalytics } from '@/hooks/use-analytics'
 
 interface LanguageContextType {
   language: Language
@@ -19,6 +20,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 )
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+  const { trackEvent } = useAnalytics()
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('app_language')
     return (saved as Language) || 'pt'
@@ -31,9 +33,10 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
+    trackEvent('language_change', { language: lang })
   }
 
-  // Fallback to 'pt' if translation is missing for some reason
+  // Fallback to 'pt' if translation is missing
   const t = translations[language] || translations.pt
 
   return (

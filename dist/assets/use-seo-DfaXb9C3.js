@@ -1,6 +1,6 @@
-import { X as __toESM, Y as require_react, o as useLanguage } from "./index-PX6pJ-En.js";
+import { Q as __toESM, Z as require_react, v as useLanguage } from "./index-Cd67lrX4.js";
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
-const useSEO = ({ title, description, image = "/og-image.png", type = "website" }) => {
+const useSEO = ({ title, description, image = "/og-image.png", type = "website", jsonLd }) => {
 	const { language } = useLanguage();
 	(0, import_react.useEffect)(() => {
 		const finalTitle = title ? `${title} | Portfolio` : "Portfolio";
@@ -25,14 +25,24 @@ const useSEO = ({ title, description, image = "/og-image.png", type = "website" 
 		if (description) setMeta("twitter:description", description, "name");
 		setMeta("twitter:image", image, "name");
 		document.documentElement.lang = language;
+		if (jsonLd) {
+			let script = document.querySelector("script[type=\"application/ld+json\"]");
+			if (!script) {
+				script = document.createElement("script");
+				script.setAttribute("type", "application/ld+json");
+				document.head.appendChild(script);
+			}
+			script.textContent = JSON.stringify(jsonLd);
+		}
 	}, [
 		title,
 		description,
 		image,
 		type,
-		language
+		language,
+		jsonLd
 	]);
 };
 export { useSEO as t };
 
-//# sourceMappingURL=use-seo-D1ycOCZJ.js.map
+//# sourceMappingURL=use-seo-DfaXb9C3.js.map

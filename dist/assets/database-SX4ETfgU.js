@@ -1,6 +1,6 @@
-import { t as supabase } from "./index-PX6pJ-En.js";
-const getProjects = async (language) => {
-	const { data, error } = await supabase.from("projects").select("*").eq("language", language).order("created_at", { ascending: false });
+import { _ as supabase } from "./index-Cd67lrX4.js";
+const getITProjects = async (language) => {
+	const { data, error } = await supabase.from("it_projects").select("*").eq("language", language).order("created_at", { ascending: false });
 	return {
 		data,
 		error
@@ -35,7 +35,7 @@ const submitContact = async (submission) => {
 	};
 };
 const getLatestItem = async (language) => {
-	const { data: projects } = await supabase.from("projects").select("*").eq("language", language).limit(1).order("created_at", { ascending: false });
+	const { data: projects } = await supabase.from("it_projects").select("*").eq("language", language).limit(1).order("created_at", { ascending: false });
 	const { data: books } = await supabase.from("books").select("*").eq("language", language).limit(1).order("created_at", { ascending: false });
 	const project = projects?.[0];
 	const book = books?.[0];
@@ -56,6 +56,6 @@ const getLatestItem = async (language) => {
 	};
 	return null;
 };
-export { getResumeItems as a, getProjects as i, getLatestItem as n, submitContact as o, getMusicTracks as r, getBooks as t };
+export { getResumeItems as a, getMusicTracks as i, getITProjects as n, submitContact as o, getLatestItem as r, getBooks as t };
 
-//# sourceMappingURL=database-D0EtR00K.js.map
+//# sourceMappingURL=database-SX4ETfgU.js.map

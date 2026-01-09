@@ -1,6 +1,6 @@
 export type Language = 'pt' | 'en' | 'ko'
 
-export interface Project {
+export interface ITProject {
   id: string
   title: string
   description: string
@@ -15,10 +15,10 @@ export interface Book {
   id: string
   title: string
   author: string
-  category: string
-  rating: number
   review: string
   cover_url: string
+  rating: number
+  category: string
   language: string
   created_at: string
 }
@@ -37,20 +37,20 @@ export interface MusicTrack {
   id: string
   title: string
   artist: string
-  deezer_id: string
   audio_url: string | null
+  lyrics_pt?: string | null
+  lyrics_en?: string | null
+  lyrics_ko?: string | null
+  deezer_id: string | null
   duration: string | null
-  lyrics_pt?: string
-  lyrics_en?: string
-  lyrics_ko?: string
   created_at: string
 }
 
 export interface ContactSubmission {
-  id: string
+  id?: string
   name: string
   email: string
-  subject?: string
   message: string
-  created_at: string
+  subject?: string
+  created_at?: string
 }

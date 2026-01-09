@@ -18,10 +18,17 @@ const ContactPage = lazy(() => import('./pages/ContactPage'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 const PageLoader = () => (
-  <div className="p-8 space-y-4">
-    <Skeleton className="h-12 w-1/3" />
-    <Skeleton className="h-64 w-full" />
-    <Skeleton className="h-32 w-full" />
+  <div className="p-8 space-y-4 max-w-4xl mx-auto">
+    <Skeleton className="h-12 w-1/3 mb-8" />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <Skeleton className="h-64 w-full rounded-xl" />
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+        <Skeleton className="h-4 w-4/6" />
+      </div>
+    </div>
   </div>
 )
 
@@ -32,7 +39,7 @@ const AnalyticsWrapper = () => {
 
 const App = () => (
   <BrowserRouter
-    future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
+    future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
   >
     <TooltipProvider>
       <Toaster />

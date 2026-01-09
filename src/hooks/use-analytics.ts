@@ -22,6 +22,19 @@ export const useAnalytics = () => {
     }
   }, [location])
 
+  const trackEvent = (
+    eventName: string,
+    params?: Record<string, string | number | boolean>,
+  ) => {
+    if (window.gtag) {
+      window.gtag('event', eventName, params)
+    }
+    // Log to console for dev environment or verification
+    if (import.meta.env.DEV) {
+      console.log(`[Analytics] ${eventName}`, params)
+    }
+  }
+
   useEffect(() => {
     const handleOutboundClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -32,17 +45,17 @@ export const useAnalytics = () => {
         anchor.href.startsWith('http') &&
         !anchor.href.includes(window.location.host)
       ) {
-        if (window.gtag) {
-          window.gtag('event', 'click', {
-            event_category: 'outbound',
-            event_label: anchor.href,
-            transport_type: 'beacon',
-          })
-        }
+        trackEvent('click', {
+          event_category: 'outbound',
+          event_label: anchor.href,
+          transport_type: 'beacon',
+        })
       }
     }
 
     document.addEventListener('click', handleOutboundClick)
     return () => document.removeEventListener('click', handleOutboundClick)
   }, [])
+
+  return { trackEvent }
 }

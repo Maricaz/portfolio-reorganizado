@@ -1,19 +1,19 @@
 import { supabase } from '@/lib/supabase/client'
 import {
-  Project,
+  ITProject,
   Book,
   ResumeItem,
   MusicTrack,
   ContactSubmission,
 } from '@/types'
 
-export const getProjects = async (language: string) => {
+export const getITProjects = async (language: string) => {
   const { data, error } = await supabase
-    .from('projects')
+    .from('it_projects')
     .select('*')
     .eq('language', language)
     .order('created_at', { ascending: false })
-  return { data: data as Project[], error }
+  return { data: data as ITProject[], error }
 }
 
 export const getBooks = async (language: string) => {
@@ -35,7 +35,6 @@ export const getResumeItems = async (language: string) => {
 }
 
 export const getMusicTracks = async () => {
-  // Music tracks are shared but lyrics are multilingual columns
   const { data, error } = await supabase
     .from('music_tracks')
     .select('*')
@@ -43,9 +42,7 @@ export const getMusicTracks = async () => {
   return { data: data as MusicTrack[], error }
 }
 
-export const submitContact = async (
-  submission: Omit<ContactSubmission, 'id' | 'created_at'>,
-) => {
+export const submitContact = async (submission: ContactSubmission) => {
   const { data, error } = await supabase
     .from('contact_submissions')
     .insert([submission])
@@ -55,7 +52,7 @@ export const submitContact = async (
 
 export const getLatestItem = async (language: string) => {
   const { data: projects } = await supabase
-    .from('projects')
+    .from('it_projects')
     .select('*')
     .eq('language', language)
     .limit(1)
@@ -73,10 +70,10 @@ export const getLatestItem = async (language: string) => {
 
   if (project && book) {
     return new Date(project.created_at) > new Date(book.created_at)
-      ? { type: 'project', item: project as Project }
+      ? { type: 'project', item: project as ITProject }
       : { type: 'book', item: book as Book }
   } else if (project) {
-    return { type: 'project', item: project as Project }
+    return { type: 'project', item: project as ITProject }
   } else if (book) {
     return { type: 'book', item: book as Book }
   }

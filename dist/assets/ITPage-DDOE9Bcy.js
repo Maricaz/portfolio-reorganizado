@@ -1,8 +1,8 @@
-import { D as X, E as cn, V as require_jsx_runtime, X as __toESM, Y as require_react, c as Close, d as Overlay, f as Portal, h as Trigger, j as createLucideIcon, l as Content, m as Title, o as useLanguage, p as Root, s as Skeleton, u as Description, v as Button } from "./index-PX6pJ-En.js";
-import { a as CardHeader, i as CardFooter, n as CardContent, o as CardTitle, t as Card } from "./card-ChJu7ipj.js";
-import { t as Badge } from "./badge-DQ_2kv0f.js";
-import { t as useSEO } from "./use-seo-D1ycOCZJ.js";
-import { i as getProjects } from "./database-D0EtR00K.js";
+import { E as X, H as require_jsx_runtime, M as createLucideIcon, Q as __toESM, T as cn, Z as require_react, a as Overlay, c as Title, i as Description, l as Trigger, m as Button, n as Close, o as Portal, r as Content, s as Root, t as Skeleton, v as useLanguage } from "./index-Cd67lrX4.js";
+import { a as CardHeader, i as CardFooter, n as CardContent, o as CardTitle, t as Card } from "./card-5cxK_lj9.js";
+import { t as Badge } from "./badge-DpTlWs_U.js";
+import { t as useSEO } from "./use-seo-DfaXb9C3.js";
+import { n as getITProjects } from "./database-SX4ETfgU.js";
 var ExternalLink = createLucideIcon("external-link", [
 	["path", {
 		d: "M15 3h6v6",
@@ -72,7 +72,7 @@ function ITPage() {
 		description: "My technical projects and portfolio"
 	});
 	(0, import_react.useEffect)(() => {
-		getProjects(language).then(({ data }) => {
+		getITProjects(language).then(({ data }) => {
 			if (data) setProjects(data);
 			setLoading(false);
 		});
@@ -80,10 +80,10 @@ function ITPage() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "space-y-8",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold",
+			className: "text-4xl font-bold border-b pb-4",
 			children: t.it.title
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+			className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
 			children: loading ? Array.from({ length: 3 }).map((_, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 				className: "overflow-hidden",
 				children: [
@@ -92,78 +92,107 @@ function ITPage() {
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-4 w-full" }) })
 				]
 			}, i)) : projects.map((project) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "group hover:shadow-xl transition-all duration-300 flex flex-col h-full",
+				className: "group hover:shadow-xl transition-all duration-300 flex flex-col h-full overflow-hidden border-border/60",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "relative h-48 overflow-hidden rounded-t-lg",
+						className: "relative h-48 overflow-hidden bg-muted",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
 							src: project.image_url,
 							alt: project.title,
-							className: "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+							className: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center",
+							className: "absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
 								asChild: true,
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "secondary",
+									variant: "outline",
+									className: "text-white border-white hover:bg-white hover:text-black",
 									children: t.it.view_project
 								})
 							})
 						})]
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
-						className: "line-clamp-1",
+						className: "line-clamp-1 text-xl",
 						children: project.title
 					}) }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 						className: "flex-1",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm text-muted-foreground line-clamp-3 mb-4",
+							className: "text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed",
 							children: project.description
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "flex flex-wrap gap-1",
-							children: project.tech_stack?.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-wrap gap-1.5",
+							children: [project.tech_stack?.slice(0, 4).map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 								variant: "secondary",
-								className: "font-mono text-xs",
+								className: "font-mono text-[10px] px-2",
 								children: tag
-							}, tag))
+							}, tag)), project.tech_stack?.length > 4 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+								variant: "outline",
+								className: "text-[10px] px-2",
+								children: ["+", project.tech_stack.length - 4]
+							})]
 						})]
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, { children: project.link && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "outline",
-						size: "sm",
-						className: "w-full",
-						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
-							href: project.link,
-							target: "_blank",
-							rel: "noopener noreferrer",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "mr-2 h-3 w-3" }), " Link"]
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, {
+						className: "pt-0",
+						children: project.link && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							size: "sm",
+							className: "w-full gap-2",
+							asChild: true,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+								href: project.link,
+								target: "_blank",
+								rel: "noopener noreferrer",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "h-4 w-4" }), " Link"]
+							})
 						})
-					}) })
+					})
 				]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
-				className: "max-w-2xl",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: project.title }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "space-y-4",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+				className: "max-w-3xl",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, {
+					className: "text-2xl",
+					children: project.title
+				}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid md:grid-cols-2 gap-6 mt-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "relative aspect-video rounded-lg overflow-hidden bg-muted",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
 							src: project.image_url,
 							alt: project.title,
-							className: "w-full h-64 object-cover rounded-lg"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, {
-							className: "text-base text-foreground",
-							children: project.description
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
-							className: "font-semibold mb-2",
-							children: t.it.tech_stack
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "flex flex-wrap gap-2",
-							children: project.tech_stack?.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, { children: tag }, tag))
-						})] })
-					]
+							className: "w-full h-full object-cover"
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-6",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, {
+								className: "text-base text-foreground leading-relaxed",
+								children: project.description
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3",
+								children: t.it.tech_stack
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "flex flex-wrap gap-2",
+								children: project.tech_stack?.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+									className: "text-sm py-1 px-3",
+									children: tag
+								}, tag))
+							})] }),
+							project.link && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								className: "w-full md:w-auto",
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+									href: project.link,
+									target: "_blank",
+									rel: "noopener noreferrer",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "mr-2 h-4 w-4" }), " Visit Project"]
+								})
+							})
+						]
+					})]
 				})]
 			})] }, project.id))
 		})]
@@ -171,4 +200,4 @@ function ITPage() {
 }
 export { ITPage as default };
 
-//# sourceMappingURL=ITPage-Dd0SAo4h.js.map
+//# sourceMappingURL=ITPage-DDOE9Bcy.js.map
