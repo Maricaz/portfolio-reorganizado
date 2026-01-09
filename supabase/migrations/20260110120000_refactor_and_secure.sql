@@ -1,9 +1,8 @@
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Create tables if they don't exist
 
 -- Projects Table
 CREATE TABLE IF NOT EXISTS projects (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   description_pt TEXT NOT NULL,
   description_en TEXT NOT NULL,
@@ -17,7 +16,7 @@ CREATE TABLE IF NOT EXISTS projects (
 
 -- Books Table
 CREATE TABLE IF NOT EXISTS books (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   author TEXT NOT NULL,
   category TEXT NOT NULL,
@@ -31,7 +30,7 @@ CREATE TABLE IF NOT EXISTS books (
 
 -- Resume Entries Table
 CREATE TABLE IF NOT EXISTS resume_entries (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   role_pt TEXT NOT NULL,
   role_en TEXT NOT NULL,
   role_ko TEXT NOT NULL,
@@ -47,7 +46,7 @@ CREATE TABLE IF NOT EXISTS resume_entries (
 
 -- Music Tracks Table
 CREATE TABLE IF NOT EXISTS music_tracks (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   artist TEXT NOT NULL,
   deezer_id TEXT NOT NULL,
@@ -59,7 +58,7 @@ CREATE TABLE IF NOT EXISTS music_tracks (
 
 -- Contact Submissions Table
 CREATE TABLE IF NOT EXISTS contact_submissions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   subject TEXT NOT NULL,
