@@ -1,4 +1,4 @@
-import { m as createLucideIcon } from "./index-DDHUyA49.js";
+import { m as createLucideIcon } from "./index-BcAFdKWP.js";
 var Download = createLucideIcon("download", [
 	["path", {
 		d: "M12 15V3",
@@ -29,4 +29,4 @@ var GraduationCap = createLucideIcon("graduation-cap", [
 ]);
 export { Download as n, GraduationCap as t };
 
-//# sourceMappingURL=graduation-cap-dW0bW_NL.js.map
+//# sourceMappingURL=graduation-cap-Baha68lj.js.map

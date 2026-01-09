@@ -1,7 +1,7 @@
-import { t as Music } from "./music-CTHUed4Q.js";
-import { A as useParams, C as require_jsx_runtime, M as require_react, N as __toESM, S as createContextScope, T as composeEventHandlers, _ as Presence, a as useLanguage, b as Primitive, c as useId, g as useControllableState, k as useNavigate, l as cn, m as createLucideIcon, t as Skeleton, v as useLayoutEffect2, w as useComposedRefs, x as createCollection, y as useCallbackRef } from "./index-DDHUyA49.js";
-import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-C8ef2dxk.js";
-import { n as getMusicTracks } from "./database-CMVGGNzl.js";
+import { t as Music } from "./music-DF_XyT0B.js";
+import { A as useParams, C as require_jsx_runtime, M as require_react, N as __toESM, S as createContextScope, T as composeEventHandlers, _ as Presence, a as useLanguage, b as Primitive, c as useId, g as useControllableState, k as useNavigate, l as cn, m as createLucideIcon, t as Skeleton, v as useLayoutEffect2, w as useComposedRefs, x as createCollection, y as useCallbackRef } from "./index-BcAFdKWP.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-CRvVL_bQ.js";
+import { n as getMusicTracks } from "./database-BQMAYcwt.js";
 var CirclePlay = createLucideIcon("circle-play", [["path", {
 	d: "M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z",
 	key: "kmsa83"
@@ -1245,4 +1245,4 @@ function MusicPage() {
 }
 export { MusicPage as default };
 
-//# sourceMappingURL=MusicPage-CW0O1o3C.js.map
+//# sourceMappingURL=MusicPage-DdPQuZDe.js.map

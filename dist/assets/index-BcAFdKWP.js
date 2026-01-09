@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-CMQwoHIo.js","assets/music-CTHUed4Q.js","assets/card-C8ef2dxk.js","assets/database-CMVGGNzl.js","assets/AboutPage-BVnu2kR8.js","assets/dist-VhSKaJi5.js","assets/graduation-cap-dW0bW_NL.js","assets/ResumePage-ClUEdBQ3.js","assets/ITPage-Bh9BJ6S4.js","assets/BooksPage-1Z_UrBRJ.js","assets/MusicPage-CW0O1o3C.js","assets/ContactPage-DnjTUrIU.js"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Index-DPiTpOuO.js","assets/music-DF_XyT0B.js","assets/card-CRvVL_bQ.js","assets/database-BQMAYcwt.js","assets/AboutPage-Dci_Txj_.js","assets/dist-B8mPwQY0.js","assets/graduation-cap-Baha68lj.js","assets/ResumePage-CZ1t4AJJ.js","assets/ITPage-J-bz9vXe.js","assets/BooksPage-w_JA6TKc.js","assets/MusicPage-DdPQuZDe.js","assets/ContactPage-C4a5uZCA.js"])))=>i.map(i=>d[i]);
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -23689,6 +23689,12 @@ const useAnalytics = () => {
 	const trackEvent = (eventName, params) => {
 		if (window.gtag) window.gtag("event", eventName, params);
 	};
+	const trackContactSubmit = (success) => {
+		trackEvent("contact_form_submit", {
+			success,
+			timestamp: (/* @__PURE__ */ new Date()).toISOString()
+		});
+	};
 	(0, import_react.useEffect)(() => {
 		const handleOutboundClick = (event) => {
 			const anchor = event.target.closest("a");
@@ -23701,7 +23707,10 @@ const useAnalytics = () => {
 		document.addEventListener("click", handleOutboundClick);
 		return () => document.removeEventListener("click", handleOutboundClick);
 	}, []);
-	return { trackEvent };
+	return {
+		trackEvent,
+		trackContactSubmit
+	};
 };
 var __assign = function() {
 	__assign = Object.assign || function __assign$1(t) {
@@ -33186,14 +33195,14 @@ const AnalyticsInit = () => {
 	}, [location]);
 	return null;
 };
-var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-CMQwoHIo.js"), __vite__mapDeps([0,1,2,3])));
-var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-BVnu2kR8.js"), __vite__mapDeps([4,5,6,2])));
-var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-ClUEdBQ3.js"), __vite__mapDeps([7,6,2,3])));
-var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-Bh9BJ6S4.js"), __vite__mapDeps([8,2,3])));
-var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-1Z_UrBRJ.js"), __vite__mapDeps([9,2])));
-var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-CW0O1o3C.js"), __vite__mapDeps([10,1,2,3])));
-var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage-DnjTUrIU.js"), __vite__mapDeps([11,5,2,3])));
-var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound-UW9MfCXa.js"), []));
+var Index = (0, import_react.lazy)(() => __vitePreload(() => import("./Index-DPiTpOuO.js"), __vite__mapDeps([0,1,2,3])));
+var AboutPage = (0, import_react.lazy)(() => __vitePreload(() => import("./AboutPage-Dci_Txj_.js"), __vite__mapDeps([4,5,6,2])));
+var ResumePage = (0, import_react.lazy)(() => __vitePreload(() => import("./ResumePage-CZ1t4AJJ.js"), __vite__mapDeps([7,6,2,3])));
+var ITPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ITPage-J-bz9vXe.js"), __vite__mapDeps([8,2,3])));
+var BooksPage = (0, import_react.lazy)(() => __vitePreload(() => import("./BooksPage-w_JA6TKc.js"), __vite__mapDeps([9,2])));
+var MusicPage = (0, import_react.lazy)(() => __vitePreload(() => import("./MusicPage-DdPQuZDe.js"), __vite__mapDeps([10,1,2,3])));
+var ContactPage = (0, import_react.lazy)(() => __vitePreload(() => import("./ContactPage-C4a5uZCA.js"), __vite__mapDeps([11,5,2,3])));
+var NotFound = (0, import_react.lazy)(() => __vitePreload(() => import("./NotFound-D0gDpi-P.js"), []));
 var PageLoader = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 	className: "p-8 space-y-4 max-w-4xl mx-auto",
 	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Skeleton, { className: "h-12 w-1/3 mb-8" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -33291,4 +33300,4 @@ var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 export { useParams as A, require_jsx_runtime as C, Link as D, useToast as E, require_react as M, __toESM as N, useLocation as O, createContextScope as S, composeEventHandlers as T, Presence as _, useLanguage as a, Primitive as b, useId as c, Mail as d, Linkedin as f, useControllableState as g, cva as h, createSlot$1 as i, require_react_dom as j, useNavigate as k, cn as l, createLucideIcon as m, Button as n, supabase as o, Github as p, Slot$1 as r, useAnalytics as s, Skeleton as t, slugify as u, useLayoutEffect2 as v, useComposedRefs as w, createCollection as x, useCallbackRef$1 as y };
 
-//# sourceMappingURL=index-DDHUyA49.js.map
+//# sourceMappingURL=index-BcAFdKWP.js.map

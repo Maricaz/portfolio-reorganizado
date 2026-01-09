@@ -25,12 +25,13 @@ import {
 import { Mail, Send, Loader2, CheckCircle2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useSEO } from '@/hooks/use-seo'
+import { useAnalytics } from '@/hooks/use-analytics'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  subject: z.string().min(5, 'Subject must be at least 5 characters'),
   message: z.string().min(10, 'Message must be at least 10 characters'),
+  company: z.string().optional(), // Honeypot field
 })
 
 type ContactFormValues = z.infer<typeof contactSchema>
@@ -38,31 +39,75 @@ type ContactFormValues = z.infer<typeof contactSchema>
 export default function ContactPage() {
   const { t } = useLanguage()
   const { toast } = useToast()
+  const { trackContactSubmit } = useAnalytics()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
   useSEO({
-    title: `${t.contact.title} - Portfolio`,
-    description: t.contact.description,
+    title: `Contato — Mariana Azevedo`,
+    description: 'Entre em contato.',
   })
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       email: '',
-      subject: '',
       message: '',
+      company: '',
     },
   })
 
+  const { isValid } = form.formState
+
   const onSubmit = async (values: ContactFormValues) => {
+    // Honeypot check
+    if (values.company) {
+      setIsSuccess(true)
+      form.reset()
+      return
+    }
+
     setIsSubmitting(true)
     try {
-      const { error } = await submitContactForm(values)
+      // 1. Formspree Integration
+      const formspreeEndpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT
+      if (!formspreeEndpoint || formspreeEndpoint.includes('PLACEHOLDER')) {
+        console.warn('VITE_FORMSPREE_ENDPOINT is not set properly.')
+        // Proceeding to Supabase even if Formspree is not configured for demo purposes
+      } else {
+        const response = await fetch(formspreeEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: values.name,
+            email: values.email,
+            message: values.message,
+            _subject: '[Portfólio] Nova mensagem',
+            _origin: window.location.href,
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error('Formspree submission failed')
+        }
+      }
+
+      // 2. Supabase Persistence
+      const { error } = await submitContactForm({
+        name: values.name,
+        email: values.email,
+        message: values.message,
+        origin: window.location.href,
+      })
       if (error) throw error
 
+      // Success handling
       setIsSuccess(true)
+      trackContactSubmit(true)
       toast({
         title: t.contact.success,
         variant: 'default',
@@ -70,6 +115,7 @@ export default function ContactPage() {
       form.reset()
     } catch (error) {
       console.error(error)
+      trackContactSubmit(false)
       toast({
         title: t.contact.error,
         variant: 'destructive',
@@ -92,9 +138,7 @@ export default function ContactPage() {
             <Mail className="h-5 w-5" />
             {t.contact.title}
           </CardTitle>
-          <CardDescription>
-            Fill out the form below to get in touch.
-          </CardDescription>
+          <CardDescription>{t.contact.description}</CardDescription>
         </CardHeader>
         <CardContent>
           {isSuccess ? (
@@ -115,6 +159,19 @@ export default function ContactPage() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
               >
+                {/* Honeypot Field */}
+                <FormField
+                  control={form.control}
+                  name="company"
+                  render={({ field }) => (
+                    <FormItem className="hidden">
+                      <FormControl>
+                        <Input {...field} tabIndex={-1} autoComplete="off" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="name"
@@ -147,19 +204,6 @@ export default function ContactPage() {
                 />
                 <FormField
                   control={form.control}
-                  name="subject"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t.contact.subject}</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Project Inquiry" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
                   name="message"
                   render={({ field }) => (
                     <FormItem>
@@ -178,12 +222,12 @@ export default function ContactPage() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isValid}
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sending...
+                      {t.common.loading}
                     </>
                   ) : (
                     <>

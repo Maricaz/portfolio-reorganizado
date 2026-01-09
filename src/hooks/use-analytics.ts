@@ -35,6 +35,13 @@ export const useAnalytics = () => {
     }
   }
 
+  const trackContactSubmit = (success: boolean) => {
+    trackEvent('contact_form_submit', {
+      success,
+      timestamp: new Date().toISOString(),
+    })
+  }
+
   useEffect(() => {
     const handleOutboundClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -57,5 +64,5 @@ export const useAnalytics = () => {
     return () => document.removeEventListener('click', handleOutboundClick)
   }, [])
 
-  return { trackEvent }
+  return { trackEvent, trackContactSubmit }
 }

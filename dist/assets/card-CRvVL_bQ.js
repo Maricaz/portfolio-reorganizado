@@ -1,4 +1,4 @@
-import { C as require_jsx_runtime, M as require_react, N as __toESM, a as useLanguage, l as cn } from "./index-DDHUyA49.js";
+import { C as require_jsx_runtime, M as require_react, N as __toESM, a as useLanguage, l as cn } from "./index-BcAFdKWP.js";
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 const useSEO = ({ title, description, image = "/og-image.png", type = "website", jsonLd }) => {
 	const { language } = useLanguage();
@@ -82,4 +82,4 @@ var CardFooter = import_react.forwardRef(({ className, ...props }, ref) => /* @_
 CardFooter.displayName = "CardFooter";
 export { CardHeader as a, CardFooter as i, CardContent as n, CardTitle as o, CardDescription as r, useSEO as s, Card as t };
 
-//# sourceMappingURL=card-C8ef2dxk.js.map
+//# sourceMappingURL=card-CRvVL_bQ.js.map

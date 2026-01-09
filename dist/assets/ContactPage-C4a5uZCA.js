@@ -1,7 +1,7 @@
-import { C as require_jsx_runtime, E as useToast, M as require_react, N as __toESM, a as useLanguage, d as Mail, h as cva, l as cn, m as createLucideIcon, n as Button, r as Slot } from "./index-DDHUyA49.js";
-import { a as CardHeader, n as CardContent, o as CardTitle, r as CardDescription, s as useSEO, t as Card } from "./card-C8ef2dxk.js";
-import { t as Primitive } from "./dist-VhSKaJi5.js";
-import { a as submitContactForm } from "./database-CMVGGNzl.js";
+import { C as require_jsx_runtime, E as useToast, M as require_react, N as __toESM, a as useLanguage, d as Mail, h as cva, l as cn, m as createLucideIcon, n as Button, r as Slot, s as useAnalytics } from "./index-BcAFdKWP.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, r as CardDescription, s as useSEO, t as Card } from "./card-CRvVL_bQ.js";
+import { t as Primitive } from "./dist-B8mPwQY0.js";
+import { a as submitContactForm } from "./database-BQMAYcwt.js";
 var CircleCheck = createLucideIcon("circle-check", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -5045,33 +5045,60 @@ FormMessage.displayName = "FormMessage";
 var contactSchema = object({
 	name: string().min(2, "Name must be at least 2 characters"),
 	email: string().email("Invalid email address"),
-	subject: string().min(5, "Subject must be at least 5 characters"),
-	message: string().min(10, "Message must be at least 10 characters")
+	message: string().min(10, "Message must be at least 10 characters"),
+	company: string().optional()
 });
 function ContactPage() {
 	const { t: t$1 } = useLanguage();
 	const { toast } = useToast();
+	const { trackContactSubmit } = useAnalytics();
 	const [isSubmitting, setIsSubmitting] = (0, import_react.useState)(false);
 	const [isSuccess, setIsSuccess] = (0, import_react.useState)(false);
 	useSEO({
-		title: `${t$1.contact.title} - Portfolio`,
-		description: t$1.contact.description
+		title: `Contato — Mariana Azevedo`,
+		description: "Entre em contato."
 	});
 	const form = useForm({
 		resolver: a(contactSchema),
+		mode: "onChange",
 		defaultValues: {
 			name: "",
 			email: "",
-			subject: "",
-			message: ""
+			message: "",
+			company: ""
 		}
 	});
+	const { isValid } = form.formState;
 	const onSubmit = async (values) => {
+		if (values.company) {
+			setIsSuccess(true);
+			form.reset();
+			return;
+		}
 		setIsSubmitting(true);
 		try {
-			const { error } = await submitContactForm(values);
+			const formspreeEndpoint = "https://formspree.io/f/PLACEHOLDER";
+			if (formspreeEndpoint.includes("PLACEHOLDER")) console.warn("VITE_FORMSPREE_ENDPOINT is not set properly.");
+			else if (!(await fetch(formspreeEndpoint, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					name: values.name,
+					email: values.email,
+					message: values.message,
+					_subject: "[Portfólio] Nova mensagem",
+					_origin: window.location.href
+				})
+			})).ok) throw new Error("Formspree submission failed");
+			const { error } = await submitContactForm({
+				name: values.name,
+				email: values.email,
+				message: values.message,
+				origin: window.location.href
+			});
 			if (error) throw error;
 			setIsSuccess(true);
+			trackContactSubmit(true);
 			toast({
 				title: t$1.contact.success,
 				variant: "default"
@@ -5079,6 +5106,7 @@ function ContactPage() {
 			form.reset();
 		} catch (error) {
 			console.error(error);
+			trackContactSubmit(false);
 			toast({
 				title: t$1.contact.error,
 				variant: "destructive"
@@ -5103,7 +5131,7 @@ function ContactPage() {
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
 				className: "flex items-center gap-2",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, { className: "h-5 w-5" }), t$1.contact.title]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Fill out the form below to get in touch." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: isSuccess ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t$1.contact.description })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: isSuccess ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-col items-center justify-center py-12 text-center space-y-4 animate-fade-in",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -5126,6 +5154,18 @@ function ContactPage() {
 					onSubmit: form.handleSubmit(onSubmit),
 					className: "space-y-6",
 					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormField, {
+							control: form.control,
+							name: "company",
+							render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormItem, {
+								className: "hidden",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormControl, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									...field,
+									tabIndex: -1,
+									autoComplete: "off"
+								}) })
+							})
+						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormField, {
 							control: form.control,
 							name: "name",
@@ -5153,18 +5193,6 @@ function ContactPage() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormField, {
 							control: form.control,
-							name: "subject",
-							render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(FormItem, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormLabel, { children: t$1.contact.subject }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormControl, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-									placeholder: "Project Inquiry",
-									...field
-								}) }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormMessage, {})
-							] })
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormField, {
-							control: form.control,
 							name: "message",
 							render: ({ field }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(FormItem, { children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormLabel, { children: t$1.contact.message }),
@@ -5179,8 +5207,8 @@ function ContactPage() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 							type: "submit",
 							className: "w-full",
-							disabled: isSubmitting,
-							children: isSubmitting ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }), "Sending..."] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Send, { className: "mr-2 h-4 w-4" }), t$1.contact.send] })
+							disabled: isSubmitting || !isValid,
+							children: isSubmitting ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }), t$1.common.loading] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Send, { className: "mr-2 h-4 w-4" }), t$1.contact.send] })
 						})
 					]
 				})
@@ -5190,4 +5218,4 @@ function ContactPage() {
 }
 export { ContactPage as default };
 
-//# sourceMappingURL=ContactPage-DnjTUrIU.js.map
+//# sourceMappingURL=ContactPage-C4a5uZCA.js.map

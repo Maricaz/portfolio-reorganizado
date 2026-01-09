@@ -1,5 +1,5 @@
-import { C as require_jsx_runtime, M as require_react, N as __toESM, a as useLanguage, m as createLucideIcon, o as supabase, s as useAnalytics, t as Skeleton, u as slugify } from "./index-DDHUyA49.js";
-import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-C8ef2dxk.js";
+import { C as require_jsx_runtime, M as require_react, N as __toESM, a as useLanguage, m as createLucideIcon, o as supabase, s as useAnalytics, t as Skeleton, u as slugify } from "./index-BcAFdKWP.js";
+import { a as CardHeader, n as CardContent, o as CardTitle, s as useSEO, t as Card } from "./card-CRvVL_bQ.js";
 var BookOpen = createLucideIcon("book-open", [["path", {
 	d: "M12 7v14",
 	key: "1akyts"
@@ -143,4 +143,4 @@ function BooksPage() {
 }
 export { BooksPage as default };
 
-//# sourceMappingURL=BooksPage-1Z_UrBRJ.js.map
+//# sourceMappingURL=BooksPage-w_JA6TKc.js.map
