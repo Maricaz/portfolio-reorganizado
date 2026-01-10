@@ -21,6 +21,15 @@ const MusicPage = lazy(() => import('./pages/MusicPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
+// Admin Pages
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'))
+const AdminDashboard = lazy(() => import('./pages/admin/BooksManager')) // Default to books for now as dashboard
+const BooksManager = lazy(() => import('./pages/admin/BooksManager'))
+const MusicManager = lazy(() => import('./pages/admin/MusicManager'))
+const ResumeManager = lazy(() => import('./pages/admin/ResumeManager'))
+const SettingsManager = lazy(() => import('./pages/admin/SettingsManager'))
+
 const PageLoader = () => (
   <div className="p-8 space-y-4 max-w-4xl mx-auto">
     <Skeleton className="h-12 w-1/3 mb-8" />
@@ -49,6 +58,7 @@ const App = () => (
             <AnalyticsInit />
             <RouteChangeTracker />
             <Routes>
+              {/* Public Routes */}
               <Route element={<Shell />}>
                 <Route
                   path="/"
@@ -114,15 +124,42 @@ const App = () => (
                     </Suspense>
                   }
                 />
-                {/* Catch-all route inside Layout to maintain header/footer consistency */}
-                <Route
-                  path="*"
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <NotFound />
-                    </Suspense>
-                  }
-                />
+              </Route>
+
+              {/* Admin Routes */}
+              <Route
+                path="/admin/login"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminLogin />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminLayout />
+                  </Suspense>
+                }
+              >
+                <Route index element={<BooksManager />} />
+                <Route path="books" element={<BooksManager />} />
+                <Route path="music" element={<MusicManager />} />
+                <Route path="resume" element={<ResumeManager />} />
+                <Route path="settings" element={<SettingsManager />} />
+              </Route>
+
+              {/* Catch-all */}
+              <Route
+                path="*"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <Shell />
+                  </Suspense>
+                }
+              >
+                <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
           </TooltipProvider>

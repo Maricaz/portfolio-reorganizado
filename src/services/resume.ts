@@ -121,3 +121,35 @@ export const getResumePublications = async () => {
     .order('date', { ascending: false })
     .returns<ResumePublication[]>()
 }
+
+// Admin Operations
+export const createResumeItem = async (table: string, item: any) => {
+  const { data, error } = await supabase
+    .from(table)
+    .insert(item)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export const updateResumeItem = async (
+  table: string,
+  id: string,
+  updates: any,
+) => {
+  const { data, error } = await supabase
+    .from(table)
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export const deleteResumeItem = async (table: string, id: string) => {
+  const { error } = await supabase.from(table).delete().eq('id', id)
+  if (error) throw error
+  return true
+}

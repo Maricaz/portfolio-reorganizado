@@ -9,6 +9,7 @@ import { Language } from '@/types'
 import { translations } from '@/lib/translations'
 import { useAnalytics } from '@/hooks/use-analytics'
 import { supabase } from '@/lib/supabase/client'
+import { getSiteTranslations, mergeTranslations } from '@/services/translations'
 
 interface LanguageContextType {
   language: Language
@@ -32,6 +33,20 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     const saved = localStorage.getItem('app_language')
     return (saved as Language) || 'pt'
   })
+
+  const [currentTranslations, setCurrentTranslations] = useState(translations)
+
+  // Fetch dynamic translations on mount
+  useEffect(() => {
+    const fetchTranslations = async () => {
+      const dbTranslations = await getSiteTranslations()
+      if (dbTranslations && dbTranslations.length > 0) {
+        const merged = mergeTranslations(translations, dbTranslations)
+        setCurrentTranslations(merged)
+      }
+    }
+    fetchTranslations()
+  }, [])
 
   // Sync with Supabase on mount and auth state change
   useEffect(() => {
@@ -102,7 +117,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   }
 
   // Fallback to 'pt' if translation is missing
-  const t = translations[language] || translations.pt
+  const t = currentTranslations[language] || currentTranslations.pt
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
