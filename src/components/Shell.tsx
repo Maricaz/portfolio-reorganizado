@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useAuth } from '@/hooks/use-auth'
 import { LanguageSwitch } from '@/components/LanguageSwitch'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ import {
   BookOpen,
   Music,
   Mail,
+  LayoutDashboard,
 } from 'lucide-react'
 import {
   Drawer,
@@ -32,16 +34,25 @@ export default function Shell() {
   const { t } = useLanguage()
   const location = useLocation()
   const [open, setOpen] = useState(false)
+  const { session } = useAuth()
 
   const navItems = [
     { title: t.nav.home, url: '/', icon: Home },
     { title: t.nav.about, url: '/about', icon: User },
     { title: t.nav.resume, url: '/resume', icon: FileText },
-    { title: t.nav.it, url: '/it', icon: Code },
+    { title: t.nav.projects, url: '/it', icon: Code },
     { title: t.nav.music, url: '/music', icon: Music },
     { title: t.nav.books, url: '/books', icon: BookOpen },
     { title: t.nav.contact, url: '/contact', icon: Mail },
   ]
+
+  if (session) {
+    navItems.push({
+      title: t.nav.admin,
+      url: '/admin',
+      icon: LayoutDashboard,
+    })
+  }
 
   const LATTES_URL = 'http://lattes.cnpq.br/1234567890'
 
