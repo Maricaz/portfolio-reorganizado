@@ -67,3 +67,17 @@ export interface AlbumConcept {
   video_url?: string
   created_at?: string
 }
+
+export interface SocialLink {
+  id: string
+  platform: string
+  url: string
+  created_at?: string
+}
+
+export interface Skill {
+  id: string
+  label: string
+  value: number
+  created_at?: string
+}

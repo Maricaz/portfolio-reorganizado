@@ -1,6 +1,5 @@
-/* Toaster Component - A component that displays a toaster (a component that displays a toast) - from shadcn/ui (exposes Toaster) */
 import './sonner.css'
-import { useTheme } from 'next-themes'
+import { useTheme } from '@/components/theme-provider'
 import { Toaster as Sonner } from 'sonner'
 
 type ToasterProps = React.ComponentProps<typeof Sonner>

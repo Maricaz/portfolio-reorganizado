@@ -20,12 +20,10 @@ export const SidePanel = ({
   const [isVisible, setIsVisible] = useState(true)
   const [lyricsLang, setLyricsLang] = useState<Language>(globalLanguage)
 
-  // Sync lyrics language with global language when it changes
   useEffect(() => {
     setLyricsLang(globalLanguage)
   }, [globalLanguage])
 
-  // Save preference to local storage
   useEffect(() => {
     const saved = localStorage.getItem('lyrics_language')
     if (saved) {

@@ -24,7 +24,6 @@ export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
     }
   }
 
-  // If track becomes active, we can perform effects if needed
   useEffect(() => {
     if (!isActive) {
       setPlatform('native')
