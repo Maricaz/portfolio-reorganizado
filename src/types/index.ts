@@ -5,7 +5,7 @@ export interface Book {
   language_code: Language
   title: string
   author: string
-  curatorship?: string | null
+  curation?: string | null
   synopsis?: string | null
   original_title?: string | null
   translation?: string | null
@@ -41,4 +41,29 @@ export interface ContactFormData {
   email: string
   subject?: string
   message: string
+}
+
+export interface MusicTrack {
+  id: string
+  track_id?: string
+  title: string
+  artist: string
+  src_url?: string
+  platforms?: {
+    spotify?: string
+    deezer?: string
+    apple?: string
+    youtube?: string
+  }
+  lyrics?: Record<string, string>
+  created_at?: string
+}
+
+export interface AlbumConcept {
+  id: string
+  title: Record<string, string>
+  description: Record<string, string>
+  cover_url?: string
+  video_url?: string
+  created_at?: string
 }
