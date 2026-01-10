@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/use-auth'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
+import { AdminHeader } from '@/components/admin/AdminHeader'
 import { Toaster } from '@/components/ui/toaster'
 
 export default function AdminLayout() {
@@ -12,11 +13,12 @@ export default function AdminLayout() {
     if (!loading) {
       if (!user) {
         navigate('/admin/login')
-      } else if (role && role !== 'admin') {
-        // Optionally redirect to a forbidden page or home
-        // For now, redirect to login/home
-        console.warn('Unauthorized access attempt by', user.email)
-        navigate('/')
+      } else {
+        const allowedRoles = ['admin', 'super_admin', 'editor']
+        if (role && !allowedRoles.includes(role)) {
+          console.warn('Unauthorized access attempt by', user.email)
+          navigate('/')
+        }
       }
     }
   }, [user, role, loading, navigate])
@@ -33,17 +35,24 @@ export default function AdminLayout() {
       </div>
     )
 
-  // Extra safety check
-  if (!user || role !== 'admin') return null
+  if (!user) return null
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
-      <AdminSidebar />
-      <main className="flex-1 overflow-y-auto bg-muted/5 p-4 md:p-8">
-        <div className="max-w-6xl mx-auto">
-          <Outlet />
-        </div>
-      </main>
+    <div className="flex min-h-screen bg-background w-full">
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block w-64 fixed inset-y-0 left-0 z-40">
+        <AdminSidebar />
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col md:pl-64 min-w-0">
+        <AdminHeader />
+        <main className="flex-1 overflow-y-auto bg-muted/5 p-4 md:p-8">
+          <div className="max-w-6xl mx-auto w-full">
+            <Outlet />
+          </div>
+        </main>
+      </div>
       <Toaster />
     </div>
   )

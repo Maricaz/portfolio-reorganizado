@@ -18,7 +18,6 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { Search, Save, Moon, Sun, Monitor } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Label } from '@/components/ui/label'
 import { useTheme } from '@/components/theme-provider'
 import { Separator } from '@/components/ui/separator'
 
@@ -30,7 +29,6 @@ export default function SettingsManager() {
   const { theme, setTheme } = useTheme()
   const [accentColor, setAccentColor] = useState('240 5.9% 10%') // Default primary
 
-  // Flatten the default translations to get all possible keys
   const flattenedDefaults = useMemo(() => {
     return {
       pt: flattenTranslations(translations.pt),
@@ -45,7 +43,6 @@ export default function SettingsManager() {
 
   useEffect(() => {
     loadTranslations()
-    // Try to load accent from local storage or css var
     const savedAccent = localStorage.getItem('admin_accent')
     if (savedAccent) {
       setAccentColor(savedAccent)
@@ -76,16 +73,13 @@ export default function SettingsManager() {
   }
 
   const getDisplayValue = (key: string, lang: 'pt' | 'en' | 'ko') => {
-    // 1. Check editing state
     if (editingValues[`${key}-${lang}`] !== undefined) {
       return editingValues[`${key}-${lang}`]
     }
-    // 2. Check DB
     const dbValue = dbTranslations.find(
       (t) => t.key === key && t.lang === lang,
     )?.value
     if (dbValue) return dbValue
-    // 3. Check Default
     return flattenedDefaults[lang][key] || ''
   }
 
@@ -233,8 +227,7 @@ export default function SettingsManager() {
                     {filteredKeys.length > 50 && (
                       <TableRow>
                         <TableCell colSpan={3} className="text-center text-sm">
-                          And {filteredKeys.length - 50} more... (Search to
-                          find)
+                          And {filteredKeys.length - 50} more...
                         </TableCell>
                       </TableRow>
                     )}

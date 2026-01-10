@@ -19,12 +19,25 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/use-auth'
+import { useNavigate } from 'react-router-dom'
 
 export default function UserManagement() {
   const [profiles, setProfiles] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
-  const { user } = useAuth()
+  const { user, role } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (role && role !== 'super_admin') {
+      toast({
+        title: 'Access Denied',
+        description: 'You do not have permission to view this page.',
+        variant: 'destructive',
+      })
+      navigate('/admin')
+    }
+  }, [role, navigate, toast])
 
   const loadProfiles = async () => {
     setLoading(true)
@@ -43,8 +56,10 @@ export default function UserManagement() {
   }
 
   useEffect(() => {
-    loadProfiles()
-  }, [])
+    if (role === 'super_admin') {
+      loadProfiles()
+    }
+  }, [role])
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
@@ -61,6 +76,8 @@ export default function UserManagement() {
       })
     }
   }
+
+  if (role !== 'super_admin') return null
 
   return (
     <div className="space-y-6">
