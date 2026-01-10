@@ -87,6 +87,10 @@ export default function ITPage() {
     trackEvent('filter_projects', { type, value })
   }
 
+  const getProjectLink = (project: ITProject) => {
+    return project.demo_url || project.link
+  }
+
   return (
     <div className="container mx-auto px-4 py-12 md:py-16 max-w-7xl space-y-12">
       <div className="flex flex-col items-center text-center space-y-4 animate-fade-in-down">
@@ -223,22 +227,30 @@ export default function ITPage() {
                 </p>
 
                 <div className="flex gap-3 mt-auto">
-                  {project.link && project.link !== '#' && (
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                      asChild
-                      onClick={() =>
-                        handleProjectClick(getTitle(project), project.link!)
-                      }
-                    >
-                      <a href={project.link} target="_blank" rel="noreferrer">
-                        <ExternalLink className="mr-2 h-3 w-3" />
-                        {t.projects.view_demo}
-                      </a>
-                    </Button>
-                  )}
+                  {getProjectLink(project) &&
+                    getProjectLink(project) !== '#' && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                        asChild
+                        onClick={() =>
+                          handleProjectClick(
+                            getTitle(project),
+                            getProjectLink(project)!,
+                          )
+                        }
+                      >
+                        <a
+                          href={getProjectLink(project)}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <ExternalLink className="mr-2 h-3 w-3" />
+                          {t.projects.view_demo}
+                        </a>
+                      </Button>
+                    )}
                   {project.github_url && (
                     <Button
                       variant="outline"
