@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { PhotoCarousel } from '@/components/PhotoCarousel'
+import { AboutGallery } from '@/components/AboutGallery'
 
 export default function AboutPage() {
   const { t } = useLanguage()
@@ -56,11 +56,11 @@ export default function AboutPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6 animate-fade-in-down">
           <h1 className="text-4xl font-bold tracking-tight">{t.about.title}</h1>
-          <div className="prose dark:prose-invert space-y-4">
+          <div className="prose dark:prose-invert space-y-4 max-w-none text-justify">
             {t.about.paragraphs.map((paragraph, index) => (
               <p
                 key={index}
-                className="text-lg text-muted-foreground leading-relaxed"
+                className="text-lg text-muted-foreground leading-relaxed indent-pt"
               >
                 {paragraph}
               </p>
@@ -77,7 +77,7 @@ export default function AboutPage() {
                   variant="outline"
                   size="sm"
                   asChild
-                  className="gap-2"
+                  className="gap-2 shadow-sm hover:bg-primary hover:text-primary-foreground transition-all"
                 >
                   <a
                     href={social.url}
@@ -94,10 +94,10 @@ export default function AboutPage() {
         </div>
 
         <div className="animate-fade-in-up space-y-2">
-          <p className="text-sm text-muted-foreground text-center italic">
+          <AboutGallery />
+          <p className="text-xs text-muted-foreground text-center italic">
             {t.about.carousel_hint}
           </p>
-          <PhotoCarousel />
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export default function AboutPage() {
           <div className="p-2 bg-primary/10 rounded-lg text-primary">
             <Code2 className="h-6 w-6" />
           </div>
-          <h2 className="text-2xl font-bold">Skills</h2>
+          <h2 className="text-2xl font-bold">{t.about.skills_title}</h2>
         </div>
 
         {loading ? (
@@ -116,14 +116,19 @@ export default function AboutPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             {skills.map((skill) => (
               <div key={skill.id} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{skill.label}</span>
-                  <span className="text-muted-foreground">{skill.value}%</span>
+                  <span className="text-muted-foreground font-mono">
+                    {skill.value}%
+                  </span>
                 </div>
-                <Progress value={skill.value} className="h-2" />
+                <Progress
+                  value={skill.value}
+                  className="h-2.5 bg-secondary/50"
+                />
               </div>
             ))}
           </div>

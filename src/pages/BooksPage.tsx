@@ -76,7 +76,7 @@ export default function BooksPage() {
         <div className="text-center py-20 bg-muted/20 rounded-xl border border-dashed border-primary/20 max-w-md mx-auto">
           <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
           <p className="text-muted-foreground font-medium">
-            No books found for this language.
+            {t.books.no_books}
           </p>
         </div>
       )}

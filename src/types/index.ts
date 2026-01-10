@@ -1,46 +1,51 @@
 export type Language = 'pt' | 'en' | 'ko'
 
+export interface SocialLink {
+  id: string
+  platform: string
+  url: string
+  icon?: string
+}
+
+export interface Skill {
+  id: string
+  label: string
+  value: number
+}
+
 export interface Book {
   id: string
-  language_code: Language
   title: string
   author: string
-  curation?: string | null
-  synopsis?: string | null
-  original_title?: string | null
-  translation?: string | null
-  image_url?: string | null
+  category: string
+  rating: number
+  synopsis?: string
+  review_pt?: string
+  review_en?: string
+  review_ko?: string
+  curation?: string
+  original_title?: string
+  translation?: string
+  language_code: string
+  image_url: string
   created_at: string
 }
 
-export interface Project {
+export interface ITProject {
   id: string
   title: string
-  description_pt?: string | null
-  description_en?: string | null
-  description_ko?: string | null
-  image_url?: string | null
+  title_ko?: string
+  description_pt: string
+  description_en: string
+  description_ko: string
+  category: string
+  tags: string[]
+  image_url: string
+  demo_url: string | null
+  github_url: string | null
+  link?: string
+  featured?: boolean
   created_at: string
-  tags?: string[] | null
-  link?: string | null
-  repo_url?: string | null
-}
-
-export interface SiteSettings {
-  id?: string
-  brand_config?: {
-    primary_gradient?: string
-  }
-  resume_config?: {
-    url?: string
-  }
-}
-
-export interface ContactFormData {
-  name: string
-  email: string
-  subject?: string
-  message: string
 }
 
 export interface MusicTrack {
@@ -49,35 +54,42 @@ export interface MusicTrack {
   title: string
   artist: string
   src_url?: string
+  deezer_id: string
+  lyrics?: Record<string, string>
   platforms?: {
     spotify?: string
     deezer?: string
     apple?: string
     youtube?: string
   }
-  lyrics?: Record<string, string>
-  created_at?: string
+  created_at: string
 }
 
 export interface AlbumConcept {
   id: string
   title: Record<string, string>
   description: Record<string, string>
-  cover_url?: string
-  video_url?: string
-  created_at?: string
+  cover_url: string
+  video_url: string
 }
 
-export interface SocialLink {
-  id: string
-  platform: string
-  url: string
-  created_at?: string
+export interface ContactFormData {
+  name: string
+  email: string
+  message: string
+  origin?: string
 }
 
-export interface Skill {
+export interface SiteSettings {
+  brand_config: any
+  resume_config: {
+    url: string
+  }
+}
+
+export interface Project {
   id: string
-  label: string
-  value: number
-  created_at?: string
+  title: string
+  description: string
+  created_at: string
 }

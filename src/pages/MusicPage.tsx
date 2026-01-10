@@ -26,7 +26,7 @@ export default function MusicPage() {
       : t.music.title,
     description: selectedTrack
       ? `Listen to ${selectedTrack.title} by ${selectedTrack.artist}`
-      : 'My music tracks and production portfolio',
+      : t.music.description,
     type: 'music.song',
   })
 
@@ -81,7 +81,7 @@ export default function MusicPage() {
       <div className="flex flex-col-reverse lg:grid lg:grid-cols-12 gap-8">
         {/* Main Content - Track List */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="space-y-2 mb-4">
+          <div className="space-y-2 mb-4 animate-fade-in-down">
             <h1 className="text-4xl font-bold tracking-tight">
               {t.music.title}
             </h1>
@@ -90,7 +90,7 @@ export default function MusicPage() {
             </p>
           </div>
 
-          <Alert className="bg-muted/50 border-primary/20">
+          <Alert className="bg-muted/50 border-primary/20 animate-fade-in">
             <Info className="h-4 w-4 text-primary" />
             <AlertDescription className="text-sm text-muted-foreground">
               {t.music.local_file_note}
@@ -105,13 +105,18 @@ export default function MusicPage() {
             </div>
           ) : (
             <div className="flex flex-col gap-6 pb-20">
-              {tracks.map((track) => (
-                <TrackCard
+              {tracks.map((track, index) => (
+                <div
                   key={track.id}
-                  track={track}
-                  isActive={selectedTrack?.id === track.id}
-                  onPlay={handleTrackPlay}
-                />
+                  className="animate-fade-in-up"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <TrackCard
+                    track={track}
+                    isActive={selectedTrack?.id === track.id}
+                    onPlay={handleTrackPlay}
+                  />
+                </div>
               ))}
               {tracks.length === 0 && (
                 <div className="text-center py-10 text-muted-foreground">
@@ -124,7 +129,7 @@ export default function MusicPage() {
 
         {/* Side Panel - Sticky on Desktop */}
         <div className="lg:col-span-5">
-          <div className="lg:sticky lg:top-24">
+          <div className="lg:sticky lg:top-24 animate-fade-in-left">
             <SidePanel
               track={selectedTrack}
               albumConcept={albumConcept}
@@ -135,8 +140,10 @@ export default function MusicPage() {
       </div>
 
       {/* Footer Playlist */}
-      <div className="mt-12 border-t pt-8">
-        <h3 className="text-xl font-semibold mb-4">More on Deezer</h3>
+      <div className="mt-12 border-t pt-8 animate-fade-in">
+        <h3 className="text-xl font-semibold mb-4">
+          {t.music.listen_on} Deezer
+        </h3>
         <div className="rounded-xl overflow-hidden shadow-lg border border-border/50">
           <iframe
             title="Deezer Playlist"

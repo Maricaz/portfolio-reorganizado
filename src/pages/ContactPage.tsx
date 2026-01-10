@@ -39,7 +39,7 @@ export default function ContactPage() {
     description: t.contact.description,
   })
 
-  // Define schema inside component to use translations
+  // Define schema inside component to use translations dynamically
   const contactSchema = z.object({
     name: z
       .string()
@@ -99,7 +99,7 @@ export default function ContactPage() {
             name: values.name,
             email: values.email,
             message: values.message,
-            _subject: '[Portfólio] Nova mensagem',
+            _subject: `[Portfólio] Nova mensagem de ${values.name}`,
             _origin: window.location.href,
           }),
         })
@@ -145,25 +145,29 @@ export default function ContactPage() {
         <p className="text-lg text-muted-foreground">{t.contact.description}</p>
       </div>
 
-      <Card className="animate-fade-in-up shadow-lg">
-        <CardHeader>
+      <Card className="animate-fade-in-up shadow-xl border-primary/10">
+        <CardHeader className="bg-muted/30 pb-6 border-b border-border/50">
           <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
+            <Mail className="h-5 w-5 text-primary" />
             {t.contact.title}
           </CardTitle>
           <CardDescription>{t.contact.description}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           {isSuccess ? (
             <div className="flex flex-col items-center justify-center py-12 text-center space-y-4 animate-fade-in">
-              <div className="h-16 w-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+              <div className="h-16 w-16 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center shadow-sm">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold text-green-800">
+              <h3 className="text-xl font-bold text-green-800 dark:text-green-300">
                 {t.contact.success}
               </h3>
-              <Button variant="outline" onClick={() => setIsSuccess(false)}>
-                Send another message
+              <Button
+                variant="outline"
+                onClick={() => setIsSuccess(false)}
+                className="mt-4"
+              >
+                {t.contact.send_another}
               </Button>
             </div>
           ) : (
@@ -192,7 +196,11 @@ export default function ContactPage() {
                     <FormItem>
                       <FormLabel>{t.contact.name}</FormLabel>
                       <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                        <Input
+                          placeholder="Ex: Mariana Azevedo"
+                          {...field}
+                          className="bg-background/50"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -206,9 +214,10 @@ export default function ContactPage() {
                       <FormLabel>{t.contact.email}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="john@example.com"
+                          placeholder="Ex: mariana@example.com"
                           type="email"
                           {...field}
+                          className="bg-background/50"
                         />
                       </FormControl>
                       <FormMessage />
@@ -223,8 +232,8 @@ export default function ContactPage() {
                       <FormLabel>{t.contact.message}</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="How can I help you?"
-                          className="min-h-[120px]"
+                          placeholder={t.contact.message}
+                          className="min-h-[120px] bg-background/50 resize-y"
                           {...field}
                         />
                       </FormControl>
@@ -234,13 +243,13 @@ export default function ContactPage() {
                 />
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full font-semibold shadow-lg hover:shadow-xl transition-all"
                   disabled={isSubmitting || !isValid}
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t.common.loading}
+                      {t.contact.sending}
                     </>
                   ) : (
                     <>

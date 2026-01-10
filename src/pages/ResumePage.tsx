@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import {
   getResumeExperience,
@@ -34,7 +34,9 @@ import {
   MapPin,
   Calendar,
   ExternalLink,
+  CheckCircle2,
 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export default function ResumePage() {
   const { t, language } = useLanguage()
@@ -114,6 +116,16 @@ export default function ResumePage() {
     ).format(date)
   }
 
+  const groupedSkills = useMemo(() => {
+    const grouped: Record<string, ResumeSkill[]> = {}
+    skills.forEach((skill) => {
+      const cat = skill.category || 'Other'
+      if (!grouped[cat]) grouped[cat] = []
+      grouped[cat].push(skill)
+    })
+    return grouped
+  }, [skills])
+
   const LoadingSkeleton = () => (
     <div className="space-y-4">
       {[1, 2, 3].map((i) => (
@@ -144,7 +156,7 @@ export default function ResumePage() {
         </div>
         <Button
           variant="outline"
-          className="gap-2"
+          className="gap-2 shadow-sm hover:shadow-md transition-all"
           onClick={handleDownload}
           disabled={!resumeUrl}
         >
@@ -158,42 +170,42 @@ export default function ResumePage() {
         <TabsList className="flex flex-wrap h-auto w-full justify-start gap-2 bg-transparent p-0">
           <TabsTrigger
             value="experience"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all"
+            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
           >
             <Briefcase className="mr-2 h-4 w-4" />
             {t.resume.experience}
           </TabsTrigger>
           <TabsTrigger
-            value="education"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all"
-          >
-            <GraduationCap className="mr-2 h-4 w-4" />
-            {t.resume.education}
-          </TabsTrigger>
-          <TabsTrigger
             value="skills"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all"
+            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
           >
             <Trophy className="mr-2 h-4 w-4" />
             {t.resume.skills}
           </TabsTrigger>
           <TabsTrigger
+            value="education"
+            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
+          >
+            <GraduationCap className="mr-2 h-4 w-4" />
+            {t.resume.education}
+          </TabsTrigger>
+          <TabsTrigger
             value="certifications"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all"
+            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
           >
             <Award className="mr-2 h-4 w-4" />
             {t.resume.certifications}
           </TabsTrigger>
           <TabsTrigger
             value="languages"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all"
+            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
           >
             <Languages className="mr-2 h-4 w-4" />
             {t.resume.languages}
           </TabsTrigger>
           <TabsTrigger
             value="publications"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all"
+            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
           >
             <BookOpen className="mr-2 h-4 w-4" />
             {t.resume.publications}
@@ -206,46 +218,87 @@ export default function ResumePage() {
             {loading ? (
               <LoadingSkeleton />
             ) : (
-              experience.map((item) => (
-                <div
-                  key={item.id}
-                  className="relative pl-8 border-l-2 border-muted hover:border-primary/50 transition-colors"
-                >
-                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-background border-2 border-primary" />
-                  <div className="space-y-4">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
-                      <div>
-                        <h3 className="text-xl font-bold">
-                          {getLocalizedText(item, 'role')}
-                        </h3>
-                        <div className="text-lg font-medium text-primary">
-                          {item.company}
+              <div className="relative border-l-2 border-primary/20 ml-3 space-y-12">
+                {experience.map((item) => (
+                  <div key={item.id} className="relative pl-8 group">
+                    <div className="absolute -left-[9px] top-1.5 h-4 w-4 rounded-full bg-background border-2 border-primary group-hover:scale-125 transition-transform duration-300" />
+                    <div className="space-y-4">
+                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+                        <div>
+                          <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+                            {getLocalizedText(item, 'role')}
+                          </h3>
+                          <div className="text-lg font-medium text-muted-foreground">
+                            {item.company}
+                          </div>
+                        </div>
+                        <div className="text-sm text-muted-foreground whitespace-nowrap flex flex-col items-start md:items-end">
+                          <span className="flex items-center gap-1 font-medium text-primary">
+                            <Calendar className="h-3 w-3" />
+                            {formatDate(item.start_date)} -{' '}
+                            {item.is_current ? (
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px] px-1"
+                              >
+                                {t.resume.present}
+                              </Badge>
+                            ) : (
+                              formatDate(item.end_date!)
+                            )}
+                          </span>
+                          <span className="flex items-center gap-1 mt-1 opacity-75">
+                            <MapPin className="h-3 w-3" />
+                            {getLocalizedText(item, 'location')}
+                          </span>
                         </div>
                       </div>
-                      <div className="text-sm text-muted-foreground whitespace-nowrap flex flex-col items-start md:items-end">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {formatDate(item.start_date)} -{' '}
-                          {item.is_current ? (
-                            <Badge variant="secondary" className="text-xs">
-                              {t.resume.present}
-                            </Badge>
-                          ) : (
-                            formatDate(item.end_date!)
-                          )}
-                        </span>
-                        <span className="flex items-center gap-1 mt-1">
-                          <MapPin className="h-3 w-3" />
-                          {getLocalizedText(item, 'location')}
-                        </span>
+                      <div className="text-muted-foreground/90 whitespace-pre-line text-sm md:text-base leading-relaxed">
+                        {getLocalizedText(item, 'description')}
                       </div>
                     </div>
-                    <div className="text-muted-foreground whitespace-pre-line text-sm md:text-base">
-                      {getLocalizedText(item, 'description')}
-                    </div>
                   </div>
-                </div>
-              ))
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Skills Tab - Updated */}
+          <TabsContent value="skills" className="animate-fade-in">
+            {loading ? (
+              <LoadingSkeleton />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {Object.entries(groupedSkills).map(([category, catSkills]) => (
+                  <Card
+                    key={category}
+                    className="overflow-hidden border-primary/10 hover:border-primary/30 transition-colors"
+                  >
+                    <CardHeader className="bg-muted/30 pb-3">
+                      <CardTitle className="text-lg font-bold flex items-center gap-2">
+                        <CheckCircle2 className="h-5 w-5 text-primary" />
+                        {category}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6 grid gap-4">
+                      {catSkills.map((item) => (
+                        <div key={item.id} className="space-y-1.5">
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="font-medium">{item.name}</span>
+                            <span className="text-muted-foreground text-xs">
+                              {item.proficiency}%
+                            </span>
+                          </div>
+                          <Progress
+                            value={item.proficiency}
+                            className="h-2 bg-secondary"
+                          />
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             )}
           </TabsContent>
 
@@ -255,29 +308,32 @@ export default function ResumePage() {
               <LoadingSkeleton />
             ) : (
               education.map((item) => (
-                <Card key={item.id} className="overflow-hidden">
+                <Card
+                  key={item.id}
+                  className="overflow-hidden hover:shadow-md transition-shadow"
+                >
                   <CardContent className="p-6">
                     <div className="flex flex-col md:flex-row gap-4 justify-between items-start">
                       <div className="space-y-2">
-                        <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary">
+                        <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-2">
                           <GraduationCap className="h-6 w-6" />
                         </div>
                         <h3 className="text-xl font-bold">
                           {getLocalizedText(item, 'degree')}
                         </h3>
-                        <p className="text-lg text-muted-foreground">
+                        <p className="text-lg text-muted-foreground font-medium">
                           {item.institution}
                         </p>
                       </div>
                       <div className="text-sm text-muted-foreground flex flex-col items-start md:items-end gap-1">
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 font-medium">
                           <Calendar className="h-3 w-3" />
                           {formatDate(item.start_date)} -{' '}
                           {item.is_current
                             ? t.resume.present
                             : formatDate(item.end_date!)}
                         </span>
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 opacity-75">
                           <MapPin className="h-3 w-3" />
                           {getLocalizedText(item, 'location')}
                         </span>
@@ -286,36 +342,6 @@ export default function ResumePage() {
                   </CardContent>
                 </Card>
               ))
-            )}
-          </TabsContent>
-
-          {/* Skills Tab */}
-          <TabsContent value="skills" className="animate-fade-in">
-            {loading ? (
-              <LoadingSkeleton />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {skills.map((item) => (
-                  <Card key={item.id}>
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center mb-1">
-                        <CardTitle className="text-base font-bold">
-                          {item.name}
-                        </CardTitle>
-                        <span className="text-sm text-muted-foreground">
-                          {item.proficiency}%
-                        </span>
-                      </div>
-                      <Progress value={item.proficiency} className="h-2" />
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-xs text-muted-foreground">
-                        {item.category}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
             )}
           </TabsContent>
 
@@ -328,32 +354,37 @@ export default function ResumePage() {
                 {certifications.map((item) => (
                   <Card
                     key={item.id}
-                    className="group hover:border-primary/50 transition-all"
+                    className="group hover:border-primary/50 transition-all flex flex-col h-full"
                   >
-                    <CardContent className="p-6 flex items-start gap-4">
-                      <div className="p-2 rounded-full bg-secondary text-secondary-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        <Award className="h-5 w-5" />
-                      </div>
-                      <div className="space-y-1 flex-1">
-                        <h3 className="font-bold">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {item.institution}
-                        </p>
-                        <div className="flex justify-between items-center mt-4">
-                          <span className="text-xs text-muted-foreground">
-                            {formatDate(item.date)}
-                          </span>
-                          {item.url && (
-                            <a
-                              href={item.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs flex items-center gap-1 text-primary hover:underline"
-                            >
-                              Verifier <ExternalLink className="h-3 w-3" />
-                            </a>
-                          )}
+                    <CardContent className="p-6 flex flex-col h-full gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className="p-2 rounded-full bg-secondary text-secondary-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
+                          <Award className="h-5 w-5" />
                         </div>
+                        <div className="space-y-1">
+                          <h3 className="font-bold leading-tight">
+                            {item.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {item.institution}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-auto flex justify-between items-center pt-2 border-t border-dashed">
+                        <span className="text-xs text-muted-foreground">
+                          {formatDate(item.date)}
+                        </span>
+                        {item.url && (
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs flex items-center gap-1 text-primary hover:underline font-medium"
+                          >
+                            {t.resume.verifier}{' '}
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -374,9 +405,9 @@ export default function ResumePage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {languages.map((item) => (
-                  <Card key={item.id} className="text-center">
+                  <Card key={item.id} className="text-center group">
                     <CardContent className="p-6 space-y-4">
-                      <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                         <Languages className="h-6 w-6" />
                       </div>
                       <div>
@@ -402,24 +433,27 @@ export default function ResumePage() {
             ) : (
               <div className="space-y-6">
                 {publications.map((item) => (
-                  <Card key={item.id}>
+                  <Card
+                    key={item.id}
+                    className="hover:bg-muted/10 transition-colors"
+                  >
                     <CardContent className="p-6">
                       <div className="flex flex-col md:flex-row gap-4 justify-between">
                         <div className="space-y-2">
                           <h3 className="text-xl font-bold flex items-center gap-2">
                             {item.title}
                           </h3>
-                          <p className="text-muted-foreground text-sm">
+                          <p className="text-muted-foreground text-sm font-medium text-primary/80">
                             {formatDate(item.date)}
                           </p>
-                          <p className="text-sm">
+                          <p className="text-sm leading-relaxed text-muted-foreground">
                             {getLocalizedText(item, 'summary')}
                           </p>
                         </div>
                         {item.url && (
                           <Button
                             variant="outline"
-                            className="shrink-0 self-start md:self-center gap-2"
+                            className="shrink-0 self-start md:self-center gap-2 hover:bg-primary hover:text-primary-foreground"
                             asChild
                           >
                             <a

@@ -93,6 +93,7 @@ export const getResumeSkills = async () => {
   return await supabase
     .from('resume_skills')
     .select('*')
+    .order('category', { ascending: true })
     .order('proficiency', { ascending: false })
     .returns<ResumeSkill[]>()
 }
