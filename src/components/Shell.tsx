@@ -44,15 +44,12 @@ export default function Shell() {
     { title: t.nav.music, url: '/music', icon: Music },
     { title: t.nav.books, url: '/books', icon: BookOpen },
     { title: t.nav.contact, url: '/contact', icon: Mail },
-  ]
-
-  if (session) {
-    navItems.push({
+    {
       title: t.nav.admin,
-      url: '/admin',
+      url: '/admin/login',
       icon: LayoutDashboard,
-    })
-  }
+    },
+  ]
 
   const LATTES_URL = 'http://lattes.cnpq.br/1234567890'
 
