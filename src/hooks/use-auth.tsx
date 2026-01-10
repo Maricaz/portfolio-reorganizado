@@ -11,9 +11,11 @@ import { supabase } from '@/lib/supabase/client'
 interface AuthContextType {
   user: User | null
   session: Session | null
+  role: string | null
   signUp: (email: string, password: string) => Promise<{ error: any }>
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => Promise<{ error: any }>
+  resetPassword: (email: string) => Promise<{ error: any }>
   loading: boolean
 }
 
@@ -30,7 +32,27 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
+  const [role, setRole] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const fetchUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single()
+
+      if (!error && data) {
+        setRole(data.role)
+      } else {
+        setRole('user') // Default role
+      }
+    } catch (error) {
+      console.error('Error fetching role:', error)
+      setRole('user')
+    }
+  }
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -39,6 +61,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
+      if (session?.user) {
+        fetchUserRole(session.user.id)
+      } else {
+        setRole(null)
+      }
       setLoading(false)
     })
 
@@ -48,10 +75,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .then(({ data: { session } }) => {
         setSession(session)
         setUser(session?.user ?? null)
+        if (session?.user) {
+          fetchUserRole(session.user.id)
+        }
         setLoading(false)
       })
       .catch(() => {
-        // Handle error gracefully, effectively acting as stub if Supabase fails
         setLoading(false)
       })
 
@@ -81,15 +110,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
+    setRole(null)
+    return { error }
+  }
+
+  const resetPassword = async (email: string) => {
+    const redirectUrl = `${window.location.origin}/admin/reset-password`
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    })
     return { error }
   }
 
   const value = {
     user,
     session,
+    role,
     signUp,
     signIn,
     signOut,
+    resetPassword,
     loading,
   }
 

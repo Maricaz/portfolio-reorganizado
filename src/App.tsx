@@ -24,7 +24,7 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 // Admin Pages
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'))
-const AdminDashboard = lazy(() => import('./pages/admin/BooksManager')) // Default to books for now as dashboard
+const AdminDashboard = lazy(() => import('./pages/admin/DashboardOverview'))
 const BooksManager = lazy(() => import('./pages/admin/BooksManager'))
 const MusicManager = lazy(() => import('./pages/admin/MusicManager'))
 const ResumeManager = lazy(() => import('./pages/admin/ResumeManager'))
@@ -143,7 +143,7 @@ const App = () => (
                   </Suspense>
                 }
               >
-                <Route index element={<BooksManager />} />
+                <Route index element={<AdminDashboard />} />
                 <Route path="books" element={<BooksManager />} />
                 <Route path="music" element={<MusicManager />} />
                 <Route path="resume" element={<ResumeManager />} />

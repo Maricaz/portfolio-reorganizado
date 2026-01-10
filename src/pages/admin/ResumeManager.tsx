@@ -36,6 +36,22 @@ export default function ResumeManager() {
   const [editingItem, setEditingItem] = useState<any>({})
   const { toast } = useToast()
 
+  // Simplified internal validation instead of full zod for this mixed component
+  // In a larger app, I'd split this into two components each with their own form schema
+
+  const validateItem = () => {
+    if (activeTab === 'experience') {
+      if (!editingItem.company || editingItem.company.length < 2)
+        return 'Company is required'
+      if (!editingItem.start_date) return 'Start date is required'
+    } else {
+      if (!editingItem.institution || editingItem.institution.length < 2)
+        return 'Institution is required'
+      if (!editingItem.start_date) return 'Start date is required'
+    }
+    return null
+  }
+
   const loadData = async () => {
     try {
       const [exp, edu] = await Promise.all([
@@ -59,6 +75,16 @@ export default function ResumeManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const error = validateItem()
+    if (error) {
+      toast({
+        title: 'Validation Error',
+        description: error,
+        variant: 'destructive',
+      })
+      return
+    }
+
     const table =
       activeTab === 'experience' ? 'resume_experience' : 'resume_education'
     try {
@@ -114,7 +140,7 @@ export default function ResumeManager() {
               {activeTab === 'experience' ? (
                 <>
                   <div className="space-y-2">
-                    <Label>Company</Label>
+                    <Label>Company *</Label>
                     <Input
                       value={editingItem.company || ''}
                       onChange={(e) =>
@@ -139,7 +165,7 @@ export default function ResumeManager() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Start Date</Label>
+                    <Label>Start Date *</Label>
                     <Input
                       type="date"
                       value={editingItem.start_date || ''}
@@ -152,11 +178,24 @@ export default function ResumeManager() {
                       required
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label>End Date</Label>
+                    <Input
+                      type="date"
+                      value={editingItem.end_date || ''}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          end_date: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
                 </>
               ) : (
                 <>
                   <div className="space-y-2">
-                    <Label>Institution</Label>
+                    <Label>Institution *</Label>
                     <Input
                       value={editingItem.institution || ''}
                       onChange={(e) =>
@@ -181,7 +220,7 @@ export default function ResumeManager() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Start Date</Label>
+                    <Label>Start Date *</Label>
                     <Input
                       type="date"
                       value={editingItem.start_date || ''}
@@ -192,6 +231,19 @@ export default function ResumeManager() {
                         })
                       }
                       required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>End Date</Label>
+                    <Input
+                      type="date"
+                      value={editingItem.end_date || ''}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          end_date: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </>
@@ -216,14 +268,20 @@ export default function ResumeManager() {
                 <TableRow>
                   <TableHead>Company</TableHead>
                   <TableHead>Role</TableHead>
+                  <TableHead>Dates</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {experience.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell>{item.company}</TableCell>
+                    <TableCell className="font-medium">
+                      {item.company}
+                    </TableCell>
                     <TableCell>{item.role_pt}</TableCell>
+                    <TableCell>
+                      {item.start_date} - {item.end_date || 'Present'}
+                    </TableCell>
                     <TableCell className="flex gap-2">
                       <Button
                         variant="ghost"
@@ -257,14 +315,20 @@ export default function ResumeManager() {
                 <TableRow>
                   <TableHead>Institution</TableHead>
                   <TableHead>Degree</TableHead>
+                  <TableHead>Dates</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {education.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell>{item.institution}</TableCell>
+                    <TableCell className="font-medium">
+                      {item.institution}
+                    </TableCell>
                     <TableCell>{item.degree_pt}</TableCell>
+                    <TableCell>
+                      {item.start_date} - {item.end_date || 'Present'}
+                    </TableCell>
                     <TableCell className="flex gap-2">
                       <Button
                         variant="ghost"

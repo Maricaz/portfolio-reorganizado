@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import {
   getMusicTracks,
   createTrack,
   updateTrack,
   deleteTrack,
 } from '@/services/music'
+import { uploadFile } from '@/services/storage'
 import { MusicTrack } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,17 +27,42 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
-import { Plus, Pencil, Trash } from 'lucide-react'
-import { Label } from '@/components/ui/label'
+import { Plus, Pencil, Trash, Image as ImageIcon } from 'lucide-react'
+
+const trackSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  artist: z.string().min(1, 'Artist is required'),
+  src_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  image_url: z.string().optional(),
+})
+
+type TrackFormValues = z.infer<typeof trackSchema>
 
 export default function MusicManager() {
   const [tracks, setTracks] = useState<MusicTrack[]>([])
   const [isOpen, setIsOpen] = useState(false)
-  const [editingTrack, setEditingTrack] = useState<Partial<MusicTrack> | null>(
-    null,
-  )
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
   const { toast } = useToast()
+
+  const form = useForm<TrackFormValues>({
+    resolver: zodResolver(trackSchema),
+    defaultValues: {
+      title: '',
+      artist: '',
+      src_url: '',
+      image_url: '',
+    },
+  })
 
   const loadTracks = async () => {
     try {
@@ -52,17 +81,59 @@ export default function MusicManager() {
     loadTracks()
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleEdit = (track: MusicTrack) => {
+    setEditingId(track.id)
+    form.reset({
+      title: track.title,
+      artist: track.artist,
+      src_url: track.src_url || '',
+      image_url: (track as any).image_url || '',
+    })
+    setIsOpen(true)
+  }
+
+  const handleAddNew = () => {
+    setEditingId(null)
+    form.reset({
+      title: '',
+      artist: '',
+      src_url: '',
+      image_url: '',
+    })
+    setIsOpen(true)
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
     try {
-      if (editingTrack?.id) {
-        await updateTrack(editingTrack.id, editingTrack)
+      setUploading(true)
+      const url = await uploadFile(file, 'portfolio-media', 'music')
+      form.setValue('image_url', url)
+      toast({ title: 'Success', description: 'Album art uploaded' })
+    } catch (error) {
+      toast({
+        title: 'Upload Error',
+        description: 'Failed to upload image',
+        variant: 'destructive',
+      })
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const onSubmit = async (values: TrackFormValues) => {
+    try {
+      if (editingId) {
+        await updateTrack(editingId, values)
+        toast({ title: 'Success', description: 'Track updated' })
       } else {
-        await createTrack(editingTrack as MusicTrack)
+        await createTrack(values as MusicTrack)
+        toast({ title: 'Success', description: 'Track created' })
       }
       setIsOpen(false)
       loadTracks()
-      toast({ title: 'Success', description: 'Track saved' })
     } catch (error) {
       toast({
         title: 'Error',
@@ -93,53 +164,99 @@ export default function MusicManager() {
         <h1 className="text-3xl font-bold">Music Manager</h1>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingTrack({})}>
+            <Button onClick={handleAddNew}>
               <Plus className="mr-2 h-4 w-4" /> Add Track
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {editingTrack?.id ? 'Edit Track' : 'Add Track'}
+                {editingId ? 'Edit Track' : 'Add Track'}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label>Title</Label>
-                <Input
-                  value={editingTrack?.title || ''}
-                  onChange={(e) =>
-                    setEditingTrack({ ...editingTrack, title: e.target.value })
-                  }
-                  required
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label>Artist</Label>
-                <Input
-                  value={editingTrack?.artist || ''}
-                  onChange={(e) =>
-                    setEditingTrack({ ...editingTrack, artist: e.target.value })
-                  }
-                  required
+                <FormField
+                  control={form.control}
+                  name="artist"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Artist</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label>Source URL (MP3)</Label>
-                <Input
-                  value={editingTrack?.src_url || ''}
-                  onChange={(e) =>
-                    setEditingTrack({
-                      ...editingTrack,
-                      src_url: e.target.value,
-                    })
-                  }
+                <FormField
+                  control={form.control}
+                  name="src_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Audio URL (MP3)</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="https://..." />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <Button type="submit" className="w-full">
-                Save
-              </Button>
-            </form>
+
+                <div className="space-y-2">
+                  <FormLabel>Album Art</FormLabel>
+                  <div className="flex gap-4 items-center">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploading}
+                    />
+                    {form.watch('image_url') && (
+                      <div className="relative h-16 w-16 border rounded overflow-hidden shrink-0">
+                        <img
+                          src={form.watch('image_url')}
+                          alt="Preview"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="image_url"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Or image URL..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <Button type="submit" className="w-full" disabled={uploading}>
+                  {uploading ? 'Uploading...' : 'Save Track'}
+                </Button>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
@@ -148,6 +265,7 @@ export default function MusicManager() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Art</TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Artist</TableHead>
               <TableHead>Actions</TableHead>
@@ -156,16 +274,26 @@ export default function MusicManager() {
           <TableBody>
             {tracks.map((track) => (
               <TableRow key={track.id}>
-                <TableCell>{track.title}</TableCell>
+                <TableCell>
+                  {(track as any).image_url ? (
+                    <img
+                      src={(track as any).image_url}
+                      alt=""
+                      className="h-10 w-10 object-cover rounded"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 bg-muted rounded flex items-center justify-center">
+                      <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
+                </TableCell>
+                <TableCell className="font-medium">{track.title}</TableCell>
                 <TableCell>{track.artist}</TableCell>
                 <TableCell className="flex gap-2">
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => {
-                      setEditingTrack(track)
-                      setIsOpen(true)
-                    }}
+                    onClick={() => handleEdit(track)}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>

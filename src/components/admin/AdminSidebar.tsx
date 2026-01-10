@@ -7,12 +7,13 @@ import {
   FileText,
   Settings,
   LogOut,
+  Home,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 
 const items = [
-  { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
+  { title: 'Overview', url: '/admin', icon: LayoutDashboard },
   { title: 'Books', url: '/admin/books', icon: BookOpen },
   { title: 'Music', url: '/admin/music', icon: Music },
   { title: 'Resume', url: '/admin/resume', icon: FileText },
@@ -45,7 +46,13 @@ export const AdminSidebar = () => {
           </Link>
         ))}
       </div>
-      <div className="p-4 border-t">
+      <div className="p-4 border-t space-y-2">
+        <Button variant="outline" className="w-full justify-start" asChild>
+          <Link to="/">
+            <Home className="mr-2 h-4 w-4" />
+            View Site
+          </Link>
+        </Button>
         <Button
           variant="ghost"
           className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
