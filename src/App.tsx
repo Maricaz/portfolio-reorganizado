@@ -29,6 +29,7 @@ const BooksManager = lazy(() => import('./pages/admin/BooksManager'))
 const MusicManager = lazy(() => import('./pages/admin/MusicManager'))
 const ResumeManager = lazy(() => import('./pages/admin/ResumeManager'))
 const SettingsManager = lazy(() => import('./pages/admin/SettingsManager'))
+const UserManagement = lazy(() => import('./pages/admin/UserManagement'))
 
 const PageLoader = () => (
   <div className="p-8 space-y-4 max-w-4xl mx-auto">
@@ -148,6 +149,7 @@ const App = () => (
                 <Route path="music" element={<MusicManager />} />
                 <Route path="resume" element={<ResumeManager />} />
                 <Route path="settings" element={<SettingsManager />} />
+                <Route path="users" element={<UserManagement />} />
               </Route>
 
               {/* Catch-all */}

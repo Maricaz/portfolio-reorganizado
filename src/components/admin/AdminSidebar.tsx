@@ -8,29 +8,68 @@ import {
   Settings,
   LogOut,
   Home,
+  Users,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
-
-const items = [
-  { title: 'Overview', url: '/admin', icon: LayoutDashboard },
-  { title: 'Books', url: '/admin/books', icon: BookOpen },
-  { title: 'Music', url: '/admin/music', icon: Music },
-  { title: 'Resume', url: '/admin/resume', icon: FileText },
-  { title: 'Settings', url: '/admin/settings', icon: Settings },
-]
+import { Notifications } from '@/components/admin/Notifications'
+import { Separator } from '@/components/ui/separator'
 
 export const AdminSidebar = () => {
   const location = useLocation()
-  const { signOut } = useAuth()
+  const { signOut, role } = useAuth()
+
+  const items = [
+    {
+      title: 'Overview',
+      url: '/admin',
+      icon: LayoutDashboard,
+      roles: ['super_admin', 'admin', 'editor'],
+    },
+    {
+      title: 'Books',
+      url: '/admin/books',
+      icon: BookOpen,
+      roles: ['super_admin', 'admin', 'editor'],
+    },
+    {
+      title: 'Music',
+      url: '/admin/music',
+      icon: Music,
+      roles: ['super_admin', 'admin', 'editor'],
+    },
+    {
+      title: 'Resume',
+      url: '/admin/resume',
+      icon: FileText,
+      roles: ['super_admin', 'admin', 'editor'],
+    },
+    {
+      title: 'Settings',
+      url: '/admin/settings',
+      icon: Settings,
+      roles: ['super_admin', 'admin'],
+    },
+    {
+      title: 'Users',
+      url: '/admin/users',
+      icon: Users,
+      roles: ['super_admin'],
+    },
+  ]
+
+  const filteredItems = items.filter((item) =>
+    item.roles.includes(role || 'user'),
+  )
 
   return (
     <div className="flex flex-col h-full w-64 bg-card border-r">
-      <div className="p-6">
-        <h2 className="text-xl font-bold tracking-tight">Admin Panel</h2>
+      <div className="p-6 flex items-center justify-between">
+        <h2 className="text-xl font-bold tracking-tight">Admin</h2>
+        <Notifications />
       </div>
       <div className="flex-1 px-3 py-2 space-y-1">
-        {items.map((item) => (
+        {filteredItems.map((item) => (
           <Link
             key={item.url}
             to={item.url}

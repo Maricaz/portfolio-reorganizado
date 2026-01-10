@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
 import { Plus, Pencil, Trash, Image as ImageIcon } from 'lucide-react'
+import { ExportButton } from '@/components/admin/ExportButton'
 
 const trackSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -161,104 +162,112 @@ export default function MusicManager() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Music Manager</h1>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={handleAddNew}>
-              <Plus className="mr-2 h-4 w-4" /> Add Track
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingId ? 'Edit Track' : 'Add Track'}
-              </DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="artist"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Artist</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="src_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Audio URL (MP3)</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="https://..." />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="space-y-2">
-                  <FormLabel>Album Art</FormLabel>
-                  <div className="flex gap-4 items-center">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploading}
-                    />
-                    {form.watch('image_url') && (
-                      <div className="relative h-16 w-16 border rounded overflow-hidden shrink-0">
-                        <img
-                          src={form.watch('image_url')}
-                          alt="Preview"
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    )}
-                  </div>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold">Music Manager</h1>
+          <p className="text-muted-foreground">
+            Manage your tracks and albums.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <ExportButton data={tracks} filename="music_export" />
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={handleAddNew}>
+                <Plus className="mr-2 h-4 w-4" /> Add Track
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingId ? 'Edit Track' : 'Add Track'}
+                </DialogTitle>
+              </DialogHeader>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={form.control}
-                    name="image_url"
+                    name="title"
                     render={({ field }) => (
                       <FormItem>
+                        <FormLabel>Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="Or image URL..." {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
+                  <FormField
+                    control={form.control}
+                    name="artist"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Artist</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="src_url"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Audio URL (MP3)</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="https://..." />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <Button type="submit" className="w-full" disabled={uploading}>
-                  {uploading ? 'Uploading...' : 'Save Track'}
-                </Button>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+                  <div className="space-y-2">
+                    <FormLabel>Album Art</FormLabel>
+                    <div className="flex gap-4 items-center">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                      />
+                      {form.watch('image_url') && (
+                        <div className="relative h-16 w-16 border rounded overflow-hidden shrink-0">
+                          <img
+                            src={form.watch('image_url')}
+                            alt="Preview"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="image_url"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Or image URL..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={uploading}>
+                    {uploading ? 'Uploading...' : 'Save Track'}
+                  </Button>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="border rounded-md">

@@ -93,3 +93,20 @@ export interface Project {
   description: string
   created_at: string
 }
+
+export interface Notification {
+  id: string
+  title: string
+  message: string
+  type: 'info' | 'warning' | 'success' | 'error'
+  read: boolean
+  created_at: string
+}
+
+export interface UserProfile {
+  id: string
+  email?: string
+  role: 'super_admin' | 'admin' | 'editor' | 'user'
+  created_at: string
+  updated_at: string
+}

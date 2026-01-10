@@ -16,14 +16,19 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
-import { Search, Save } from 'lucide-react'
+import { Search, Save, Moon, Sun, Monitor } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Label } from '@/components/ui/label'
+import { useTheme } from '@/components/theme-provider'
+import { Separator } from '@/components/ui/separator'
 
 export default function SettingsManager() {
   const [dbTranslations, setDbTranslations] = useState<any[]>([])
   const [search, setSearch] = useState('')
   const [editingValues, setEditingValues] = useState<Record<string, string>>({})
   const { toast } = useToast()
+  const { theme, setTheme } = useTheme()
+  const [accentColor, setAccentColor] = useState('240 5.9% 10%') // Default primary
 
   // Flatten the default translations to get all possible keys
   const flattenedDefaults = useMemo(() => {
@@ -40,6 +45,11 @@ export default function SettingsManager() {
 
   useEffect(() => {
     loadTranslations()
+    // Try to load accent from local storage or css var
+    const savedAccent = localStorage.getItem('admin_accent')
+    if (savedAccent) {
+      setAccentColor(savedAccent)
+    }
   }, [])
 
   const loadTranslations = async () => {
@@ -83,74 +93,158 @@ export default function SettingsManager() {
     key.toLowerCase().includes(search.toLowerCase()),
   )
 
+  const handleAccentChange = (hsl: string) => {
+    setAccentColor(hsl)
+    document.documentElement.style.setProperty('--primary', hsl)
+    localStorage.setItem('admin_accent', hsl)
+  }
+
+  const accents = [
+    { name: 'Default', value: '240 5.9% 10%' },
+    { name: 'Blue', value: '221 83% 53%' },
+    { name: 'Green', value: '142 76% 36%' },
+    { name: 'Red', value: '346 84% 61%' },
+    { name: 'Purple', value: '262 83% 58%' },
+    { name: 'Orange', value: '24 94% 50%' },
+  ]
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Content Manager</h1>
+        <h1 className="text-3xl font-bold">Settings</h1>
         <p className="text-muted-foreground">
-          Manage site-wide text and translations.
+          Manage site configurations and preferences.
         </p>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Search className="h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search keys..."
-          className="max-w-sm"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-4 p-4 border rounded-lg bg-card">
+          <h3 className="text-lg font-medium">Theme Preference</h3>
+          <div className="flex gap-2">
+            <Button
+              variant={theme === 'light' ? 'default' : 'outline'}
+              onClick={() => setTheme('light')}
+              className="flex-1"
+            >
+              <Sun className="mr-2 h-4 w-4" /> Light
+            </Button>
+            <Button
+              variant={theme === 'dark' ? 'default' : 'outline'}
+              onClick={() => setTheme('dark')}
+              className="flex-1"
+            >
+              <Moon className="mr-2 h-4 w-4" /> Dark
+            </Button>
+            <Button
+              variant={theme === 'system' ? 'default' : 'outline'}
+              onClick={() => setTheme('system')}
+              className="flex-1"
+            >
+              <Monitor className="mr-2 h-4 w-4" /> System
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-4 p-4 border rounded-lg bg-card">
+          <h3 className="text-lg font-medium">Accent Color</h3>
+          <div className="flex flex-wrap gap-2">
+            {accents.map((acc) => (
+              <button
+                key={acc.name}
+                onClick={() => handleAccentChange(acc.value)}
+                className={`w-8 h-8 rounded-full border-2 transition-all ${
+                  accentColor === acc.value
+                    ? 'border-foreground scale-110'
+                    : 'border-transparent hover:scale-105'
+                }`}
+                style={{ backgroundColor: `hsl(${acc.value})` }}
+                title={acc.name}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
-      <Tabs defaultValue="pt">
-        <TabsList>
-          <TabsTrigger value="pt">Português</TabsTrigger>
-          <TabsTrigger value="en">English</TabsTrigger>
-          <TabsTrigger value="ko">Korean</TabsTrigger>
-        </TabsList>
-        {['pt', 'en', 'ko'].map((lang) => (
-          <TabsContent key={lang} value={lang}>
-            <div className="border rounded-md">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[300px]">Key</TableHead>
-                    <TableHead>Value</TableHead>
-                    <TableHead className="w-[100px]">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredKeys.map((key) => (
-                    <TableRow key={key}>
-                      <TableCell className="font-mono text-xs">{key}</TableCell>
-                      <TableCell>
-                        <Input
-                          value={getDisplayValue(key, lang as any)}
-                          onChange={(e) =>
-                            setEditingValues((prev) => ({
-                              ...prev,
-                              [`${key}-${lang}`]: e.target.value,
-                            }))
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleSave(key, lang)}
-                        >
-                          <Save className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+      <Separator />
+
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <h3 className="text-lg font-medium">Content Translations</h3>
+          <p className="text-muted-foreground text-sm">
+            Override default text for different languages.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search keys..."
+            className="max-w-sm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <Tabs defaultValue="pt">
+          <TabsList>
+            <TabsTrigger value="pt">Português</TabsTrigger>
+            <TabsTrigger value="en">English</TabsTrigger>
+            <TabsTrigger value="ko">Korean</TabsTrigger>
+          </TabsList>
+          {['pt', 'en', 'ko'].map((lang) => (
+            <TabsContent key={lang} value={lang}>
+              <div className="border rounded-md">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[300px]">Key</TableHead>
+                      <TableHead>Value</TableHead>
+                      <TableHead className="w-[100px]">Action</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredKeys.slice(0, 50).map((key) => (
+                      <TableRow key={key}>
+                        <TableCell className="font-mono text-xs">
+                          {key}
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            value={getDisplayValue(key, lang as any)}
+                            onChange={(e) =>
+                              setEditingValues((prev) => ({
+                                ...prev,
+                                [`${key}-${lang}`]: e.target.value,
+                              }))
+                            }
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => handleSave(key, lang)}
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {filteredKeys.length > 50 && (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center text-sm">
+                          And {filteredKeys.length - 50} more... (Search to
+                          find)
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
     </div>
   )
 }

@@ -27,6 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import { Plus, Pencil, Trash } from 'lucide-react'
 import { Label } from '@/components/ui/label'
+import { ExportButton } from '@/components/admin/ExportButton'
 
 export default function ResumeManager() {
   const [experience, setExperience] = useState<any[]>([])
@@ -35,9 +36,6 @@ export default function ResumeManager() {
   const [activeTab, setActiveTab] = useState('experience')
   const [editingItem, setEditingItem] = useState<any>({})
   const { toast } = useToast()
-
-  // Simplified internal validation instead of full zod for this mixed component
-  // In a larger app, I'd split this into two components each with their own form schema
 
   const validateItem = () => {
     if (activeTab === 'experience') {
@@ -125,135 +123,146 @@ export default function ResumeManager() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Resume Manager</h1>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setEditingItem({})}>
-              <Plus className="mr-2 h-4 w-4" /> Add Item
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add/Edit {activeTab}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {activeTab === 'experience' ? (
-                <>
-                  <div className="space-y-2">
-                    <Label>Company *</Label>
-                    <Input
-                      value={editingItem.company || ''}
-                      onChange={(e) =>
-                        setEditingItem({
-                          ...editingItem,
-                          company: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Role (PT)</Label>
-                    <Input
-                      value={editingItem.role_pt || ''}
-                      onChange={(e) =>
-                        setEditingItem({
-                          ...editingItem,
-                          role_pt: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Start Date *</Label>
-                    <Input
-                      type="date"
-                      value={editingItem.start_date || ''}
-                      onChange={(e) =>
-                        setEditingItem({
-                          ...editingItem,
-                          start_date: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>End Date</Label>
-                    <Input
-                      type="date"
-                      value={editingItem.end_date || ''}
-                      onChange={(e) =>
-                        setEditingItem({
-                          ...editingItem,
-                          end_date: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="space-y-2">
-                    <Label>Institution *</Label>
-                    <Input
-                      value={editingItem.institution || ''}
-                      onChange={(e) =>
-                        setEditingItem({
-                          ...editingItem,
-                          institution: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Degree (PT)</Label>
-                    <Input
-                      value={editingItem.degree_pt || ''}
-                      onChange={(e) =>
-                        setEditingItem({
-                          ...editingItem,
-                          degree_pt: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Start Date *</Label>
-                    <Input
-                      type="date"
-                      value={editingItem.start_date || ''}
-                      onChange={(e) =>
-                        setEditingItem({
-                          ...editingItem,
-                          start_date: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>End Date</Label>
-                    <Input
-                      type="date"
-                      value={editingItem.end_date || ''}
-                      onChange={(e) =>
-                        setEditingItem({
-                          ...editingItem,
-                          end_date: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </>
-              )}
-              <Button type="submit" className="w-full">
-                Save
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold">Resume Manager</h1>
+          <p className="text-muted-foreground">
+            Update your professional history.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <ExportButton
+            data={activeTab === 'experience' ? experience : education}
+            filename={`resume_${activeTab}_export`}
+          />
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setEditingItem({})}>
+                <Plus className="mr-2 h-4 w-4" /> Add Item
               </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add/Edit {activeTab}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {activeTab === 'experience' ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Company *</Label>
+                      <Input
+                        value={editingItem.company || ''}
+                        onChange={(e) =>
+                          setEditingItem({
+                            ...editingItem,
+                            company: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Role (PT)</Label>
+                      <Input
+                        value={editingItem.role_pt || ''}
+                        onChange={(e) =>
+                          setEditingItem({
+                            ...editingItem,
+                            role_pt: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Start Date *</Label>
+                      <Input
+                        type="date"
+                        value={editingItem.start_date || ''}
+                        onChange={(e) =>
+                          setEditingItem({
+                            ...editingItem,
+                            start_date: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>End Date</Label>
+                      <Input
+                        type="date"
+                        value={editingItem.end_date || ''}
+                        onChange={(e) =>
+                          setEditingItem({
+                            ...editingItem,
+                            end_date: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Institution *</Label>
+                      <Input
+                        value={editingItem.institution || ''}
+                        onChange={(e) =>
+                          setEditingItem({
+                            ...editingItem,
+                            institution: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Degree (PT)</Label>
+                      <Input
+                        value={editingItem.degree_pt || ''}
+                        onChange={(e) =>
+                          setEditingItem({
+                            ...editingItem,
+                            degree_pt: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Start Date *</Label>
+                      <Input
+                        type="date"
+                        value={editingItem.start_date || ''}
+                        onChange={(e) =>
+                          setEditingItem({
+                            ...editingItem,
+                            start_date: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>End Date</Label>
+                      <Input
+                        type="date"
+                        value={editingItem.end_date || ''}
+                        onChange={(e) =>
+                          setEditingItem({
+                            ...editingItem,
+                            end_date: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+                <Button type="submit" className="w-full">
+                  Save
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
