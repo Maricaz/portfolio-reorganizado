@@ -22,7 +22,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { supabase } from '@/lib/supabase/client'
-import { ShieldAlert, Loader2, Lock, Mail } from 'lucide-react'
+import { ShieldAlert, Loader2, Lock, Mail, AlertCircle } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -30,6 +31,7 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const [resetEmail, setResetEmail] = useState('')
   const [isResetOpen, setIsResetOpen] = useState(false)
+  const [loginError, setLoginError] = useState<string | null>(null)
 
   // MFA State
   const [mfaRequired, setMfaRequired] = useState(false)
@@ -53,13 +55,18 @@ export default function AdminLogin() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setLoginError(null)
 
     try {
       // 1. Basic Sign In
       const { data, error } = await signIn(email, password)
 
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
+        // Provide more user friendly error messages
+        if (
+          error.message.includes('Invalid login credentials') ||
+          error.message.includes('Email not confirmed')
+        ) {
           throw new Error('Email ou senha incorretos.')
         }
         throw new Error(error.message)
@@ -114,14 +121,18 @@ export default function AdminLogin() {
           title: 'Bem-vinda de volta!',
           description: 'Login realizado com sucesso.',
         })
-        setLoading(false)
+        // The navigation will happen in the useEffect or here if we want instant feedback
         navigate('/admin')
+        setLoading(false)
       }
     } catch (error: any) {
       setLoading(false)
+      const errorMessage =
+        error.message || 'Ocorreu um erro ao tentar entrar. Tente novamente.'
+      setLoginError(errorMessage)
       toast({
         title: 'Falha no Login',
-        description: error.message || 'Ocorreu um erro ao tentar entrar.',
+        description: errorMessage,
         variant: 'destructive',
       })
     }
@@ -241,6 +252,13 @@ export default function AdminLogin() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
+            {loginError && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Erro</AlertTitle>
+                <AlertDescription>{loginError}</AlertDescription>
+              </Alert>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">

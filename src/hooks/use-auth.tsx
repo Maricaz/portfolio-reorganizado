@@ -24,6 +24,7 @@ interface AuthContextType {
     code: string,
   ) => Promise<{ error: any; data: any }>
   loading: boolean
+  refreshRole: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -185,6 +186,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { data, error }
   }
 
+  const refreshRole = async () => {
+    if (user) {
+      await fetchUserRole(user.id)
+    }
+  }
+
   const value = {
     user,
     session,
@@ -195,6 +202,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     resetPassword,
     verifyMfa,
     loading,
+    refreshRole,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
