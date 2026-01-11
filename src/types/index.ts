@@ -63,6 +63,24 @@ export interface MusicTrack {
     youtube?: string
   }
   created_at: string
+  image_url?: string
+}
+
+export interface Playlist {
+  id: string
+  name: string
+  description?: string
+  image_url?: string
+  created_at: string
+}
+
+export interface PlaylistTrack {
+  id: string
+  playlist_id: string
+  track_id: string
+  order_index: number
+  track?: MusicTrack
+  created_at: string
 }
 
 export interface AlbumConcept {

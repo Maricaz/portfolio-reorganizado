@@ -10,6 +10,7 @@ export const uploadFile = async (
 
   try {
     // Attempt to optimize image before upload
+    // optimizeImage will skip non-image files
     fileToUpload = await optimizeImage(file)
   } catch (error) {
     console.warn(
