@@ -53,7 +53,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!error && data) {
         setRole(data.role)
       } else {
-        setRole('user') // Default role
+        // Fallback or default role
+        setRole('user')
       }
     } catch (error) {
       console.error('Error fetching role:', error)
@@ -62,32 +63,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
+    // 1. Setup Auth Listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
+
       if (session?.user) {
+        // We cannot await here as this callback must be synchronous
+        // But we trigger the fetch which updates the role state when done
         fetchUserRole(session.user.id)
       } else {
         setRole(null)
       }
+
+      // Note: We set loading to false immediately for the auth session
+      // Components that need the role must check if (user && role === null) to wait
       setLoading(false)
     })
 
-    supabase.auth
-      .getSession()
-      .then(({ data: { session } }) => {
+    // 2. Check Initial Session
+    const initSession = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
         setSession(session)
         setUser(session?.user ?? null)
+
         if (session?.user) {
-          fetchUserRole(session.user.id)
+          // For initial load, we WANT to await the role to avoid redirects/flicker
+          await fetchUserRole(session.user.id)
         }
+      } catch (error) {
+        console.error('Error checking session:', error)
+      } finally {
         setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
+      }
+    }
+
+    initSession()
 
     return () => subscription.unsubscribe()
   }, [])
@@ -142,6 +158,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (data?.session) {
       setSession(data.session)
+      if (data.session.user) {
+        fetchUserRole(data.session.user.id)
+      }
     }
 
     return { data, error }

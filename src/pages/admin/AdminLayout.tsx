@@ -4,38 +4,61 @@ import { useAuth } from '@/hooks/use-auth'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminHeader } from '@/components/admin/AdminHeader'
 import { Toaster } from '@/components/ui/toaster'
+import { Loader2 } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 
 export default function AdminLayout() {
   const { user, role, loading } = useAuth()
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        navigate('/admin/login')
-      } else {
-        const allowedRoles = ['admin', 'super_admin', 'editor']
-        if (role && !allowedRoles.includes(role)) {
-          console.warn('Unauthorized access attempt by', user.email)
-          navigate('/')
-        }
+    // Wait until basic auth loading is done
+    if (loading) return
+
+    // 1. Check if user is authenticated
+    if (!user) {
+      navigate('/admin/login')
+      return
+    }
+
+    // 2. Check role ONLY if it has been loaded
+    if (role !== null) {
+      const allowedRoles = ['admin', 'super_admin', 'editor']
+      if (!allowedRoles.includes(role)) {
+        console.warn('Unauthorized access attempt by', user.email)
+        toast({
+          title: 'Access Denied',
+          description: 'You do not have permission to access the admin area.',
+          variant: 'destructive',
+        })
+        navigate('/')
       }
     }
-  }, [user, role, loading, navigate])
+  }, [user, role, loading, navigate, toast])
 
-  if (loading)
+  // Show loader if:
+  // 1. Auth is initializing (loading === true)
+  // 2. User is authenticated but role is still being fetched (user && role === null)
+  if (loading || (user && role === null)) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="h-8 w-8 rounded-full bg-primary/20"></div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <div className="text-sm text-muted-foreground">
             Verifying access...
           </div>
         </div>
       </div>
     )
+  }
 
+  // Should not render content if no user, effectively waiting for redirect
   if (!user) return null
+
+  // Double check role prevents flash of content before redirect in edge cases
+  const allowedRoles = ['admin', 'super_admin', 'editor']
+  if (role && !allowedRoles.includes(role)) return null
 
   return (
     <div className="flex min-h-screen bg-background w-full">
