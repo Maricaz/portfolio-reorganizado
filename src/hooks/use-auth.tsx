@@ -72,14 +72,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (session?.user) {
         // We cannot await here as this callback must be synchronous
-        // But we trigger the fetch which updates the role state when done
         fetchUserRole(session.user.id)
       } else {
         setRole(null)
       }
 
-      // Note: We set loading to false immediately for the auth session
-      // Components that need the role must check if (user && role === null) to wait
       setLoading(false)
     })
 
@@ -93,7 +90,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null)
 
         if (session?.user) {
-          // For initial load, we WANT to await the role to avoid redirects/flicker
           await fetchUserRole(session.user.id)
         }
       } catch (error) {
@@ -126,12 +122,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email,
       password,
     })
+
+    // If sign in is successful, we should try to refresh the role immediately
+    // to ensure consistency, although onAuthStateChange handles it too.
+    if (data?.user) {
+      await fetchUserRole(data.user.id)
+    }
+
     return { data, error }
   }
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     setRole(null)
+    setUser(null)
+    setSession(null)
     return { error }
   }
 
@@ -159,7 +164,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (data?.session) {
       setSession(data.session)
       if (data.session.user) {
-        fetchUserRole(data.session.user.id)
+        await fetchUserRole(data.session.user.id)
       }
     }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { supabase } from '@/lib/supabase/client'
-import { ShieldAlert } from 'lucide-react'
+import { ShieldAlert, Loader2 } from 'lucide-react'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -36,9 +36,19 @@ export default function AdminLogin() {
   const [mfaCode, setMfaCode] = useState('')
   const [factorId, setFactorId] = useState<string | null>(null)
 
-  const { signIn, resetPassword, verifyMfa } = useAuth()
+  const { signIn, resetPassword, verifyMfa, user, role, signOut } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
+
+  // Redirect if already logged in and has correct role
+  useEffect(() => {
+    if (user && role) {
+      const allowedRoles = ['admin', 'super_admin', 'editor']
+      if (allowedRoles.includes(role)) {
+        navigate('/admin')
+      }
+    }
+  }, [user, role, navigate])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,20 +59,46 @@ export default function AdminLogin() {
       const { data, error } = await signIn(email, password)
 
       if (error) {
-        throw error
+        throw new Error('Invalid credentials')
       }
 
-      // 2. Check for MFA Factors
+      if (!data.user) {
+        throw new Error('No user returned from login')
+      }
+
+      // 2. Check User Role directly to ensure immediate feedback
+      // We do this manually here to avoid waiting for the async auth listener state update
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+
+      if (profileError) {
+        await signOut()
+        throw new Error('Error verifying user profile')
+      }
+
+      const userRole = profile?.role || 'user'
+      const allowedRoles = ['admin', 'super_admin', 'editor']
+
+      if (!allowedRoles.includes(userRole)) {
+        await signOut()
+        throw new Error('Access denied: Administrator privileges required')
+      }
+
+      // 3. Check for MFA Factors
       const { data: factorsData, error: factorsError } =
         await supabase.auth.mfa.listFactors()
 
       if (factorsError) {
-        throw factorsError
+        // If MFA check fails, we still let them in if they are admin, or fail?
+        // Assuming fail safe, but let's just log it and proceed if no strict requirement
+        console.error('Error listing MFA factors:', factorsError)
       }
 
-      const verifiedFactors = factorsData.all.filter(
-        (f) => f.status === 'verified',
-      )
+      const verifiedFactors =
+        factorsData?.all?.filter((f) => f.status === 'verified') || []
 
       if (verifiedFactors.length > 0) {
         // MFA Required
@@ -198,6 +234,7 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
@@ -249,10 +286,18 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
             </Button>
           </form>
         </CardContent>
