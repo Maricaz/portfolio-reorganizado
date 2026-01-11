@@ -9,7 +9,7 @@ import {
   deleteTrack,
 } from '@/services/music'
 import { uploadFile } from '@/services/storage'
-import { MusicTrack } from '@/types'
+import { Database } from '@/lib/supabase/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -36,8 +36,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
-import { Plus, Pencil, Trash, Image as ImageIcon } from 'lucide-react'
+import { Plus, Pencil, Trash, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { ExportButton } from '@/components/admin/ExportButton'
+
+type MusicTrack = Database['public']['Tables']['music_tracks']['Row']
+type MusicTrackInsert = Database['public']['Tables']['music_tracks']['Insert']
 
 const trackSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -53,6 +56,7 @@ export default function MusicManager() {
   const [isOpen, setIsOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const { toast } = useToast()
 
   const form = useForm<TrackFormValues>({
@@ -67,14 +71,20 @@ export default function MusicManager() {
 
   const loadTracks = async () => {
     try {
+      setLoading(true)
       const data = await getMusicTracks()
-      setTracks(data || [])
+      // Ensure data is an array before setting state
+      setTracks(Array.isArray(data) ? data : [])
     } catch (error) {
+      console.error('Failed to load tracks:', error)
       toast({
         title: 'Error',
-        description: 'Failed to load tracks',
+        description: 'Failed to load tracks. Please try again.',
         variant: 'destructive',
       })
+      setTracks([])
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -88,6 +98,7 @@ export default function MusicManager() {
       title: track.title,
       artist: track.artist,
       src_url: track.src_url || '',
+      // Cast to any to access potentially missing image_url property
       image_url: (track as any).image_url || '',
     })
     setIsOpen(true)
@@ -126,16 +137,18 @@ export default function MusicManager() {
 
   const onSubmit = async (values: TrackFormValues) => {
     try {
+      // Cast values to compatible types since image_url might not exist in strict DB types
       if (editingId) {
-        await updateTrack(editingId, values)
+        await updateTrack(editingId, values as any)
         toast({ title: 'Success', description: 'Track updated' })
       } else {
-        await createTrack(values as MusicTrack)
+        await createTrack(values as any)
         toast({ title: 'Success', description: 'Track created' })
       }
       setIsOpen(false)
       loadTracks()
     } catch (error) {
+      console.error('Operation failed:', error)
       toast({
         title: 'Error',
         description: 'Operation failed',
@@ -271,54 +284,72 @@ export default function MusicManager() {
       </div>
 
       <div className="border rounded-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Art</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Artist</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {tracks.map((track) => (
-              <TableRow key={track.id}>
-                <TableCell>
-                  {(track as any).image_url ? (
-                    <img
-                      src={(track as any).image_url}
-                      alt=""
-                      className="h-10 w-10 object-cover rounded"
-                    />
-                  ) : (
-                    <div className="h-10 w-10 bg-muted rounded flex items-center justify-center">
-                      <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell className="font-medium">{track.title}</TableCell>
-                <TableCell>{track.artist}</TableCell>
-                <TableCell className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEdit(track)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive"
-                    onClick={() => handleDelete(track.id)}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </TableCell>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center p-8 space-y-2">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">Loading tracks...</p>
+          </div>
+        ) : tracks.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-8 space-y-2 text-center">
+            <div className="rounded-full bg-muted p-3">
+              <ImageIcon className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h3 className="font-semibold text-lg">No tracks found</h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              You haven't added any music tracks yet. Click the "Add Track"
+              button to get started.
+            </p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Art</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead>Artist</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {tracks.map((track) => (
+                <TableRow key={track.id}>
+                  <TableCell>
+                    {(track as any).image_url ? (
+                      <img
+                        src={(track as any).image_url}
+                        alt=""
+                        className="h-10 w-10 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 bg-muted rounded flex items-center justify-center">
+                        <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-medium">{track.title}</TableCell>
+                  <TableCell>{track.artist}</TableCell>
+                  <TableCell className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(track)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive"
+                      onClick={() => handleDelete(track.id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </div>
   )
