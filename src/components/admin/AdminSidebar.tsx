@@ -9,6 +9,7 @@ import {
   LogOut,
   Home,
   Users,
+  ShieldAlert,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
@@ -45,6 +46,12 @@ export const AdminSidebar = ({ onNavigate }: AdminSidebarProps) => {
       url: '/admin/resume',
       icon: FileText,
       roles: ['super_admin', 'admin', 'editor'],
+    },
+    {
+      title: 'Audit Logs',
+      url: '/admin/audit-logs',
+      icon: ShieldAlert,
+      roles: ['super_admin'],
     },
     {
       title: 'Settings',

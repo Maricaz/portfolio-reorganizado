@@ -21,6 +21,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { supabase } from '@/lib/supabase/client'
+import { ShieldAlert } from 'lucide-react'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -28,19 +30,71 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const [resetEmail, setResetEmail] = useState('')
   const [isResetOpen, setIsResetOpen] = useState(false)
-  const { signIn, resetPassword } = useAuth()
+
+  // MFA State
+  const [mfaRequired, setMfaRequired] = useState(false)
+  const [mfaCode, setMfaCode] = useState('')
+  const [factorId, setFactorId] = useState<string | null>(null)
+
+  const { signIn, resetPassword, verifyMfa } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    const { error } = await signIn(email, password)
+
+    try {
+      // 1. Basic Sign In
+      const { data, error } = await signIn(email, password)
+
+      if (error) {
+        throw error
+      }
+
+      // 2. Check for MFA Factors
+      const { data: factorsData, error: factorsError } =
+        await supabase.auth.mfa.listFactors()
+
+      if (factorsError) {
+        throw factorsError
+      }
+
+      const verifiedFactors = factorsData.all.filter(
+        (f) => f.status === 'verified',
+      )
+
+      if (verifiedFactors.length > 0) {
+        // MFA Required
+        setFactorId(verifiedFactors[0].id) // Use the first verified factor
+        setMfaRequired(true)
+        setLoading(false)
+      } else {
+        // No MFA, proceed
+        setLoading(false)
+        navigate('/admin')
+      }
+    } catch (error: any) {
+      setLoading(false)
+      toast({
+        title: 'Login failed',
+        description: error.message || 'An error occurred',
+        variant: 'destructive',
+      })
+    }
+  }
+
+  const handleMfaVerify = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!factorId) return
+
+    setLoading(true)
+    const { error } = await verifyMfa(factorId, mfaCode)
     setLoading(false)
 
     if (error) {
       toast({
-        title: 'Login failed',
+        title: 'MFA Verification failed',
         description: error.message,
         variant: 'destructive',
       })
@@ -68,6 +122,61 @@ export default function AdminLogin() {
         description: 'Check your inbox for password reset instructions.',
       })
     }
+  }
+
+  if (mfaRequired) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
+        <Card className="w-full max-w-md border-primary/20 shadow-lg">
+          <CardHeader className="space-y-1">
+            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <ShieldAlert className="w-6 h-6 text-primary" />
+            </div>
+            <CardTitle className="text-center">
+              Two-Factor Authentication
+            </CardTitle>
+            <CardDescription className="text-center">
+              Enter the code from your authenticator app
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleMfaVerify} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="mfa-code" className="sr-only">
+                  Authentication Code
+                </Label>
+                <Input
+                  id="mfa-code"
+                  type="text"
+                  value={mfaCode}
+                  onChange={(e) => setMfaCode(e.target.value)}
+                  className="text-center text-lg tracking-widest"
+                  placeholder="000000"
+                  maxLength={6}
+                  autoFocus
+                  required
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading || mfaCode.length !== 6}
+              >
+                {loading ? 'Verifying...' : 'Verify'}
+              </Button>
+              <Button
+                variant="ghost"
+                type="button"
+                className="w-full text-xs text-muted-foreground"
+                onClick={() => window.location.reload()}
+              >
+                Back to Login
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (

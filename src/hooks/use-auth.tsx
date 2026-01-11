@@ -13,9 +13,16 @@ interface AuthContextType {
   session: Session | null
   role: string | null
   signUp: (email: string, password: string) => Promise<{ error: any }>
-  signIn: (email: string, password: string) => Promise<{ error: any }>
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{ error: any; data: any }>
   signOut: () => Promise<{ error: any }>
   resetPassword: (email: string) => Promise<{ error: any }>
+  verifyMfa: (
+    factorId: string,
+    code: string,
+  ) => Promise<{ error: any; data: any }>
   loading: boolean
 }
 
@@ -55,7 +62,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -69,7 +75,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false)
     })
 
-    // THEN check for existing session
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
@@ -101,11 +106,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
-    return { error }
+    return { data, error }
   }
 
   const signOut = async () => {
@@ -122,6 +127,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error }
   }
 
+  const verifyMfa = async (factorId: string, code: string) => {
+    // Challenge
+    const { data: challengeData, error: challengeError } =
+      await supabase.auth.mfa.challenge({ factorId })
+    if (challengeError) return { error: challengeError, data: null }
+
+    // Verify
+    const { data, error } = await supabase.auth.mfa.verify({
+      factorId,
+      challengeId: challengeData.id,
+      code,
+    })
+
+    if (data?.session) {
+      setSession(data.session)
+    }
+
+    return { data, error }
+  }
+
   const value = {
     user,
     session,
@@ -130,6 +155,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     signIn,
     signOut,
     resetPassword,
+    verifyMfa,
     loading,
   }
 
