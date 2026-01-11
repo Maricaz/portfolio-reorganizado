@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -6,16 +7,33 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { useSEO } from '@/hooks/use-seo'
 import { useAnalytics } from '@/hooks/use-analytics'
 import { LatestItem } from '@/components/LatestItem'
-import profileImage from '@/assets/profile.jpg' // Assuming this exists, otherwise placeholder
+import { getSiteSettings } from '@/services/settings'
 
 export default function Index() {
   const { t } = useLanguage()
   const { trackEvent } = useAnalytics()
+  const [heroImage, setHeroImage] = useState<string>(
+    'https://img.usecurling.com/ppl/large?gender=female&seed=mari',
+  )
 
   useSEO({
     title: t.home.hero_title,
     description: t.home.hero_subtitle,
   })
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const settings = await getSiteSettings()
+        if (settings.home_hero_image) {
+          setHeroImage(settings.home_hero_image)
+        }
+      } catch (error) {
+        console.error('Failed to fetch hero image settings', error)
+      }
+    }
+    fetchSettings()
+  }, [])
 
   const cards = [
     {
@@ -76,7 +94,7 @@ export default function Index() {
         <div className="flex-1 flex justify-center md:justify-end animate-float">
           <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-background shadow-2xl ring-4 ring-primary/10">
             <img
-              src="https://img.usecurling.com/ppl/large?gender=female&seed=mari"
+              src={heroImage}
               alt="Mariana Azevedo"
               className="w-full h-full object-cover"
               loading="eager"
