@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { supabase } from '@/lib/supabase/client'
-import { ShieldAlert, Loader2 } from 'lucide-react'
+import { ShieldAlert, Loader2, Lock, Mail } from 'lucide-react'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -59,11 +59,14 @@ export default function AdminLogin() {
       const { data, error } = await signIn(email, password)
 
       if (error) {
-        throw new Error('Invalid credentials')
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Email ou senha incorretos.')
+        }
+        throw new Error(error.message)
       }
 
       if (!data.user) {
-        throw new Error('No user returned from login')
+        throw new Error('Erro ao obter dados do usuário.')
       }
 
       // 2. Check User Role directly to ensure immediate feedback
@@ -76,7 +79,7 @@ export default function AdminLogin() {
 
       if (profileError) {
         await signOut()
-        throw new Error('Error verifying user profile')
+        throw new Error('Erro ao verificar perfil do usuário.')
       }
 
       const userRole = profile?.role || 'user'
@@ -84,7 +87,9 @@ export default function AdminLogin() {
 
       if (!allowedRoles.includes(userRole)) {
         await signOut()
-        throw new Error('Access denied: Administrator privileges required')
+        throw new Error(
+          'Acesso negado: Privilégios de administrador necessários.',
+        )
       }
 
       // 3. Check for MFA Factors
@@ -92,8 +97,6 @@ export default function AdminLogin() {
         await supabase.auth.mfa.listFactors()
 
       if (factorsError) {
-        // If MFA check fails, we still let them in if they are admin, or fail?
-        // Assuming fail safe, but let's just log it and proceed if no strict requirement
         console.error('Error listing MFA factors:', factorsError)
       }
 
@@ -107,14 +110,18 @@ export default function AdminLogin() {
         setLoading(false)
       } else {
         // No MFA, proceed
+        toast({
+          title: 'Bem-vinda de volta!',
+          description: 'Login realizado com sucesso.',
+        })
         setLoading(false)
         navigate('/admin')
       }
     } catch (error: any) {
       setLoading(false)
       toast({
-        title: 'Login failed',
-        description: error.message || 'An error occurred',
+        title: 'Falha no Login',
+        description: error.message || 'Ocorreu um erro ao tentar entrar.',
         variant: 'destructive',
       })
     }
@@ -130,7 +137,7 @@ export default function AdminLogin() {
 
     if (error) {
       toast({
-        title: 'MFA Verification failed',
+        title: 'MFA Falhou',
         description: error.message,
         variant: 'destructive',
       })
@@ -148,14 +155,15 @@ export default function AdminLogin() {
 
     if (error) {
       toast({
-        title: 'Error',
+        title: 'Erro',
         description: error.message,
         variant: 'destructive',
       })
     } else {
       toast({
-        title: 'Email sent',
-        description: 'Check your inbox for password reset instructions.',
+        title: 'Email enviado',
+        description:
+          'Verifique sua caixa de entrada para instruções de redefinição.',
       })
     }
   }
@@ -169,17 +177,17 @@ export default function AdminLogin() {
               <ShieldAlert className="w-6 h-6 text-primary" />
             </div>
             <CardTitle className="text-center">
-              Two-Factor Authentication
+              Autenticação de Dois Fatores
             </CardTitle>
             <CardDescription className="text-center">
-              Enter the code from your authenticator app
+              Digite o código do seu aplicativo autenticador
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleMfaVerify} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="mfa-code" className="sr-only">
-                  Authentication Code
+                  Código de Autenticação
                 </Label>
                 <Input
                   id="mfa-code"
@@ -198,7 +206,7 @@ export default function AdminLogin() {
                 className="w-full"
                 disabled={loading || mfaCode.length !== 6}
               >
-                {loading ? 'Verifying...' : 'Verify'}
+                {loading ? 'Verificando...' : 'Verificar'}
               </Button>
               <Button
                 variant="ghost"
@@ -206,7 +214,7 @@ export default function AdminLogin() {
                 className="w-full text-xs text-muted-foreground"
                 onClick={() => window.location.reload()}
               >
-                Back to Login
+                Voltar ao Login
               </Button>
             </form>
           </CardContent>
@@ -217,29 +225,42 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Admin Access</CardTitle>
-          <CardDescription>
-            Enter your credentials to access the dashboard
+      <Card className="w-full max-w-md shadow-lg border-primary/10">
+        <CardHeader className="space-y-1">
+          <div className="mx-auto mb-2">
+            <div className="p-3 bg-primary/10 rounded-full">
+              <Lock className="w-6 h-6 text-primary" />
+            </div>
+          </div>
+          <CardTitle className="text-center text-2xl font-bold">
+            Área Administrativa
+          </CardTitle>
+          <CardDescription className="text-center">
+            Entre com suas credenciais para acessar o painel
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@exemplo.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="pl-9"
+                  autoComplete="email"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Senha</Label>
                 <Dialog open={isResetOpen} onOpenChange={setIsResetOpen}>
                   <DialogTrigger asChild>
                     <Button
@@ -247,15 +268,15 @@ export default function AdminLogin() {
                       className="px-0 font-normal h-auto text-xs"
                       type="button"
                     >
-                      Forgot password?
+                      Esqueceu a senha?
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Reset Password</DialogTitle>
+                      <DialogTitle>Redefinir Senha</DialogTitle>
                       <DialogDescription>
-                        Enter your email address and we'll send you a link to
-                        reset your password.
+                        Digite seu email e enviaremos um link para redefinir sua
+                        senha.
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleResetPassword}>
@@ -273,30 +294,36 @@ export default function AdminLogin() {
                       </div>
                       <DialogFooter>
                         <Button type="submit" disabled={loading}>
-                          {loading ? 'Sending...' : 'Send Reset Link'}
+                          {loading ? 'Enviando...' : 'Enviar Link'}
                         </Button>
                       </DialogFooter>
                     </form>
                   </DialogContent>
                 </Dialog>
               </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="pl-9"
+                  autoComplete="current-password"
+                />
+              </div>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
+                  Entrando...
                 </>
               ) : (
-                'Sign In'
+                'Entrar'
               )}
             </Button>
           </form>

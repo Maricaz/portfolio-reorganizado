@@ -53,7 +53,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!error && data) {
         setRole(data.role)
       } else {
-        // Fallback or default role
+        // Fallback to 'user' role if profile exists but no role, or error
+        console.warn(
+          'Could not fetch role or no role assigned, defaulting to user',
+        )
         setRole('user')
       }
     } catch (error) {
@@ -63,21 +66,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
+    let mounted = true
+
     // 1. Setup Auth Listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return
+
       setSession(session)
       setUser(session?.user ?? null)
 
       if (session?.user) {
-        // We cannot await here as this callback must be synchronous
-        fetchUserRole(session.user.id)
+        // Fetch role asynchronously
+        // We don't await here because onAuthStateChange must be synchronous
+        fetchUserRole(session.user.id).then(() => {
+          if (mounted) setLoading(false)
+        })
       } else {
         setRole(null)
+        setLoading(false)
       }
-
-      setLoading(false)
     })
 
     // 2. Check Initial Session
@@ -86,8 +95,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const {
           data: { session },
         } = await supabase.auth.getSession()
-        setSession(session)
-        setUser(session?.user ?? null)
+
+        if (mounted) {
+          setSession(session)
+          setUser(session?.user ?? null)
+        }
 
         if (session?.user) {
           await fetchUserRole(session.user.id)
@@ -95,13 +107,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error('Error checking session:', error)
       } finally {
-        setLoading(false)
+        if (mounted) setLoading(false)
       }
     }
 
     initSession()
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const signUp = async (email: string, password: string) => {
@@ -123,8 +138,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
     })
 
-    // If sign in is successful, we should try to refresh the role immediately
-    // to ensure consistency, although onAuthStateChange handles it too.
+    // If sign in is successful, refresh role immediately
     if (data?.user) {
       await fetchUserRole(data.user.id)
     }

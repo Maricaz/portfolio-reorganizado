@@ -28,8 +28,9 @@ export default function AdminLayout() {
       if (!allowedRoles.includes(role)) {
         console.warn('Unauthorized access attempt by', user.email)
         toast({
-          title: 'Access Denied',
-          description: 'You do not have permission to access the admin area.',
+          title: 'Acesso Negado',
+          description:
+            'Você não tem permissão para acessar a área administrativa.',
           variant: 'destructive',
         })
         navigate('/')
@@ -46,7 +47,7 @@ export default function AdminLayout() {
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <div className="text-sm text-muted-foreground">
-            Verifying access...
+            Verificando acesso...
           </div>
         </div>
       </div>
