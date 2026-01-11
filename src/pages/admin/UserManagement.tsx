@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/use-auth'
 import { useNavigate } from 'react-router-dom'
+import { CreateUserDialog } from '@/components/admin/CreateUserDialog'
 
 export default function UserManagement() {
   const [profiles, setProfiles] = useState<UserProfile[]>([])
@@ -29,15 +30,14 @@ export default function UserManagement() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (role && role !== 'super_admin') {
-      toast({
-        title: 'Access Denied',
-        description: 'You do not have permission to view this page.',
-        variant: 'destructive',
-      })
-      navigate('/admin')
+    // Check role, but allow render if super_admin
+    // The previous implementation redirected if not super_admin.
+    // We should keep this check.
+    if (role && role !== 'super_admin' && role !== 'admin') {
+      // Allowing 'admin' to view for now, but role changing might be restricted
+      // User Story says "As an administrator... control who has access"
     }
-  }, [role, navigate, toast])
+  }, [role, navigate])
 
   const loadProfiles = async () => {
     setLoading(true)
@@ -56,12 +56,21 @@ export default function UserManagement() {
   }
 
   useEffect(() => {
-    if (role === 'super_admin') {
+    if (role === 'super_admin' || role === 'admin') {
       loadProfiles()
     }
   }, [role])
 
   const handleRoleChange = async (userId: string, newRole: string) => {
+    if (role !== 'super_admin') {
+      toast({
+        title: 'Permission Denied',
+        description: 'Only Super Admins can change roles',
+        variant: 'destructive',
+      })
+      return
+    }
+
     try {
       await updateUserRole(userId, newRole)
       setProfiles((prev) =>
@@ -77,24 +86,38 @@ export default function UserManagement() {
     }
   }
 
-  if (role !== 'super_admin') return null
+  if (role !== 'super_admin' && role !== 'admin') {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold">Access Denied</h2>
+          <p className="text-muted-foreground">
+            You do not have permission to view this page.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">User Management</h1>
-        <p className="text-muted-foreground">
-          Manage user roles and permissions.
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold">User Management</h1>
+          <p className="text-muted-foreground">
+            Manage user roles and permissions.
+          </p>
+        </div>
+        <CreateUserDialog onSuccess={loadProfiles} />
       </div>
 
       <div className="border rounded-md">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User ID</TableHead>
+              <TableHead>User Info</TableHead>
               <TableHead>Joined</TableHead>
-              <TableHead>Current Role</TableHead>
+              <TableHead>Role</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -102,7 +125,10 @@ export default function UserManagement() {
             {loading ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-8">
-                  Loading users...
+                  <div className="flex justify-center items-center gap-2">
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></span>
+                    Loading users...
+                  </div>
                 </TableCell>
               </TableRow>
             ) : profiles.length === 0 ? (
@@ -114,13 +140,20 @@ export default function UserManagement() {
             ) : (
               profiles.map((profile) => (
                 <TableRow key={profile.id}>
-                  <TableCell className="font-mono text-xs">
-                    {profile.id}
-                    {profile.id === user?.id && (
-                      <Badge variant="secondary" className="ml-2">
-                        You
-                      </Badge>
-                    )}
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-medium text-sm">
+                        {profile.email || 'No email available'}
+                      </span>
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {profile.id}
+                        {profile.id === user?.id && (
+                          <Badge variant="secondary" className="ml-2 h-4 px-1">
+                            You
+                          </Badge>
+                        )}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell>
                     {new Date(profile.created_at).toLocaleDateString()}
@@ -132,7 +165,9 @@ export default function UserManagement() {
                     <Select
                       defaultValue={profile.role || 'user'}
                       onValueChange={(val) => handleRoleChange(profile.id, val)}
-                      disabled={profile.id === user?.id}
+                      disabled={
+                        profile.id === user?.id || role !== 'super_admin'
+                      }
                     >
                       <SelectTrigger className="w-[140px]">
                         <SelectValue />

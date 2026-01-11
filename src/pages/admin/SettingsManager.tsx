@@ -5,8 +5,11 @@ import {
   flattenTranslations,
 } from '@/services/translations'
 import { translations } from '@/lib/translations'
+import { getSiteSettings, upsertSiteSetting } from '@/services/settings'
+import { uploadFile } from '@/services/storage'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Table,
   TableBody,
@@ -16,10 +19,19 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
-import { Search, Save, Moon, Sun, Monitor, Shield } from 'lucide-react'
+import {
+  Search,
+  Save,
+  Moon,
+  Sun,
+  Monitor,
+  Shield,
+  Image as ImageIcon,
+  Loader2,
+  Upload,
+} from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTheme } from '@/components/theme-provider'
-import { Separator } from '@/components/ui/separator'
 import { SecuritySettings } from '@/components/admin/SecuritySettings'
 
 export default function SettingsManager() {
@@ -29,6 +41,8 @@ export default function SettingsManager() {
   const { toast } = useToast()
   const { theme, setTheme } = useTheme()
   const [accentColor, setAccentColor] = useState('240 5.9% 10%') // Default primary
+  const [homeImage, setHomeImage] = useState<string>('')
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   const flattenedDefaults = useMemo(() => {
     return {
@@ -44,11 +58,23 @@ export default function SettingsManager() {
 
   useEffect(() => {
     loadTranslations()
+    loadSettings()
     const savedAccent = localStorage.getItem('admin_accent')
     if (savedAccent) {
       setAccentColor(savedAccent)
     }
   }, [])
+
+  const loadSettings = async () => {
+    try {
+      const settings = await getSiteSettings()
+      if (settings.home_hero_image) {
+        setHomeImage(settings.home_hero_image)
+      }
+    } catch (error) {
+      console.error('Failed to load settings', error)
+    }
+  }
 
   const loadTranslations = async () => {
     const data = await getSiteTranslations()
@@ -70,6 +96,33 @@ export default function SettingsManager() {
         description: 'Failed to update',
         variant: 'destructive',
       })
+    }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingImage(true)
+    try {
+      const url = await uploadFile(file, 'portfolio-media', 'home')
+      if (url) {
+        setHomeImage(url)
+        await upsertSiteSetting('home_hero_image', url)
+        toast({
+          title: 'Image updated',
+          description: 'Home page hero image has been updated successfully.',
+        })
+      }
+    } catch (error) {
+      console.error('Upload failed:', error)
+      toast({
+        title: 'Upload failed',
+        description: 'Failed to upload image. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      setUploadingImage(false)
     }
   }
 
@@ -124,8 +177,11 @@ export default function SettingsManager() {
 
         <TabsContent value="general" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
+            {/* Theme Settings */}
             <div className="space-y-4 p-4 border rounded-lg bg-card">
-              <h3 className="text-lg font-medium">Theme Preference</h3>
+              <h3 className="text-lg font-medium flex items-center gap-2">
+                <Monitor className="h-5 w-5" /> Theme Preference
+              </h3>
               <div className="flex gap-2">
                 <Button
                   variant={theme === 'light' ? 'default' : 'outline'}
@@ -151,6 +207,7 @@ export default function SettingsManager() {
               </div>
             </div>
 
+            {/* Accent Color */}
             <div className="space-y-4 p-4 border rounded-lg bg-card">
               <h3 className="text-lg font-medium">Accent Color</h3>
               <div className="flex flex-wrap gap-2">
@@ -167,6 +224,51 @@ export default function SettingsManager() {
                     title={acc.name}
                   />
                 ))}
+              </div>
+            </div>
+
+            {/* Home Hero Image */}
+            <div className="space-y-4 p-4 border rounded-lg bg-card md:col-span-2">
+              <h3 className="text-lg font-medium flex items-center gap-2">
+                <ImageIcon className="h-5 w-5" /> Home Page Customization
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6 items-start">
+                <div className="space-y-4">
+                  <Label>Hero Image</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Upload a new image to replace the main picture on the home
+                    page. Recommended size: 500x500px or larger.
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                    />
+                  </div>
+                  {uploadingImage && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Uploading...
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-center md:justify-end">
+                  <div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-muted shadow-md">
+                    {homeImage ? (
+                      <img
+                        src={homeImage}
+                        alt="Home Hero"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
+                        <ImageIcon className="h-10 w-10 opacity-20" />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -28,3 +28,11 @@ export const getSiteSettings = async (): Promise<
 
   return settings
 }
+
+export const upsertSiteSetting = async (key: string, value: any) => {
+  const { error } = await supabase
+    .from('site_settings')
+    .upsert({ key, value }, { onConflict: 'key' })
+
+  return { error }
+}
