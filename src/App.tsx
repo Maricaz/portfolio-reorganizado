@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -22,7 +22,6 @@ const ContactPage = lazy(() => import('./pages/ContactPage'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 // Admin Pages
-const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'))
 const AdminDashboard = lazy(() => import('./pages/admin/DashboardOverview'))
 const BooksManager = lazy(() => import('./pages/admin/BooksManager'))
@@ -128,14 +127,10 @@ const App = () => (
                 />
               </Route>
 
-              {/* Admin Routes */}
+              {/* Admin Routes - Login bypassed */}
               <Route
                 path="/admin/login"
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <AdminLogin />
-                  </Suspense>
-                }
+                element={<Navigate to="/admin" replace />}
               />
               <Route
                 path="/admin"

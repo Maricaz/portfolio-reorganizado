@@ -34,6 +34,7 @@ export default function Shell() {
   const { t } = useLanguage()
   const location = useLocation()
   const [open, setOpen] = useState(false)
+  // Auth hook usage kept for compatibility, though not used for admin access anymore
   const { session } = useAuth()
 
   const navItems = [
@@ -46,7 +47,7 @@ export default function Shell() {
     { title: t.nav.contact, url: '/contact', icon: Mail },
     {
       title: t.nav.admin,
-      url: '/admin/login',
+      url: '/admin',
       icon: LayoutDashboard,
     },
   ]

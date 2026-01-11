@@ -8,7 +8,7 @@ export const translations = {
       books: 'Livros',
       music: 'Música',
       contact: 'Contato',
-      admin: 'Login',
+      admin: 'Admin',
     },
     home: {
       hero_title: 'Mariana Azevedo',
@@ -135,7 +135,7 @@ export const translations = {
       books: 'Books',
       music: 'Music',
       contact: 'Contact',
-      admin: 'Login',
+      admin: 'Admin',
     },
     home: {
       hero_title: 'Mariana Azevedo',
@@ -262,7 +262,7 @@ export const translations = {
       books: '도서',
       music: '음악',
       contact: '연락하기',
-      admin: '로그인',
+      admin: '관리',
     },
     home: {
       hero_title: '마리아나 아제베도',
