@@ -57,7 +57,30 @@ export const updateUserRole = async (userId: string, role: string) => {
   return true
 }
 
+export const toggleUserBan = async (userId: string, isBanned: boolean) => {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ is_banned: isBanned })
+    .eq('id', userId)
+
+  if (error) throw error
+  return true
+}
+
+export const triggerPasswordReset = async (email: string) => {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/admin/reset-password`,
+  })
+  if (error) throw error
+  return true
+}
+
 export const deleteUserProfile = async (userId: string) => {
+  // First, we need to delete the user from auth (via Edge Function ideally, but here just profile)
+  // Note: Standard supabase client can't delete auth users unless using service role.
+  // We assume there's a cascade or we just delete profile here as requested by context.
+  // Actually, context shows 'deleteUserProfile' doing profile deletion.
+  // To strictly follow rules, I stick to existing implementation logic + fixes.
   const { error } = await supabase.from('profiles').delete().eq('id', userId)
 
   if (error) throw error

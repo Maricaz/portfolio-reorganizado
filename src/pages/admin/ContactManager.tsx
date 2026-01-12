@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { ExportButton } from '@/components/admin/ExportButton'
 
 export default function ContactManager() {
   const [submissions, setSubmissions] = useState<ContactSubmission[]>([])
@@ -75,9 +76,12 @@ export default function ContactManager() {
             Manage incoming messages from the contact form.
           </p>
         </div>
-        <Button onClick={loadSubmissions} variant="outline" size="sm">
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          <ExportButton data={submissions} filename="contact_submissions" />
+          <Button onClick={loadSubmissions} variant="outline" size="sm">
+            Refresh
+          </Button>
+        </div>
       </div>
 
       <div className="border rounded-md">

@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
-import { getAllProfiles, deleteUserProfile } from '@/services/admin'
+import {
+  getAllProfiles,
+  deleteUserProfile,
+  toggleUserBan,
+  triggerPasswordReset,
+} from '@/services/admin'
 import { UserProfile } from '@/types'
 import {
   Table,
@@ -26,7 +31,25 @@ import { useAuth } from '@/hooks/use-auth'
 import { useNavigate } from 'react-router-dom'
 import { CreateUserDialog } from '@/components/admin/CreateUserDialog'
 import { EditUserDialog } from '@/components/admin/EditUserDialog'
-import { Pencil, Trash2, Loader2, ShieldAlert } from 'lucide-react'
+import {
+  Pencil,
+  Trash2,
+  Loader2,
+  ShieldAlert,
+  Ban,
+  CheckCircle,
+  KeyRound,
+  MoreVertical,
+} from 'lucide-react'
+import { ExportButton } from '@/components/admin/ExportButton'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export default function UserManagement() {
   const [profiles, setProfiles] = useState<UserProfile[]>([])
@@ -43,6 +66,9 @@ export default function UserManagement() {
   const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  // Processing State
+  const [processingId, setProcessingId] = useState<string | null>(null)
 
   const loadProfiles = async () => {
     setLoading(true)
@@ -61,7 +87,6 @@ export default function UserManagement() {
   }
 
   useEffect(() => {
-    // Only load profiles if user has sufficient permission
     if (!authLoading && (role === 'super_admin' || role === 'admin')) {
       loadProfiles()
     } else if (
@@ -70,12 +95,83 @@ export default function UserManagement() {
       role !== 'super_admin' &&
       role !== 'admin'
     ) {
-      // If auth loaded but role is insufficient, stop loading spinner for data
       setLoading(false)
     }
   }, [role, authLoading])
 
-  // 1. Loading State (Auth or Data)
+  const handleEditClick = (profile: UserProfile) => {
+    setEditingUser(profile)
+    setEditDialogOpen(true)
+  }
+
+  const handleDeleteClick = (profile: UserProfile) => {
+    setDeletingUser(profile)
+    setDeleteDialogOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    if (!deletingUser) return
+    setIsDeleting(true)
+    try {
+      await deleteUserProfile(deletingUser.id)
+      toast({ title: 'Success', description: 'User deleted' })
+      setProfiles((prev) => prev.filter((p) => p.id !== deletingUser.id))
+      setDeleteDialogOpen(false)
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete user',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsDeleting(false)
+      setDeletingUser(null)
+    }
+  }
+
+  const handleToggleBan = async (profile: UserProfile) => {
+    if (!profile.id) return
+    setProcessingId(profile.id)
+    try {
+      const newStatus = !profile.is_banned
+      await toggleUserBan(profile.id, newStatus)
+      setProfiles((prev) =>
+        prev.map((p) =>
+          p.id === profile.id ? { ...p, is_banned: newStatus } : p,
+        ),
+      )
+      toast({
+        title: 'Success',
+        description: `User ${newStatus ? 'banned' : 'unbanned'} successfully`,
+      })
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update user status',
+        variant: 'destructive',
+      })
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
+  const handleResetPassword = async (email: string) => {
+    if (!email) return
+    try {
+      await triggerPasswordReset(email)
+      toast({
+        title: 'Email Sent',
+        description: `Password reset email sent to ${email}`,
+      })
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to send password reset email',
+        variant: 'destructive',
+      })
+    }
+  }
+
   if (authLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
@@ -84,7 +180,6 @@ export default function UserManagement() {
     )
   }
 
-  // 2. Permission Check
   if (role !== 'super_admin' && role !== 'admin') {
     return (
       <div className="flex h-[50vh] flex-col items-center justify-center gap-4 text-center animate-fade-in">
@@ -105,7 +200,6 @@ export default function UserManagement() {
     )
   }
 
-  // 3. Main Content
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -115,7 +209,10 @@ export default function UserManagement() {
             Manage user roles, permissions and accounts.
           </p>
         </div>
-        <CreateUserDialog onSuccess={loadProfiles} />
+        <div className="flex gap-2">
+          <ExportButton data={profiles} filename="users_export" />
+          <CreateUserDialog onSuccess={loadProfiles} />
+        </div>
       </div>
 
       <div className="border rounded-md bg-card">
@@ -125,13 +222,14 @@ export default function UserManagement() {
               <TableHead>User Info</TableHead>
               <TableHead>Joined</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8">
+                <TableCell colSpan={5} className="text-center py-8">
                   <div className="flex justify-center items-center gap-2">
                     <Loader2 className="animate-spin h-4 w-4" />
                     Loading users...
@@ -140,7 +238,7 @@ export default function UserManagement() {
               </TableRow>
             ) : profiles.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8">
+                <TableCell colSpan={5} className="text-center py-8">
                   No users found.
                 </TableCell>
               </TableRow>
@@ -179,38 +277,75 @@ export default function UserManagement() {
                       {profile.role || 'user'}
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    {profile.is_banned ? (
+                      <Badge variant="destructive" className="gap-1">
+                        <Ban className="h-3 w-3" /> Banned
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-green-600 border-green-200 gap-1"
+                      >
+                        <CheckCircle className="h-3 w-3" /> Active
+                      </Badge>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditClick(profile)}
-                        disabled={role !== 'super_admin'}
-                        title={
-                          role !== 'super_admin'
-                            ? 'Only Super Admin can edit roles'
-                            : 'Edit user role'
-                        }
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => handleDeleteClick(profile)}
-                        disabled={
-                          role !== 'super_admin' || profile.id === user?.id
-                        }
-                        title={
-                          role !== 'super_admin'
-                            ? 'Only Super Admin can delete users'
-                            : 'Delete user'
-                        }
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem
+                          onClick={() => handleEditClick(profile)}
+                          disabled={role !== 'super_admin'}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit Role
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleResetPassword(profile.email!)}
+                        >
+                          <KeyRound className="mr-2 h-4 w-4" />
+                          Reset Password
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleToggleBan(profile)}
+                          disabled={
+                            profile.id === user?.id ||
+                            (role !== 'super_admin' &&
+                              profile.role === 'super_admin')
+                          }
+                        >
+                          {profile.is_banned ? (
+                            <>
+                              <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
+                              Unban User
+                            </>
+                          ) : (
+                            <>
+                              <Ban className="mr-2 h-4 w-4 text-destructive" />
+                              Ban User
+                            </>
+                          )}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteClick(profile)}
+                          className="text-destructive focus:text-destructive"
+                          disabled={
+                            role !== 'super_admin' || profile.id === user?.id
+                          }
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete User
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))

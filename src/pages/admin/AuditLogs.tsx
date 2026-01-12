@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { PaginationControl } from '@/components/PaginationControl'
+import { ExportButton } from '@/components/admin/ExportButton'
 
 export default function AuditLogs() {
   const [logs, setLogs] = useState<AuditLog[]>([])
@@ -73,14 +74,17 @@ export default function AuditLogs() {
             Track system changes and activity.
           </p>
         </div>
-        <Button variant="outline" onClick={fetchLogs} disabled={loading}>
-          {loading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCw className="mr-2 h-4 w-4" />
-          )}
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          <ExportButton data={logs} filename="audit_logs" />
+          <Button variant="outline" onClick={fetchLogs} disabled={loading}>
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            Refresh
+          </Button>
+        </div>
       </div>
 
       <Card>

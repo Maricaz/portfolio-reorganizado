@@ -40,7 +40,9 @@ export type ContactFormData = {
   origin?: string
 }
 
-export type UserProfile = Database['public']['Tables']['profiles']['Row']
+export type UserProfile = Database['public']['Tables']['profiles']['Row'] & {
+  is_banned?: boolean
+}
 
 export type Book = Database['public']['Tables']['books']['Row']
 export type Project = {
@@ -54,7 +56,7 @@ export type Project = {
   demo_url?: string
   repo_url?: string
   created_at: string
-} // Assuming basic project structure as it's not in the provided types but used in database.ts
+}
 
 export type ContactSubmission =
   Database['public']['Tables']['contact_submissions']['Row']
