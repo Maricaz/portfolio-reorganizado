@@ -14,7 +14,8 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Shield, ShieldCheck, AlertTriangle, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { Separator } from '@/components/ui/separator'
+import { SessionManager } from '@/components/admin/SessionManager'
+import { logSecurityEvent, triggerSecurityAlert } from '@/services/security'
 
 export const SecuritySettings = () => {
   const [factors, setFactors] = useState<any[]>([])
@@ -86,6 +87,7 @@ export const SecuritySettings = () => {
         variant: 'destructive',
       })
     } else {
+      // Success Logic
       toast({
         title: 'Success!',
         description: 'Two-factor authentication has been enabled.',
@@ -94,6 +96,13 @@ export const SecuritySettings = () => {
       setQrCode(null)
       setVerifyCode('')
       fetchFactors()
+
+      // Audit & Alert
+      await logSecurityEvent('2FA_CHANGE', { type: 'enabled', factorId })
+      await triggerSecurityAlert('2FA_CHANGE', {
+        title: 'Security Alert: 2FA Enabled',
+        message: 'Two-factor authentication was enabled for your account.',
+      })
     }
   }
 
@@ -111,6 +120,13 @@ export const SecuritySettings = () => {
         description: 'Factor removed successfully.',
       })
       fetchFactors()
+
+      // Audit & Alert
+      await logSecurityEvent('2FA_CHANGE', { type: 'disabled', factorId: id })
+      await triggerSecurityAlert('2FA_CHANGE', {
+        title: 'Security Alert: 2FA Disabled',
+        message: 'Two-factor authentication was disabled for your account.',
+      })
     }
   }
 
@@ -125,7 +141,7 @@ export const SecuritySettings = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -238,6 +254,8 @@ export const SecuritySettings = () => {
           </CardFooter>
         )}
       </Card>
+
+      <SessionManager />
     </div>
   )
 }

@@ -15,6 +15,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, Mail, ArrowLeft, CheckCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { logSecurityEvent, triggerSecurityAlert } from '@/services/security'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -31,7 +32,17 @@ export default function ForgotPassword() {
     try {
       const { error } = await resetPassword(email)
       if (error) throw error
+
       setSubmitted(true)
+
+      // Audit and Alert
+      // We don't wait for these to prevent blocking UI if they fail
+      logSecurityEvent('PASSWORD_RECOVERY_REQUEST', { email })
+      triggerSecurityAlert('PASSWORD_RESET', {
+        title: 'Security Alert: Password Reset Requested',
+        message: `A password reset was requested for email: ${email}`,
+        email,
+      })
     } catch (err: any) {
       setError(err.message || 'Ocorreu um erro ao enviar o email.')
     } finally {

@@ -14,6 +14,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, Lock, CheckCircle } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { logSecurityEvent, triggerSecurityAlert } from '@/services/security'
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('')
@@ -62,6 +63,14 @@ export default function ResetPassword() {
       const { error } = await updatePassword(password)
       if (error) throw error
       setSuccess(true)
+
+      // Audit and Alert
+      logSecurityEvent('PASSWORD_UPDATED', { success: true })
+      triggerSecurityAlert('PASSWORD_RESET', {
+        title: 'Security Alert: Password Changed',
+        message: 'Your account password has been successfully updated.',
+      })
+
       toast({
         title: 'Senha atualizada',
         description: 'Sua senha foi redefinida com sucesso.',
