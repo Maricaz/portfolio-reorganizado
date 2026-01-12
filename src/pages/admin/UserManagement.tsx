@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAllProfiles, updateUserRole } from '@/services/admin'
+import { getAllProfiles, deleteUserProfile } from '@/services/admin'
 import { UserProfile } from '@/types'
 import {
   Table,
@@ -9,18 +9,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/use-auth'
 import { useNavigate } from 'react-router-dom'
 import { CreateUserDialog } from '@/components/admin/CreateUserDialog'
+import { EditUserDialog } from '@/components/admin/EditUserDialog'
+import { Pencil, Trash2, Loader2 } from 'lucide-react'
 
 export default function UserManagement() {
   const [profiles, setProfiles] = useState<UserProfile[]>([])
@@ -29,13 +35,18 @@ export default function UserManagement() {
   const { user, role } = useAuth()
   const navigate = useNavigate()
 
+  // Edit State
+  const [editingUser, setEditingUser] = useState<UserProfile | null>(null)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+
+  // Delete State
+  const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+
   useEffect(() => {
-    // Check role, but allow render if super_admin
-    // The previous implementation redirected if not super_admin.
-    // We should keep this check.
     if (role && role !== 'super_admin' && role !== 'admin') {
-      // Allowing 'admin' to view for now, but role changing might be restricted
-      // User Story says "As an administrator... control who has access"
+      // Access control
     }
   }, [role, navigate])
 
@@ -61,28 +72,45 @@ export default function UserManagement() {
     }
   }, [role])
 
-  const handleRoleChange = async (userId: string, newRole: string) => {
-    if (role !== 'super_admin') {
+  const handleEditClick = (profile: UserProfile) => {
+    setEditingUser(profile)
+    setEditDialogOpen(true)
+  }
+
+  const handleDeleteClick = (profile: UserProfile) => {
+    if (profile.id === user?.id) {
       toast({
-        title: 'Permission Denied',
-        description: 'Only Super Admins can change roles',
+        title: 'Operation Denied',
+        description: 'You cannot delete your own account.',
         variant: 'destructive',
       })
       return
     }
+    setDeletingUser(profile)
+    setDeleteDialogOpen(true)
+  }
 
+  const confirmDelete = async () => {
+    if (!deletingUser) return
+
+    setIsDeleting(true)
     try {
-      await updateUserRole(userId, newRole)
-      setProfiles((prev) =>
-        prev.map((p) => (p.id === userId ? { ...p, role: newRole as any } : p)),
-      )
-      toast({ title: 'Success', description: 'User role updated' })
+      await deleteUserProfile(deletingUser.id)
+      setProfiles((prev) => prev.filter((p) => p.id !== deletingUser.id))
+      toast({
+        title: 'User Deleted',
+        description: 'The user profile has been removed.',
+      })
+      setDeleteDialogOpen(false)
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to update role',
+        description: 'Failed to delete user.',
         variant: 'destructive',
       })
+    } finally {
+      setIsDeleting(false)
+      setDeletingUser(null)
     }
   }
 
@@ -105,20 +133,20 @@ export default function UserManagement() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">User Management</h1>
           <p className="text-muted-foreground">
-            Manage user roles and permissions.
+            Manage user roles, permissions and accounts.
           </p>
         </div>
         <CreateUserDialog onSuccess={loadProfiles} />
       </div>
 
-      <div className="border rounded-md">
+      <div className="border rounded-md bg-card">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>User Info</TableHead>
               <TableHead>Joined</TableHead>
               <TableHead>Role</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -126,7 +154,7 @@ export default function UserManagement() {
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-8">
                   <div className="flex justify-center items-center gap-2">
-                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></span>
+                    <Loader2 className="animate-spin h-4 w-4" />
                     Loading users...
                   </div>
                 </TableCell>
@@ -161,24 +189,28 @@ export default function UserManagement() {
                   <TableCell>
                     <Badge variant="outline">{profile.role || 'user'}</Badge>
                   </TableCell>
-                  <TableCell>
-                    <Select
-                      defaultValue={profile.role || 'user'}
-                      onValueChange={(val) => handleRoleChange(profile.id, val)}
-                      disabled={
-                        profile.id === user?.id || role !== 'super_admin'
-                      }
-                    >
-                      <SelectTrigger className="w-[140px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="user">User</SelectItem>
-                        <SelectItem value="editor">Editor</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="super_admin">Super Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditClick(profile)}
+                        disabled={role !== 'super_admin'}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDeleteClick(profile)}
+                        disabled={
+                          role !== 'super_admin' || profile.id === user?.id
+                        }
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -186,6 +218,39 @@ export default function UserManagement() {
           </TableBody>
         </Table>
       </div>
+
+      <EditUserDialog
+        user={editingUser}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSuccess={loadProfiles}
+      />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              user account and remove their data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault()
+                confirmDelete()
+              }}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

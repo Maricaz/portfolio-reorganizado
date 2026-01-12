@@ -28,11 +28,12 @@ import {
   Shield,
   Image as ImageIcon,
   Loader2,
-  Upload,
+  Globe,
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTheme } from '@/components/theme-provider'
 import { SecuritySettings } from '@/components/admin/SecuritySettings'
+import { SeoSettings } from '@/components/admin/SeoSettings'
 
 export default function SettingsManager() {
   const [dbTranslations, setDbTranslations] = useState<any[]>([])
@@ -40,7 +41,7 @@ export default function SettingsManager() {
   const [editingValues, setEditingValues] = useState<Record<string, string>>({})
   const { toast } = useToast()
   const { theme, setTheme } = useTheme()
-  const [accentColor, setAccentColor] = useState('240 5.9% 10%') // Default primary
+  const [accentColor, setAccentColor] = useState('240 5.9% 10%')
   const [homeImage, setHomeImage] = useState<string>('')
   const [uploadingImage, setUploadingImage] = useState(false)
 
@@ -169,6 +170,10 @@ export default function SettingsManager() {
         <TabsList className="mb-4">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="translations">Translations</TabsTrigger>
+          <TabsTrigger value="seo">
+            <Globe className="w-4 h-4 mr-2" />
+            SEO
+          </TabsTrigger>
           <TabsTrigger value="security">
             <Shield className="w-4 h-4 mr-2" />
             Security
@@ -300,7 +305,7 @@ export default function SettingsManager() {
             </TabsList>
             {['pt', 'en', 'ko'].map((lang) => (
               <TabsContent key={lang} value={lang}>
-                <div className="border rounded-md">
+                <div className="border rounded-md max-h-[600px] overflow-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -353,6 +358,10 @@ export default function SettingsManager() {
               </TabsContent>
             ))}
           </Tabs>
+        </TabsContent>
+
+        <TabsContent value="seo">
+          <SeoSettings />
         </TabsContent>
 
         <TabsContent value="security">

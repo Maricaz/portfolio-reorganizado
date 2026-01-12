@@ -57,6 +57,13 @@ export const updateUserRole = async (userId: string, role: string) => {
   return true
 }
 
+export const deleteUserProfile = async (userId: string) => {
+  const { error } = await supabase.from('profiles').delete().eq('id', userId)
+
+  if (error) throw error
+  return true
+}
+
 export const createUser = async (
   data: any,
 ): Promise<{ data: any; error: any }> => {

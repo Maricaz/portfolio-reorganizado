@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { getSiteSettings } from '@/services/settings'
 
 interface JsonLdProps {
   '@context': string
@@ -13,6 +14,7 @@ interface SeoProps {
   image?: string
   type?: string
   jsonLd?: JsonLdProps
+  keywords?: string
 }
 
 export const useSEO = ({
@@ -21,13 +23,38 @@ export const useSEO = ({
   image = '/og-image.png',
   type = 'website',
   jsonLd,
+  keywords,
 }: SeoProps) => {
   const { language } = useLanguage()
+  const [globalSeo, setGlobalSeo] = useState<{
+    title: string
+    description: string
+    keywords: string
+  } | null>(null)
+
+  useEffect(() => {
+    // Ideally we would cache this or fetch it once in a provider,
+    // but for now we fetch if not present to support the SEO requirement.
+    const fetchGlobalSeo = async () => {
+      const settings = await getSiteSettings()
+      if (settings.seo_global) {
+        setGlobalSeo(settings.seo_global)
+      }
+    }
+    fetchGlobalSeo()
+  }, [])
 
   useEffect(() => {
     // Set Title
-    const finalTitle = title ? `${title} | Portfolio` : 'Portfolio'
+    const siteTitle = globalSeo?.title || 'Portfolio'
+    const finalTitle = title ? `${title} | ${siteTitle}` : siteTitle
     document.title = finalTitle
+
+    // Meta Description
+    const finalDescription = description || globalSeo?.description || ''
+
+    // Meta Keywords
+    const finalKeywords = keywords || globalSeo?.keywords || ''
 
     // Helper to set meta tag
     const setMeta = (
@@ -45,11 +72,13 @@ export const useSEO = ({
     }
 
     // Standard Meta
-    if (description) setMeta('description', description)
+    if (finalDescription) setMeta('description', finalDescription)
+    if (finalKeywords) setMeta('keywords', finalKeywords)
 
     // Open Graph
     setMeta('og:title', finalTitle, 'property')
-    if (description) setMeta('og:description', description, 'property')
+    if (finalDescription)
+      setMeta('og:description', finalDescription, 'property')
     setMeta('og:image', image, 'property')
     setMeta('og:type', type, 'property')
     setMeta('og:locale', language, 'property')
@@ -57,7 +86,8 @@ export const useSEO = ({
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image', 'name')
     setMeta('twitter:title', finalTitle, 'name')
-    if (description) setMeta('twitter:description', description, 'name')
+    if (finalDescription)
+      setMeta('twitter:description', finalDescription, 'name')
     setMeta('twitter:image', image, 'name')
 
     // Set HTML Lang Attribute
@@ -73,7 +103,5 @@ export const useSEO = ({
       }
       script.textContent = JSON.stringify(jsonLd)
     }
-
-    // CSP is handled in index.html, but we should ensure valid meta tags
-  }, [title, description, image, type, language, jsonLd])
+  }, [title, description, image, type, language, jsonLd, keywords, globalSeo])
 }

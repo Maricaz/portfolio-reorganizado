@@ -2,7 +2,14 @@ import { supabase } from '@/lib/supabase/client'
 import { SiteSettings } from '@/types'
 
 export const getSiteSettings = async (): Promise<
-  Partial<SiteSettings> & { home_hero_image?: string }
+  Partial<SiteSettings> & {
+    home_hero_image?: string
+    seo_global?: {
+      title: string
+      description: string
+      keywords: string
+    }
+  }
 > => {
   const { data, error } = await supabase
     .from('site_settings')
@@ -13,7 +20,7 @@ export const getSiteSettings = async (): Promise<
     return {}
   }
 
-  const settings: Partial<SiteSettings> & { home_hero_image?: string } = {}
+  const settings: any = {}
 
   data.forEach((item) => {
     if (item.key === 'brand_config') {
@@ -23,6 +30,8 @@ export const getSiteSettings = async (): Promise<
     } else if (item.key === 'home_hero_image') {
       settings.home_hero_image =
         typeof item.value === 'string' ? item.value : String(item.value)
+    } else if (item.key === 'seo_global') {
+      settings.seo_global = item.value
     }
   })
 
