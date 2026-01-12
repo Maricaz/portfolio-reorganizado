@@ -61,19 +61,50 @@ export default function AdminLogin() {
       }
 
       if (!data.user) {
-        throw new Error('Erro ao obter dados do usuário.')
+        throw new Error('Erro inesperado: dados do usuário não retornados.')
       }
 
       // 2. Check User Role directly to ensure immediate feedback
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role, is_banned')
-        .eq('id', data.user.id)
-        .single()
+      // We wrap this in a try-catch to be robust against "Profile Not Found"
+      let profile = null
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('role, is_banned')
+          .eq('id', data.user.id)
+          .single()
 
-      if (profileError) {
-        await signOut()
-        throw new Error('Erro ao verificar perfil do usuário.')
+        if (profileError) {
+          if (profileError.code === 'PGRST116') {
+            // Profile missing. Attempt to create default profile so we don't block.
+            // (Though we expect useAuth to also try this, doing it here gives immediate feedback logic)
+            console.log(
+              'Profile missing in Login check. Attempting creation...',
+            )
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert([{ id: data.user.id, email: email, role: 'user' }])
+
+            if (insertError) {
+              // If we can't create, we can't proceed properly
+              console.error('Failed to auto-create profile:', insertError)
+              throw new Error(
+                'Perfil de usuário não encontrado e não pôde ser criado.',
+              )
+            }
+            // Proceed with default 'user' role check (which will fail admin check, but correctly)
+            profile = { role: 'user', is_banned: false }
+          } else {
+            // Other DB error
+            console.error('Profile fetch error:', profileError)
+            throw new Error(`Erro ao verificar perfil: ${profileError.message}`)
+          }
+        } else {
+          profile = profileData
+        }
+      } catch (err: any) {
+        // If we caught an error above, rethrow it to be handled by outer catch
+        throw err
       }
 
       if (profile?.is_banned) {
@@ -87,9 +118,12 @@ export default function AdminLogin() {
       const allowedRoles = ['admin', 'super_admin', 'editor']
 
       if (!allowedRoles.includes(userRole)) {
+        // We do NOT sign out here immediately, we just show error.
+        // Or we can sign out to force them to use a correct account.
+        // Usually safer to sign out to avoid "stuck" logged in state on login page.
         await signOut()
         throw new Error(
-          'Acesso negado: Privilégios de administrador necessários.',
+          'Acesso negado: Esta conta não possui privilégios de administrador.',
         )
       }
 
@@ -122,7 +156,10 @@ export default function AdminLogin() {
       setLoading(false)
       const errorMessage =
         error.message || 'Ocorreu um erro ao tentar entrar. Tente novamente.'
+
+      console.error('Login process error:', error)
       setLoginError(errorMessage)
+
       toast({
         title: 'Falha no Login',
         description: errorMessage,
@@ -224,10 +261,12 @@ export default function AdminLogin() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             {loginError && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" className="animate-fade-in">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Erro</AlertTitle>
-                <AlertDescription>{loginError}</AlertDescription>
+                <AlertDescription className="text-xs mt-1">
+                  {loginError}
+                </AlertDescription>
               </Alert>
             )}
             <div className="space-y-2">
@@ -282,6 +321,18 @@ export default function AdminLogin() {
                 'Entrar'
               )}
             </Button>
+
+            {loginError && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs text-muted-foreground mt-2"
+                onClick={() => setLoginError(null)}
+              >
+                Tentar novamente
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>

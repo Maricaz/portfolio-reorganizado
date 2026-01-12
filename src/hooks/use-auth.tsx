@@ -50,13 +50,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
 
-  const fetchUserRole = async (userId: string) => {
+  // Robust function to fetch or create user profile
+  const fetchUserRole = async (userId: string, userEmail?: string) => {
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('profiles')
         .select('role, is_banned, permissions')
         .eq('id', userId)
         .single()
+
+      // Self-healing: If profile is missing (PGRST116), try to create it
+      if (error && error.code === 'PGRST116') {
+        console.warn('Profile not found for user. Attempting to create...')
+
+        const { error: insertError } = await supabase.from('profiles').insert([
+          {
+            id: userId,
+            email: userEmail || '',
+            role: 'user', // Default role
+          },
+        ])
+
+        if (insertError) {
+          console.error('Failed to auto-create profile:', insertError)
+        } else {
+          // Retry fetch
+          const retryResult = await supabase
+            .from('profiles')
+            .select('role, is_banned, permissions')
+            .eq('id', userId)
+            .single()
+
+          data = retryResult.data
+          error = retryResult.error
+        }
+      }
 
       if (!error && data) {
         if (data.is_banned) {
@@ -104,7 +132,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         if (initialSession?.user) {
-          await fetchUserRole(initialSession.user.id)
+          await fetchUserRole(initialSession.user.id, initialSession.user.email)
         }
       } catch (error) {
         console.error('Error checking initial session:', error)
@@ -114,17 +142,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const {
         data: { subscription },
-      } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      } = supabase.auth.onAuthStateChange(async (event, newSession) => {
         if (!mounted) return
 
-        setSession(newSession)
-        setUser(newSession?.user ?? null)
-
-        if (newSession?.user) {
-          await fetchUserRole(newSession.user.id)
-        } else {
+        // Handle Token Refresh or Sign In
+        if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+          setSession(newSession)
+          setUser(newSession?.user ?? null)
+          if (newSession?.user) {
+            // We don't want to block UI on token refresh, but we need to update role
+            fetchUserRole(newSession.user.id, newSession.user.email)
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setSession(null)
+          setUser(null)
           setRole(null)
           setPermissions({})
+        } else {
+          // Initial load or other events
+          setSession(newSession)
+          setUser(newSession?.user ?? null)
+          if (newSession?.user) {
+            await fetchUserRole(newSession.user.id, newSession.user.email)
+          }
         }
 
         setLoading(false)
@@ -162,7 +202,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })
 
     if (data?.user) {
-      await fetchUserRole(data.user.id)
+      // Force fetch role on explicit sign in to ensure latest data
+      await fetchUserRole(data.user.id, data.user.email)
     }
 
     return { data, error }
@@ -206,7 +247,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (data?.session) {
       setSession(data.session)
       if (data.session.user) {
-        await fetchUserRole(data.session.user.id)
+        await fetchUserRole(data.session.user.id, data.session.user.email)
       }
     }
 
@@ -215,7 +256,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshRole = async () => {
     if (user) {
-      await fetchUserRole(user.id)
+      await fetchUserRole(user.id, user.email)
     }
   }
 
