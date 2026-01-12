@@ -53,3 +53,13 @@ export const getContactSubmissions = async () => {
   if (error) throw error
   return data
 }
+
+export const deleteContactSubmission = async (id: string) => {
+  const { error } = await supabase
+    .from('contact_submissions')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw error
+  return true
+}
