@@ -55,7 +55,7 @@ export default function UserManagement() {
   const [profiles, setProfiles] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
-  const { user, role, loading: authLoading } = useAuth()
+  const { user, role, hasPermission, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
   // Edit State
@@ -87,17 +87,14 @@ export default function UserManagement() {
   }
 
   useEffect(() => {
-    if (!authLoading && (role === 'super_admin' || role === 'admin')) {
-      loadProfiles()
-    } else if (
-      !authLoading &&
-      role &&
-      role !== 'super_admin' &&
-      role !== 'admin'
-    ) {
-      setLoading(false)
+    if (!authLoading) {
+      if (hasPermission('users')) {
+        loadProfiles()
+      } else {
+        setLoading(false)
+      }
     }
-  }, [role, authLoading])
+  }, [authLoading, role]) // Simplified dep array
 
   const handleEditClick = (profile: UserProfile) => {
     setEditingUser(profile)
@@ -180,21 +177,20 @@ export default function UserManagement() {
     )
   }
 
-  if (role !== 'super_admin' && role !== 'admin') {
+  if (!hasPermission('users')) {
     return (
       <div className="flex h-[50vh] flex-col items-center justify-center gap-4 text-center animate-fade-in">
         <div className="rounded-full bg-destructive/10 p-4">
           <ShieldAlert className="h-10 w-10 text-destructive" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold">Acesso Restrito</h2>
+          <h2 className="text-2xl font-bold">Access Restricted</h2>
           <p className="text-muted-foreground max-w-md mt-2">
-            Você não tem permissão para gerenciar usuários. Esta seção é
-            reservada para administradores.
+            You do not have permission to manage users.
           </p>
         </div>
         <Button variant="outline" onClick={() => navigate('/admin')}>
-          Voltar ao Dashboard
+          Back to Dashboard
         </Button>
       </div>
     )
@@ -222,6 +218,7 @@ export default function UserManagement() {
               <TableHead>User Info</TableHead>
               <TableHead>Joined</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Permissions</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -229,7 +226,7 @@ export default function UserManagement() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell colSpan={6} className="text-center py-8">
                   <div className="flex justify-center items-center gap-2">
                     <Loader2 className="animate-spin h-4 w-4" />
                     Loading users...
@@ -238,7 +235,7 @@ export default function UserManagement() {
               </TableRow>
             ) : profiles.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell colSpan={6} className="text-center py-8">
                   No users found.
                 </TableCell>
               </TableRow>
@@ -278,6 +275,36 @@ export default function UserManagement() {
                     </Badge>
                   </TableCell>
                   <TableCell>
+                    {profile.role === 'super_admin' ? (
+                      <span className="text-xs text-muted-foreground">All</span>
+                    ) : profile.permissions ? (
+                      <div className="flex flex-wrap gap-1">
+                        {Object.entries(profile.permissions)
+                          .filter(([, v]) => v)
+                          .map(([k]) => (
+                            <Badge
+                              key={k}
+                              variant="secondary"
+                              className="text-[10px]"
+                            >
+                              {k}
+                            </Badge>
+                          ))}
+                        {Object.values(profile.permissions).every(
+                          (v) => !v,
+                        ) && (
+                          <span className="text-xs text-muted-foreground">
+                            None
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">
+                        None
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     {profile.is_banned ? (
                       <Badge variant="destructive" className="gap-1">
                         <Ban className="h-3 w-3" /> Banned
@@ -302,10 +329,13 @@ export default function UserManagement() {
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
                           onClick={() => handleEditClick(profile)}
-                          disabled={role !== 'super_admin'}
+                          disabled={
+                            role !== 'super_admin' && role !== 'admin'
+                            // Admin can edit other users but maybe not super_admins
+                          }
                         >
                           <Pencil className="mr-2 h-4 w-4" />
-                          Edit Role
+                          Edit Role & Perms
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleResetPassword(profile.email!)}

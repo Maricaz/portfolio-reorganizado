@@ -22,6 +22,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { PaginationControl } from '@/components/PaginationControl'
 import { ExportButton } from '@/components/admin/ExportButton'
+import { useAuth } from '@/hooks/use-auth'
 
 export default function AuditLogs() {
   const [logs, setLogs] = useState<AuditLog[]>([])
@@ -29,10 +30,15 @@ export default function AuditLogs() {
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const { hasPermission } = useAuth()
   const pageSize = 10
 
   useEffect(() => {
-    fetchLogs()
+    if (hasPermission('audit')) {
+      fetchLogs()
+    } else {
+      setLoading(false)
+    }
   }, [currentPage])
 
   const fetchLogs = async () => {
@@ -65,13 +71,24 @@ export default function AuditLogs() {
     }
   }
 
+  if (!hasPermission('audit')) {
+    return (
+      <div className="flex h-[50vh] flex-col items-center justify-center gap-4 text-center">
+        <h2 className="text-xl font-bold">Access Restricted</h2>
+        <p className="text-muted-foreground">
+          You do not have permission to view audit logs.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold">Audit Logs</h1>
           <p className="text-muted-foreground">
-            Track system changes and activity.
+            Track system changes and activity for accountability.
           </p>
         </div>
         <div className="flex gap-2">
@@ -126,9 +143,7 @@ export default function AuditLogs() {
                       {log.table_name}
                     </TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">
-                      {log.user_id
-                        ? log.user_id.split('-')[0] + '...'
-                        : 'System'}
+                      {log.user_id ? log.user_id : 'System/Unknown'}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
@@ -169,8 +184,8 @@ export default function AuditLogs() {
           <DialogHeader>
             <DialogTitle>Audit Log Details</DialogTitle>
             <DialogDescription>
-              {selectedLog?.action} on {selectedLog?.table_name} at{' '}
-              {selectedLog && new Date(selectedLog.created_at).toLocaleString()}
+              {selectedLog?.action} on {selectedLog?.table_name} by{' '}
+              {selectedLog?.user_id}
             </DialogDescription>
           </DialogHeader>
 
@@ -187,7 +202,7 @@ export default function AuditLogs() {
                   </pre>
                 ) : (
                   <div className="flex items-center justify-center h-full text-muted-foreground text-sm italic">
-                    No previous data
+                    No previous data (Insert)
                   </div>
                 )}
               </ScrollArea>

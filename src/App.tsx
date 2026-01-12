@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
@@ -48,10 +48,29 @@ const PageLoader = () => (
   </div>
 )
 
+const ServiceWorkerRegister = () => {
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered:', registration)
+          })
+          .catch((registrationError) => {
+            console.log('SW registration failed:', registrationError)
+          })
+      })
+    }
+  }, [])
+  return null
+}
+
 const App = () => (
   <BrowserRouter
     future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
   >
+    <ServiceWorkerRegister />
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <ThemeSynchronizer />
       <AuthProvider>

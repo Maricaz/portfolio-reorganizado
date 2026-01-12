@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { UserProfile } from '@/types'
+import { UserProfile, AdminPermissions } from '@/types'
 import {
   Dialog,
   DialogContent,
@@ -17,8 +17,9 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Loader2 } from 'lucide-react'
-import { updateUserRole } from '@/services/admin'
+import { updateUserRole, updateUserPermissions } from '@/services/admin'
 import { useToast } from '@/hooks/use-toast'
 
 interface EditUserDialogProps {
@@ -35,12 +36,14 @@ export const EditUserDialog = ({
   onSuccess,
 }: EditUserDialogProps) => {
   const [role, setRole] = useState<string>('user')
+  const [permissions, setPermissions] = useState<AdminPermissions>({})
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
     if (user) {
       setRole(user.role || 'user')
+      setPermissions(user.permissions || {})
     }
   }, [user])
 
@@ -49,13 +52,17 @@ export const EditUserDialog = ({
     setLoading(true)
     try {
       await updateUserRole(user.id, role)
-      toast({ title: 'Success', description: 'User role updated' })
+      // Only update permissions if role is NOT super_admin (they have all implicitly)
+      // But we can save them anyway.
+      await updateUserPermissions(user.id, permissions)
+
+      toast({ title: 'Success', description: 'User updated successfully' })
       onSuccess()
       onOpenChange(false)
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to update user role',
+        description: 'Failed to update user',
         variant: 'destructive',
       })
     } finally {
@@ -63,16 +70,23 @@ export const EditUserDialog = ({
     }
   }
 
+  const togglePermission = (key: keyof AdminPermissions) => {
+    setPermissions((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }))
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Edit User</DialogTitle>
           <DialogDescription>
-            Update permissions for {user?.email}
+            Update role and permissions for {user?.email}
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-6 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="role" className="text-right">
               Role
@@ -91,6 +105,53 @@ export const EditUserDialog = ({
               </Select>
             </div>
           </div>
+
+          {role !== 'user' && role !== 'super_admin' && (
+            <div className="space-y-3">
+              <h4 className="font-medium text-sm">Granular Permissions</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="perm-content"
+                    checked={permissions.content}
+                    onCheckedChange={() => togglePermission('content')}
+                  />
+                  <Label htmlFor="perm-content">Manage Content</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="perm-users"
+                    checked={permissions.users}
+                    onCheckedChange={() => togglePermission('users')}
+                  />
+                  <Label htmlFor="perm-users">Manage Users</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="perm-settings"
+                    checked={permissions.settings}
+                    onCheckedChange={() => togglePermission('settings')}
+                  />
+                  <Label htmlFor="perm-settings">Manage Settings</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="perm-audit"
+                    checked={permissions.audit}
+                    onCheckedChange={() => togglePermission('audit')}
+                  />
+                  <Label htmlFor="perm-audit">View Audit Logs</Label>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {role === 'super_admin' && (
+            <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
+              Super Administrators have full access to all features
+              automatically.
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button

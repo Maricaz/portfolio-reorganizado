@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LanguageSwitch } from '@/components/LanguageSwitch'
+import { useAuth } from '@/hooks/use-auth'
 
 interface AdminSidebarProps {
   onNavigate?: () => void
@@ -20,49 +21,62 @@ interface AdminSidebarProps {
 
 export const AdminSidebar = ({ onNavigate }: AdminSidebarProps) => {
   const location = useLocation()
+  const { hasPermission } = useAuth()
 
-  const items = [
+  const allItems = [
     {
       title: 'Overview',
       url: '/admin',
       icon: LayoutDashboard,
+      alwaysShow: true,
     },
     {
       title: 'Contacts',
       url: '/admin/contacts',
       icon: MessageSquare,
+      permission: 'content',
     },
     {
       title: 'Books',
       url: '/admin/books',
       icon: BookOpen,
+      permission: 'content',
     },
     {
       title: 'Music',
       url: '/admin/music',
       icon: Music,
+      permission: 'content',
     },
     {
       title: 'Resume',
       url: '/admin/resume',
       icon: FileText,
+      permission: 'content',
     },
     {
       title: 'Audit Logs',
       url: '/admin/audit-logs',
       icon: ShieldAlert,
+      permission: 'audit',
     },
     {
       title: 'Settings',
       url: '/admin/settings',
       icon: Settings,
+      permission: 'settings',
     },
     {
       title: 'Users',
       url: '/admin/users',
       icon: Users,
+      permission: 'users',
     },
   ]
+
+  const items = allItems.filter(
+    (item) => item.alwaysShow || hasPermission(item.permission as any),
+  )
 
   return (
     <div className="flex flex-col h-full w-full bg-card border-r">

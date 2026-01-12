@@ -8,11 +8,13 @@ import {
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
 import { useToast } from '@/hooks/use-toast'
+import { AdminPermissions } from '@/types'
 
 interface AuthContextType {
   user: User | null
   session: Session | null
   role: string | null
+  permissions: AdminPermissions
   signUp: (email: string, password: string) => Promise<{ error: any }>
   signIn: (
     email: string,
@@ -26,6 +28,7 @@ interface AuthContextType {
   ) => Promise<{ error: any; data: any }>
   loading: boolean
   refreshRole: () => Promise<void>
+  hasPermission: (permission: keyof AdminPermissions) => boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -42,6 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [role, setRole] = useState<string | null>(null)
+  const [permissions, setPermissions] = useState<AdminPermissions>({})
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
 
@@ -49,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('role, is_banned')
+        .select('role, is_banned, permissions')
         .eq('id', userId)
         .single()
 
@@ -59,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setRole(null)
           setUser(null)
           setSession(null)
+          setPermissions({})
           toast({
             title: 'Access Denied',
             description: 'Your account has been banned.',
@@ -67,16 +72,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           return
         }
         setRole(data.role)
+        setPermissions((data.permissions as AdminPermissions) || {})
       } else {
         console.warn(
           'Could not fetch role or no role assigned, defaulting to user',
           error,
         )
         setRole('user')
+        setPermissions({})
       }
     } catch (error) {
       console.error('Error fetching role:', error)
       setRole('user')
+      setPermissions({})
     }
   }
 
@@ -115,6 +123,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           await fetchUserRole(newSession.user.id)
         } else {
           setRole(null)
+          setPermissions({})
         }
 
         setLoading(false)
@@ -164,6 +173,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRole(null)
       setUser(null)
       setSession(null)
+      setPermissions({})
     }
     return { error }
   }
@@ -203,10 +213,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  const hasPermission = (permission: keyof AdminPermissions) => {
+    if (role === 'super_admin') return true
+    return !!permissions[permission]
+  }
+
   const value = {
     user,
     session,
     role,
+    permissions,
     signUp,
     signIn,
     signOut,
@@ -214,6 +230,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     verifyMfa,
     loading,
     refreshRole,
+    hasPermission,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

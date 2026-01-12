@@ -40,8 +40,16 @@ export type ContactFormData = {
   origin?: string
 }
 
+export interface AdminPermissions {
+  settings?: boolean
+  users?: boolean
+  content?: boolean
+  audit?: boolean
+}
+
 export type UserProfile = Database['public']['Tables']['profiles']['Row'] & {
   is_banned?: boolean
+  permissions?: AdminPermissions
 }
 
 export type Book = Database['public']['Tables']['books']['Row']
@@ -60,3 +68,11 @@ export type Project = {
 
 export type ContactSubmission =
   Database['public']['Tables']['contact_submissions']['Row']
+
+export interface PushSubscriptionData {
+  endpoint: string
+  keys: {
+    p256dh: string
+    auth: string
+  }
+}
