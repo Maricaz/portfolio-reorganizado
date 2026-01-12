@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -11,6 +11,7 @@ import { LanguageProvider } from '@/contexts/LanguageContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/hooks/use-auth'
 import { ThemeSynchronizer } from '@/components/ThemeSynchronizer'
+import { ProtectedRoute } from '@/components/admin/ProtectedRoute'
 
 // Lazy loaded pages
 const Index = lazy(() => import('./pages/Index'))
@@ -26,6 +27,8 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'))
 const AdminDashboard = lazy(() => import('./pages/admin/DashboardOverview'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
+const ForgotPassword = lazy(() => import('./pages/admin/ForgotPassword'))
+const ResetPassword = lazy(() => import('./pages/admin/ResetPassword'))
 const BooksManager = lazy(() => import('./pages/admin/BooksManager'))
 const MusicManager = lazy(() => import('./pages/admin/MusicManager'))
 const ResumeManager = lazy(() => import('./pages/admin/ResumeManager'))
@@ -160,6 +163,23 @@ const App = () => (
                 }
               />
               <Route
+                path="/admin/forgot-password"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <ForgotPassword />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/admin/reset-password"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <ResetPassword />
+                  </Suspense>
+                }
+              />
+
+              <Route
                 path="/admin"
                 element={
                   <Suspense fallback={<PageLoader />}>
@@ -168,13 +188,62 @@ const App = () => (
                 }
               >
                 <Route index element={<AdminDashboard />} />
-                <Route path="contacts" element={<ContactManager />} />
-                <Route path="books" element={<BooksManager />} />
-                <Route path="music" element={<MusicManager />} />
-                <Route path="resume" element={<ResumeManager />} />
-                <Route path="settings" element={<SettingsManager />} />
-                <Route path="users" element={<UserManagement />} />
-                <Route path="audit-logs" element={<AuditLogs />} />
+                <Route
+                  path="contacts"
+                  element={
+                    <ProtectedRoute permission="content">
+                      <ContactManager />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="books"
+                  element={
+                    <ProtectedRoute permission="content">
+                      <BooksManager />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="music"
+                  element={
+                    <ProtectedRoute permission="content">
+                      <MusicManager />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="resume"
+                  element={
+                    <ProtectedRoute permission="content">
+                      <ResumeManager />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="settings"
+                  element={
+                    <ProtectedRoute permission="settings">
+                      <SettingsManager />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="users"
+                  element={
+                    <ProtectedRoute permission="users">
+                      <UserManagement />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="audit-logs"
+                  element={
+                    <ProtectedRoute permission="audit">
+                      <AuditLogs />
+                    </ProtectedRoute>
+                  }
+                />
               </Route>
 
               {/* Catch-all */}

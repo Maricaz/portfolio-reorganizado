@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,15 +12,6 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 import { supabase } from '@/lib/supabase/client'
 import { ShieldAlert, Loader2, Lock, Mail, AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -29,8 +20,6 @@ export default function AdminLogin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [resetEmail, setResetEmail] = useState('')
-  const [isResetOpen, setIsResetOpen] = useState(false)
   const [loginError, setLoginError] = useState<string | null>(null)
 
   // MFA State
@@ -38,7 +27,7 @@ export default function AdminLogin() {
   const [mfaCode, setMfaCode] = useState('')
   const [factorId, setFactorId] = useState<string | null>(null)
 
-  const { signIn, resetPassword, verifyMfa, user, role, signOut } = useAuth()
+  const { signIn, verifyMfa, user, role, signOut } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
 
@@ -62,7 +51,6 @@ export default function AdminLogin() {
       const { data, error } = await signIn(email, password)
 
       if (error) {
-        // Provide more user friendly error messages
         if (
           error.message.includes('Invalid login credentials') ||
           error.message.includes('Email not confirmed')
@@ -77,7 +65,6 @@ export default function AdminLogin() {
       }
 
       // 2. Check User Role directly to ensure immediate feedback
-      // We do this manually here to avoid waiting for the async auth listener state update
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role, is_banned')
@@ -119,7 +106,7 @@ export default function AdminLogin() {
 
       if (verifiedFactors.length > 0) {
         // MFA Required
-        setFactorId(verifiedFactors[0].id) // Use the first verified factor
+        setFactorId(verifiedFactors[0].id)
         setMfaRequired(true)
         setLoading(false)
       } else {
@@ -160,28 +147,6 @@ export default function AdminLogin() {
       })
     } else {
       navigate('/admin')
-    }
-  }
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    const { error } = await resetPassword(resetEmail)
-    setLoading(false)
-    setIsResetOpen(false)
-
-    if (error) {
-      toast({
-        title: 'Erro',
-        description: error.message,
-        variant: 'destructive',
-      })
-    } else {
-      toast({
-        title: 'Email enviado',
-        description:
-          'Verifique sua caixa de entrada para instruções de redefinição.',
-      })
     }
   }
 
@@ -285,45 +250,12 @@ export default function AdminLogin() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Senha</Label>
-                <Dialog open={isResetOpen} onOpenChange={setIsResetOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="link"
-                      className="px-0 font-normal h-auto text-xs"
-                      type="button"
-                    >
-                      Esqueceu a senha?
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Redefinir Senha</DialogTitle>
-                      <DialogDescription>
-                        Digite seu email e enviaremos um link para redefinir sua
-                        senha.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleResetPassword}>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="reset-email">Email</Label>
-                          <Input
-                            id="reset-email"
-                            type="email"
-                            value={resetEmail}
-                            onChange={(e) => setResetEmail(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button type="submit" disabled={loading}>
-                          {loading ? 'Enviando...' : 'Enviar Link'}
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <Link
+                  to="/admin/forgot-password"
+                  className="text-xs text-primary hover:underline underline-offset-4"
+                >
+                  Esqueceu a senha?
+                </Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />

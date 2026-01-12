@@ -22,6 +22,7 @@ interface AuthContextType {
   ) => Promise<{ error: any; data: any }>
   signOut: () => Promise<{ error: any }>
   resetPassword: (email: string) => Promise<{ error: any }>
+  updatePassword: (password: string) => Promise<{ error: any }>
   verifyMfa: (
     factorId: string,
     code: string,
@@ -161,8 +162,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })
 
     if (data?.user) {
-      // Fetch role logic will also be triggered by onAuthStateChange,
-      // but waiting for it here helps ensure state is ready for immediate checks if needed
       await fetchUserRole(data.user.id)
     }
 
@@ -185,6 +184,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
     })
+    return { error }
+  }
+
+  const updatePassword = async (password: string) => {
+    const { error } = await supabase.auth.updateUser({ password })
     return { error }
   }
 
@@ -229,6 +233,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     signIn,
     signOut,
     resetPassword,
+    updatePassword,
     verifyMfa,
     loading,
     refreshRole,
