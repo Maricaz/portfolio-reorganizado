@@ -9,6 +9,7 @@ import {
   Home,
   Users,
   ShieldAlert,
+  MessageSquare,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -24,6 +25,11 @@ export const AdminSidebar = ({ onNavigate }: AdminSidebarProps) => {
       title: 'Overview',
       url: '/admin',
       icon: LayoutDashboard,
+    },
+    {
+      title: 'Contacts',
+      url: '/admin/contacts',
+      icon: MessageSquare,
     },
     {
       title: 'Books',

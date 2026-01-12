@@ -30,6 +30,7 @@ const ResumeManager = lazy(() => import('./pages/admin/ResumeManager'))
 const SettingsManager = lazy(() => import('./pages/admin/SettingsManager'))
 const UserManagement = lazy(() => import('./pages/admin/UserManagement'))
 const AuditLogs = lazy(() => import('./pages/admin/AuditLogs'))
+const ContactManager = lazy(() => import('./pages/admin/ContactManager'))
 
 const PageLoader = () => (
   <div className="p-8 space-y-4 max-w-4xl mx-auto">
@@ -141,6 +142,7 @@ const App = () => (
                 }
               >
                 <Route index element={<AdminDashboard />} />
+                <Route path="contacts" element={<ContactManager />} />
                 <Route path="books" element={<BooksManager />} />
                 <Route path="music" element={<MusicManager />} />
                 <Route path="resume" element={<ResumeManager />} />

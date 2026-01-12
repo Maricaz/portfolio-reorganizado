@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { MusicTrack } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { PlatformSelector, Platform } from './PlatformSelector'
+import { CustomAudioPlayer } from './CustomAudioPlayer'
 import { cn } from '@/lib/utils'
 import { useAnalytics } from '@/hooks/use-analytics'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
@@ -75,20 +76,17 @@ export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
 
           <div className="mt-2 rounded-lg overflow-hidden bg-muted/30">
             {platform === 'native' && (
-              <div className="p-4 flex items-center justify-center bg-secondary/20">
+              <div className="p-4 flex items-center justify-center">
                 {track.src_url ? (
-                  <audio
-                    controls
-                    controlsList="nodownload"
-                    className="w-full h-10 outline-none"
+                  <CustomAudioPlayer
                     src={track.src_url}
+                    isActive={isActive}
                     onPlay={() => {
-                      if (!isActive) onPlay(track)
+                      onPlay(track)
                       trackAudioPlay(track.title)
                     }}
-                  >
-                    Your browser does not support the audio element.
-                  </audio>
+                    trackTitle={track.title}
+                  />
                 ) : (
                   <p className="text-sm text-muted-foreground py-2">
                     Preview not available

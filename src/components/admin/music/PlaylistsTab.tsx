@@ -74,6 +74,7 @@ export function PlaylistsTab() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   // Track Management
   const [managingId, setManagingId] = useState<string | null>(null)
@@ -136,6 +137,7 @@ export function PlaylistsTab() {
       description: playlist.description || '',
       image_url: playlist.image_url || '',
     })
+    setImagePreview(playlist.image_url || null)
     setIsOpen(true)
   }
 
@@ -146,6 +148,7 @@ export function PlaylistsTab() {
       description: '',
       image_url: '',
     })
+    setImagePreview(null)
     setIsOpen(true)
   }
 
@@ -153,9 +156,17 @@ export function PlaylistsTab() {
     const file = e.target.files?.[0]
     if (!file) return
 
+    // Show preview immediately
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+
     try {
       setUploading(true)
-      const url = await uploadFile(file, 'portfolio-media', 'playlists')
+      // Upload to 'playlist-covers' bucket
+      const url = await uploadFile(file, 'playlist-covers', 'covers')
       form.setValue('image_url', url)
       toast({ title: 'Success', description: 'Cover image uploaded' })
     } catch (error) {
@@ -256,7 +267,7 @@ export function PlaylistsTab() {
         <div className="space-y-1">
           <h2 className="text-2xl font-bold tracking-tight">Playlists</h2>
           <p className="text-muted-foreground">
-            Curate collections of music tracks.
+            Curate collections of music tracks with custom covers.
           </p>
         </div>
         <div className="flex gap-2">
@@ -310,17 +321,17 @@ export function PlaylistsTab() {
 
                   <div className="space-y-2">
                     <FormLabel>Cover Image</FormLabel>
-                    <div className="flex gap-4 items-center">
+                    <div className="flex flex-col gap-4">
                       <Input
                         type="file"
                         accept="image/*"
                         onChange={handleImageUpload}
                         disabled={uploading}
                       />
-                      {form.watch('image_url') && (
-                        <div className="relative h-16 w-16 border rounded overflow-hidden shrink-0">
+                      {imagePreview && (
+                        <div className="relative aspect-square w-32 border rounded-md overflow-hidden bg-muted">
                           <img
-                            src={form.watch('image_url')}
+                            src={imagePreview}
                             alt="Preview"
                             className="h-full w-full object-cover"
                           />

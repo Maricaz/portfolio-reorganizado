@@ -1,130 +1,60 @@
+import { Database } from '@/lib/supabase/types'
+
 export type Language = 'pt' | 'en' | 'ko'
 
-export interface SocialLink {
-  id: string
-  platform: string
-  url: string
-  icon?: string
-}
-
-export interface Skill {
-  id: string
-  label: string
-  value: number
-}
-
-export interface Book {
-  id: string
-  title: string
-  author: string
-  category: string
-  rating: number
-  synopsis?: string
-  review_pt?: string
-  review_en?: string
-  review_ko?: string
-  curation?: string
-  original_title?: string
-  translation?: string
-  language_code: string
-  image_url: string
-  created_at: string
-}
-
-export interface ITProject {
-  id: string
-  title: string
-  title_ko?: string
-  description_pt: string
-  description_en: string
-  description_ko: string
-  category: string
-  tags: string[]
-  image_url: string
-  demo_url: string | null
-  github_url: string | null
-  link?: string
-  featured?: boolean
-  created_at: string
-}
-
-export interface MusicTrack {
-  id: string
-  track_id?: string
-  title: string
-  artist: string
-  src_url?: string
-  deezer_id: string
-  lyrics?: Record<string, string>
-  platforms?: {
-    spotify?: string
-    deezer?: string
-    apple?: string
-    youtube?: string
+export type Playlist = Database['public']['Tables']['playlists']['Row']
+export type PlaylistTrack =
+  Database['public']['Tables']['playlist_tracks']['Row'] & {
+    track?: MusicTrack
   }
-  created_at: string
-  image_url?: string
-}
 
-export interface Playlist {
-  id: string
-  name: string
-  description?: string
-  image_url?: string
-  created_at: string
-}
-
-export interface PlaylistTrack {
-  id: string
-  playlist_id: string
-  track_id: string
-  order_index: number
-  track?: MusicTrack
-  created_at: string
-}
+export type MusicTrack = Database['public']['Tables']['music_tracks']['Row']
 
 export interface AlbumConcept {
-  id: string
   title: Record<string, string>
   description: Record<string, string>
-  cover_url: string
-  video_url: string
+  cover_url?: string | null
+  video_url?: string | null
 }
 
-export interface ContactFormData {
+export interface SiteSettings {
+  home_hero_image?: string
+  seo_global?: {
+    title: string
+    description: string
+    keywords: string
+  }
+  brand_config?: any
+  resume_config?: any
+}
+
+export type Notification =
+  Database['public']['Tables']['notifications']['Row'] & {
+    link?: string | null
+  }
+
+export type ContactFormData = {
   name: string
   email: string
   message: string
   origin?: string
 }
 
-export interface SiteSettings {
-  brand_config: any
-  resume_config: {
-    url: string
-  }
-}
+export type UserProfile = Database['public']['Tables']['profiles']['Row']
 
-export interface Project {
+export type Book = Database['public']['Tables']['books']['Row']
+export type Project = {
   id: string
   title: string
-  description: string
+  description_pt: string
+  description_en: string
+  description_ko: string
+  image_url: string
+  tech_stack: string[]
+  demo_url?: string
+  repo_url?: string
   created_at: string
-}
+} // Assuming basic project structure as it's not in the provided types but used in database.ts
 
-export interface Notification {
-  id: string
-  title: string
-  message: string
-  type: 'info' | 'warning' | 'success' | 'error'
-  read: boolean
-  created_at: string
-}
-
-export interface UserProfile {
-  id: string
-  email?: string
-  role: 'super_admin' | 'admin' | 'editor' | 'user'
-  created_at: string
-  updated_at: string
-}
+export type ContactSubmission =
+  Database['public']['Tables']['contact_submissions']['Row']

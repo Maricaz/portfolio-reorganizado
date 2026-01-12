@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Bell, Check, Loader2 } from 'lucide-react'
+import { Bell, Check, Loader2, ExternalLink } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import {
   Popover,
   PopoverContent,
@@ -42,7 +43,8 @@ export const Notifications = () => {
 
   const unreadCount = notifications.filter((n) => !n.read).length
 
-  const handleMarkAsRead = async (id: string) => {
+  const handleMarkAsRead = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
     try {
       await markNotificationAsRead(id)
       setNotifications((prev) =>
@@ -103,44 +105,70 @@ export const Notifications = () => {
             </div>
           ) : (
             <div className="divide-y">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={cn(
-                    'p-4 transition-colors hover:bg-muted/50 flex gap-3',
-                    !notification.read && 'bg-muted/20',
-                  )}
-                >
-                  <div className="flex-1 space-y-1">
-                    <p
-                      className={cn(
-                        'text-sm font-medium leading-none',
-                        !notification.read && 'font-semibold',
-                      )}
-                    >
-                      {notification.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {notification.message}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground/60">
-                      {new Date(notification.created_at).toLocaleDateString()}{' '}
-                      {new Date(notification.created_at).toLocaleTimeString()}
-                    </p>
+              {notifications.map((notification) => {
+                const Content = (
+                  <div
+                    className={cn(
+                      'p-4 transition-colors hover:bg-muted/50 flex gap-3 cursor-pointer',
+                      !notification.read && 'bg-muted/20',
+                    )}
+                    onClick={() => {
+                      if (!notification.read) {
+                        handleMarkAsRead(notification.id)
+                      }
+                      if (notification.link) {
+                        setOpen(false)
+                      }
+                    }}
+                  >
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <p
+                          className={cn(
+                            'text-sm font-medium leading-none',
+                            !notification.read && 'font-semibold',
+                          )}
+                        >
+                          {notification.title}
+                        </p>
+                        {notification.link && (
+                          <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {notification.message}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground/60">
+                        {new Date(notification.created_at).toLocaleDateString()}{' '}
+                        {new Date(notification.created_at).toLocaleTimeString()}
+                      </p>
+                    </div>
+                    {!notification.read && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 shrink-0"
+                        onClick={(e) => handleMarkAsRead(notification.id, e)}
+                      >
+                        <Check className="h-3 w-3" />
+                        <span className="sr-only">Mark read</span>
+                      </Button>
+                    )}
                   </div>
-                  {!notification.read && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => handleMarkAsRead(notification.id)}
-                    >
-                      <Check className="h-3 w-3" />
-                      <span className="sr-only">Mark read</span>
-                    </Button>
-                  )}
-                </div>
-              ))}
+                )
+
+                return notification.link ? (
+                  <Link
+                    key={notification.id}
+                    to={notification.link}
+                    className="block"
+                  >
+                    {Content}
+                  </Link>
+                ) : (
+                  <div key={notification.id}>{Content}</div>
+                )
+              })}
             </div>
           )}
         </ScrollArea>
