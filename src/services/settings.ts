@@ -1,9 +1,16 @@
 import { supabase } from '@/lib/supabase/client'
 import { SiteSettings } from '@/types'
 
+export interface ThemeConfig {
+  mode: 'light' | 'dark' | 'system'
+  primary: string
+  font: string
+}
+
 export const getSiteSettings = async (): Promise<
   Partial<SiteSettings> & {
     home_hero_image?: string
+    theme_config?: ThemeConfig
     seo_global?: {
       title: string
       description: string
@@ -34,12 +41,12 @@ export const getSiteSettings = async (): Promise<
         typeof item.value === 'string' ? item.value : String(item.value)
     } else if (item.key === 'seo_global') {
       settings.seo_global = item.value
+    } else if (item.key === 'theme_config') {
+      settings.theme_config = item.value
     } else if (item.key === 'theme_primary_color') {
-      settings.theme_primary_color =
-        typeof item.value === 'string' ? item.value : String(item.value)
+      settings.theme_primary_color = String(item.value)
     } else if (item.key === 'theme_font_family') {
-      settings.theme_font_family =
-        typeof item.value === 'string' ? item.value : String(item.value)
+      settings.theme_font_family = String(item.value)
     }
   })
 
