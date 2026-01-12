@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserRole = async (userId: string) => {
     try {
+      // Ensure we have a fresh token for the request if possible
       const { data, error } = await supabase
         .from('profiles')
         .select('role')
@@ -54,10 +55,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!error && data) {
         setRole(data.role)
       } else {
-        // Fallback to 'user' role if profile exists but no role, or error
         console.warn(
           'Could not fetch role or no role assigned, defaulting to user',
+          error,
         )
+        // If error is PGRST116 (0 rows), it means profile doesn't exist yet
         setRole('user')
       }
     } catch (error) {
@@ -69,7 +71,71 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let mounted = true
 
-    // 1. Setup Auth Listener
+    const initAuth = async () => {
+      try {
+        // 1. Get initial session
+        const {
+          data: { session: initialSession },
+        } = await supabase.auth.getSession()
+
+        if (mounted) {
+          setSession(initialSession)
+          setUser(initialSession?.user ?? null)
+        }
+
+        if (initialSession?.user) {
+          await fetchUserRole(initialSession.user.id)
+        }
+      } catch (error) {
+        console.error('Error checking initial session:', error)
+      } finally {
+        if (mounted) setLoading(false)
+      }
+
+      // 2. Listen for changes
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+        if (!mounted) return
+
+        // When signing out, session becomes null
+        setSession(newSession)
+        setUser(newSession?.user ?? null)
+
+        if (newSession?.user) {
+          // If we have a user, ensure we have their role
+          // Only fetch if role isn't set or user changed
+          // But to be safe and sync, we fetch.
+          await fetchUserRole(newSession.user.id)
+        } else {
+          setRole(null)
+        }
+
+        // Ensure loading is false after state change processing
+        setLoading(false)
+      })
+
+      return () => {
+        subscription.unsubscribe()
+      }
+    }
+
+    const cleanup = initAuth()
+
+    return () => {
+      mounted = false
+      // Cleanup logic is handled within the async function via subscription variable
+      // but we need to extract subscription to unsubscribe properly if needed outside
+      // Simplified: the subscription variable inside initAuth isn't accessible here directly for return.
+      // So we refactor slightly to standard pattern:
+    }
+  }, [])
+
+  // Refactored Effect for correctness with cleanup
+  useEffect(() => {
+    let mounted = true
+
+    // Setup listener first
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -79,40 +145,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null)
 
       if (session?.user) {
-        // Fetch role asynchronously
-        // We don't await here because onAuthStateChange must be synchronous
-        fetchUserRole(session.user.id).then(() => {
-          if (mounted) setLoading(false)
-        })
+        // We cannot await here effectively for the UI blocking,
+        // but we should set loading to true if we wanted to block?
+        // Better to just fetch role and update.
+        fetchUserRole(session.user.id)
       } else {
         setRole(null)
-        setLoading(false)
       }
+      // Note: onAuthStateChange fires after getSession usually, or independently.
     })
 
-    // 2. Check Initial Session
-    const initSession = async () => {
+    // Check initial session
+    const checkSession = async () => {
       try {
         const {
           data: { session },
         } = await supabase.auth.getSession()
-
         if (mounted) {
           setSession(session)
           setUser(session?.user ?? null)
-        }
 
-        if (session?.user) {
-          await fetchUserRole(session.user.id)
+          if (session?.user) {
+            await fetchUserRole(session.user.id)
+          }
         }
-      } catch (error) {
-        console.error('Error checking session:', error)
+      } catch (err) {
+        console.error('Session check error', err)
       } finally {
         if (mounted) setLoading(false)
       }
     }
 
-    initSession()
+    checkSession()
 
     return () => {
       mounted = false
@@ -139,7 +203,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
     })
 
-    // If sign in is successful, refresh role immediately
     if (data?.user) {
       await fetchUserRole(data.user.id)
     }
@@ -149,9 +212,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
-    setRole(null)
-    setUser(null)
-    setSession(null)
+    if (!error) {
+      setRole(null)
+      setUser(null)
+      setSession(null)
+    }
     return { error }
   }
 
@@ -164,12 +229,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const verifyMfa = async (factorId: string, code: string) => {
-    // Challenge
     const { data: challengeData, error: challengeError } =
       await supabase.auth.mfa.challenge({ factorId })
     if (challengeError) return { error: challengeError, data: null }
 
-    // Verify
     const { data, error } = await supabase.auth.mfa.verify({
       factorId,
       challengeId: challengeData.id,

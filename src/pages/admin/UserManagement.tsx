@@ -26,13 +26,13 @@ import { useAuth } from '@/hooks/use-auth'
 import { useNavigate } from 'react-router-dom'
 import { CreateUserDialog } from '@/components/admin/CreateUserDialog'
 import { EditUserDialog } from '@/components/admin/EditUserDialog'
-import { Pencil, Trash2, Loader2 } from 'lucide-react'
+import { Pencil, Trash2, Loader2, ShieldAlert } from 'lucide-react'
 
 export default function UserManagement() {
   const [profiles, setProfiles] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
-  const { user, role } = useAuth()
+  const { user, role, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
   // Edit State
@@ -43,12 +43,6 @@ export default function UserManagement() {
   const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-
-  useEffect(() => {
-    if (role && role !== 'super_admin' && role !== 'admin') {
-      // Access control
-    }
-  }, [role, navigate])
 
   const loadProfiles = async () => {
     setLoading(true)
@@ -67,68 +61,53 @@ export default function UserManagement() {
   }
 
   useEffect(() => {
-    if (role === 'super_admin' || role === 'admin') {
+    // Only load profiles if user has sufficient permission
+    if (!authLoading && (role === 'super_admin' || role === 'admin')) {
       loadProfiles()
+    } else if (
+      !authLoading &&
+      role &&
+      role !== 'super_admin' &&
+      role !== 'admin'
+    ) {
+      // If auth loaded but role is insufficient, stop loading spinner for data
+      setLoading(false)
     }
-  }, [role])
+  }, [role, authLoading])
 
-  const handleEditClick = (profile: UserProfile) => {
-    setEditingUser(profile)
-    setEditDialogOpen(true)
-  }
-
-  const handleDeleteClick = (profile: UserProfile) => {
-    if (profile.id === user?.id) {
-      toast({
-        title: 'Operation Denied',
-        description: 'You cannot delete your own account.',
-        variant: 'destructive',
-      })
-      return
-    }
-    setDeletingUser(profile)
-    setDeleteDialogOpen(true)
-  }
-
-  const confirmDelete = async () => {
-    if (!deletingUser) return
-
-    setIsDeleting(true)
-    try {
-      await deleteUserProfile(deletingUser.id)
-      setProfiles((prev) => prev.filter((p) => p.id !== deletingUser.id))
-      toast({
-        title: 'User Deleted',
-        description: 'The user profile has been removed.',
-      })
-      setDeleteDialogOpen(false)
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete user.',
-        variant: 'destructive',
-      })
-    } finally {
-      setIsDeleting(false)
-      setDeletingUser(null)
-    }
-  }
-
-  if (role !== 'super_admin' && role !== 'admin') {
+  // 1. Loading State (Auth or Data)
+  if (authLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold">Access Denied</h2>
-          <p className="text-muted-foreground">
-            You do not have permission to view this page.
-          </p>
-        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
 
+  // 2. Permission Check
+  if (role !== 'super_admin' && role !== 'admin') {
+    return (
+      <div className="flex h-[50vh] flex-col items-center justify-center gap-4 text-center animate-fade-in">
+        <div className="rounded-full bg-destructive/10 p-4">
+          <ShieldAlert className="h-10 w-10 text-destructive" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold">Acesso Restrito</h2>
+          <p className="text-muted-foreground max-w-md mt-2">
+            Você não tem permissão para gerenciar usuários. Esta seção é
+            reservada para administradores.
+          </p>
+        </div>
+        <Button variant="outline" onClick={() => navigate('/admin')}>
+          Voltar ao Dashboard
+        </Button>
+      </div>
+    )
+  }
+
+  // 3. Main Content
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">User Management</h1>
@@ -187,7 +166,18 @@ export default function UserManagement() {
                     {new Date(profile.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{profile.role || 'user'}</Badge>
+                    <Badge
+                      variant="outline"
+                      className={
+                        profile.role === 'super_admin'
+                          ? 'border-primary text-primary'
+                          : profile.role === 'admin'
+                            ? 'border-blue-500 text-blue-500'
+                            : ''
+                      }
+                    >
+                      {profile.role || 'user'}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
@@ -196,6 +186,11 @@ export default function UserManagement() {
                         size="icon"
                         onClick={() => handleEditClick(profile)}
                         disabled={role !== 'super_admin'}
+                        title={
+                          role !== 'super_admin'
+                            ? 'Only Super Admin can edit roles'
+                            : 'Edit user role'
+                        }
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -206,6 +201,11 @@ export default function UserManagement() {
                         onClick={() => handleDeleteClick(profile)}
                         disabled={
                           role !== 'super_admin' || profile.id === user?.id
+                        }
+                        title={
+                          role !== 'super_admin'
+                            ? 'Only Super Admin can delete users'
+                            : 'Delete user'
                         }
                       >
                         <Trash2 className="h-4 w-4" />
