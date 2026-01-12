@@ -65,46 +65,39 @@ export default function AdminLogin() {
       }
 
       // 2. Check User Role directly to ensure immediate feedback
-      // We wrap this in a try-catch to be robust against "Profile Not Found"
       let profile = null
-      try {
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('role, is_banned')
-          .eq('id', data.user.id)
-          .single()
 
-        if (profileError) {
-          if (profileError.code === 'PGRST116') {
-            // Profile missing. Attempt to create default profile so we don't block.
-            // (Though we expect useAuth to also try this, doing it here gives immediate feedback logic)
-            console.log(
-              'Profile missing in Login check. Attempting creation...',
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('role, is_banned')
+        .eq('id', data.user.id)
+        .single()
+
+      if (profileError) {
+        if (profileError.code === 'PGRST116') {
+          // Profile missing. Attempt to create default profile so we don't block.
+          // (Though we expect useAuth to also try this, doing it here gives immediate feedback logic)
+          console.log('Profile missing in Login check. Attempting creation...')
+          const { error: insertError } = await supabase
+            .from('profiles')
+            .insert([{ id: data.user.id, email: email, role: 'user' }])
+
+          if (insertError) {
+            // If we can't create, we can't proceed properly
+            console.error('Failed to auto-create profile:', insertError)
+            throw new Error(
+              'Perfil de usuário não encontrado e não pôde ser criado.',
             )
-            const { error: insertError } = await supabase
-              .from('profiles')
-              .insert([{ id: data.user.id, email: email, role: 'user' }])
-
-            if (insertError) {
-              // If we can't create, we can't proceed properly
-              console.error('Failed to auto-create profile:', insertError)
-              throw new Error(
-                'Perfil de usuário não encontrado e não pôde ser criado.',
-              )
-            }
-            // Proceed with default 'user' role check (which will fail admin check, but correctly)
-            profile = { role: 'user', is_banned: false }
-          } else {
-            // Other DB error
-            console.error('Profile fetch error:', profileError)
-            throw new Error(`Erro ao verificar perfil: ${profileError.message}`)
           }
+          // Proceed with default 'user' role check (which will fail admin check, but correctly)
+          profile = { role: 'user', is_banned: false }
         } else {
-          profile = profileData
+          // Other DB error
+          console.error('Profile fetch error:', profileError)
+          throw new Error(`Erro ao verificar perfil: ${profileError.message}`)
         }
-      } catch (err: any) {
-        // If we caught an error above, rethrow it to be handled by outer catch
-        throw err
+      } else {
+        profile = profileData
       }
 
       if (profile?.is_banned) {
