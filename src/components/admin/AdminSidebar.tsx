@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -10,6 +10,7 @@ import {
   Users,
   ShieldAlert,
   MessageSquare,
+  LogOut,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LanguageSwitch } from '@/components/LanguageSwitch'
@@ -21,7 +22,8 @@ interface AdminSidebarProps {
 
 export const AdminSidebar = ({ onNavigate }: AdminSidebarProps) => {
   const location = useLocation()
-  const { hasPermission } = useAuth()
+  const { hasPermission, signOut } = useAuth()
+  const navigate = useNavigate()
 
   const allItems = [
     {
@@ -78,6 +80,11 @@ export const AdminSidebar = ({ onNavigate }: AdminSidebarProps) => {
     (item) => item.alwaysShow || hasPermission(item.permission as any),
   )
 
+  const handleLogout = async () => {
+    await signOut()
+    navigate('/admin/login')
+  }
+
   return (
     <div className="flex flex-col h-full w-full bg-card border-r">
       <div className="p-6 h-16 flex items-center">
@@ -105,12 +112,22 @@ export const AdminSidebar = ({ onNavigate }: AdminSidebarProps) => {
         <div className="flex justify-center">
           <LanguageSwitch />
         </div>
-        <Button variant="outline" className="w-full justify-start" asChild>
-          <Link to="/">
-            <Home className="mr-2 h-4 w-4" />
-            View Site
-          </Link>
-        </Button>
+        <div className="space-y-2">
+          <Button variant="outline" className="w-full justify-start" asChild>
+            <Link to="/">
+              <Home className="mr-2 h-4 w-4" />
+              View Site
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
       </div>
     </div>
   )

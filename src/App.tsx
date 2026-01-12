@@ -25,6 +25,7 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 // Admin Pages
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'))
 const AdminDashboard = lazy(() => import('./pages/admin/DashboardOverview'))
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const BooksManager = lazy(() => import('./pages/admin/BooksManager'))
 const MusicManager = lazy(() => import('./pages/admin/MusicManager'))
 const ResumeManager = lazy(() => import('./pages/admin/ResumeManager'))
@@ -149,10 +150,14 @@ const App = () => (
                 />
               </Route>
 
-              {/* Admin Routes - Login bypassed */}
+              {/* Admin Routes */}
               <Route
                 path="/admin/login"
-                element={<Navigate to="/admin" replace />}
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminLogin />
+                  </Suspense>
+                }
               />
               <Route
                 path="/admin"

@@ -80,13 +80,20 @@ export default function AdminLogin() {
       // We do this manually here to avoid waiting for the async auth listener state update
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, is_banned')
         .eq('id', data.user.id)
         .single()
 
       if (profileError) {
         await signOut()
         throw new Error('Erro ao verificar perfil do usuário.')
+      }
+
+      if (profile?.is_banned) {
+        await signOut()
+        throw new Error(
+          'Acesso negado: Sua conta foi banida ou desativada. Entre em contato com o suporte.',
+        )
       }
 
       const userRole = profile?.role || 'user'
@@ -121,7 +128,6 @@ export default function AdminLogin() {
           title: 'Bem-vinda de volta!',
           description: 'Login realizado com sucesso.',
         })
-        // The navigation will happen in the useEffect or here if we want instant feedback
         navigate('/admin')
         setLoading(false)
       }
@@ -181,7 +187,7 @@ export default function AdminLogin() {
 
   if (mfaRequired) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4 animate-fade-in">
         <Card className="w-full max-w-md border-primary/20 shadow-lg">
           <CardHeader className="space-y-1">
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
@@ -235,7 +241,7 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4 animate-fade-in">
       <Card className="w-full max-w-md shadow-lg border-primary/10">
         <CardHeader className="space-y-1">
           <div className="mx-auto mb-2">

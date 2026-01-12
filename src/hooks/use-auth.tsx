@@ -65,8 +65,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSession(null)
           setPermissions({})
           toast({
-            title: 'Access Denied',
-            description: 'Your account has been banned.',
+            title: 'Acesso Negado',
+            description: 'Sua conta foi banida ou desativada.',
             variant: 'destructive',
           })
           return
@@ -161,6 +161,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })
 
     if (data?.user) {
+      // Fetch role logic will also be triggered by onAuthStateChange,
+      // but waiting for it here helps ensure state is ready for immediate checks if needed
       await fetchUserRole(data.user.id)
     }
 
