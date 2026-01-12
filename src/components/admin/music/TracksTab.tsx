@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
-  getMusicTracks,
+  getTracksPaginated,
   createTrack,
   updateTrack,
   deleteTrack,
@@ -46,9 +46,11 @@ import {
   Loader2,
   Music,
   Eye,
+  Search,
 } from 'lucide-react'
 import { ExportButton } from '@/components/admin/ExportButton'
 import { TrackDetailsDialog } from './TrackDetailsDialog'
+import { PaginationControl } from '@/components/PaginationControl'
 
 const trackSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -68,13 +70,20 @@ type TrackFormValues = z.infer<typeof trackSchema>
 
 export function TracksTab() {
   const [tracks, setTracks] = useState<MusicTrack[]>([])
+  const [totalTracks, setTotalTracks] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+
   const [isOpen, setIsOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [audioUploading, setAudioUploading] = useState(false)
-  const [loading, setLoading] = useState(true)
   const [viewTrack, setViewTrack] = useState<MusicTrack | null>(null)
   const { toast } = useToast()
+
+  const pageSize = 10
 
   const form = useForm<TrackFormValues>({
     resolver: zodResolver(trackSchema),
@@ -96,8 +105,14 @@ export function TracksTab() {
   const loadTracks = async () => {
     try {
       setLoading(true)
-      const data = await getMusicTracks()
+      const {
+        data,
+        count,
+        totalPages: total,
+      } = await getTracksPaginated(currentPage, pageSize, search)
       setTracks((data as unknown as MusicTrack[]) || [])
+      setTotalTracks(count)
+      setTotalPages(total)
     } catch (error) {
       console.error('Failed to load tracks:', error)
       toast({
@@ -112,8 +127,15 @@ export function TracksTab() {
   }
 
   useEffect(() => {
-    loadTracks()
-  }, [])
+    const timer = setTimeout(() => {
+      if (currentPage !== 1 && search) {
+        setCurrentPage(1)
+      } else {
+        loadTracks()
+      }
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [search, currentPage])
 
   const handleEdit = (track: MusicTrack) => {
     setEditingId(track.id)
@@ -180,7 +202,6 @@ export function TracksTab() {
 
     try {
       setAudioUploading(true)
-      // Upload to 'music' bucket as per requirement
       const url = await uploadFile(file, 'music', 'tracks')
       form.setValue('src_url', url)
       toast({ title: 'Success', description: 'Audio track uploaded' })
@@ -257,7 +278,7 @@ export function TracksTab() {
         <div className="space-y-1">
           <h2 className="text-2xl font-bold tracking-tight">Music Tracks</h2>
           <p className="text-muted-foreground">
-            Upload and manage your music library.
+            Upload and manage your music library. Total: {totalTracks}
           </p>
         </div>
         <div className="flex gap-2">
@@ -488,6 +509,16 @@ export function TracksTab() {
         </div>
       </div>
 
+      <div className="flex items-center gap-2">
+        <Search className="h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search tracks..."
+          className="max-w-sm"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
       <div className="border rounded-md">
         {loading ? (
           <div className="flex flex-col items-center justify-center p-8 space-y-2">
@@ -524,6 +555,7 @@ export function TracksTab() {
                         src={track.image_url}
                         alt=""
                         className="h-10 w-10 object-cover rounded"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="h-10 w-10 bg-muted rounded flex items-center justify-center">
@@ -566,6 +598,12 @@ export function TracksTab() {
           </Table>
         )}
       </div>
+
+      <PaginationControl
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
       <TrackDetailsDialog
         track={viewTrack}

@@ -12,6 +12,7 @@ import {
   MessageSquare,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { LanguageSwitch } from '@/components/LanguageSwitch'
 
 interface AdminSidebarProps {
   onNavigate?: () => void
@@ -86,7 +87,10 @@ export const AdminSidebar = ({ onNavigate }: AdminSidebarProps) => {
           </Link>
         ))}
       </div>
-      <div className="p-4 border-t space-y-2 mt-auto">
+      <div className="p-4 border-t space-y-4 mt-auto">
+        <div className="flex justify-center">
+          <LanguageSwitch />
+        </div>
         <Button variant="outline" className="w-full justify-start" asChild>
           <Link to="/">
             <Home className="mr-2 h-4 w-4" />

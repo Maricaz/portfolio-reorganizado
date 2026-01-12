@@ -14,3 +14,10 @@ export function slugify(text: string) {
     .replace(/[^\w-]+/g, '')
     .replace(/--+/g, '-')
 }
+
+export function getLocalizedValue(item: any, field: string, lang: string) {
+  if (!item) return ''
+  const key = `${field}_${lang}`
+  // Fallback chain: specific lang -> english -> base field -> empty string
+  return item[key] || item[`${field}_en`] || item[field] || ''
+}

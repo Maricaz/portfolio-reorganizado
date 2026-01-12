@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAuditLogs, AuditLog } from '@/services/audit'
+import { getAuditLogsPaginated, AuditLog } from '@/services/audit'
 import {
   Table,
   TableBody,
@@ -20,21 +20,35 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { PaginationControl } from '@/components/PaginationControl'
 
 export default function AuditLogs() {
   const [logs, setLogs] = useState<AuditLog[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const pageSize = 10
 
   useEffect(() => {
     fetchLogs()
-  }, [])
+  }, [currentPage])
 
   const fetchLogs = async () => {
     setLoading(true)
-    const data = await getAuditLogs()
-    setLogs(data)
-    setLoading(false)
+    try {
+      const {
+        data,
+        count,
+        totalPages: total,
+      } = await getAuditLogsPaginated(currentPage, pageSize)
+      setLogs(data)
+      setTotalPages(total)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getActionColor = (action: string) => {
@@ -85,36 +99,46 @@ export default function AuditLogs() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {logs.map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {new Date(log.created_at).toLocaleString()}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      className={`${getActionColor(log.action)} text-white`}
-                    >
-                      {log.action}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {log.table_name}
-                  </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {log.user_id ? log.user_id.split('-')[0] + '...' : 'System'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedLog(log)}
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span className="sr-only">View Details</span>
-                    </Button>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                logs.map((log) => (
+                  <TableRow key={log.id}>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {new Date(log.created_at).toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={`${getActionColor(log.action)} text-white`}
+                      >
+                        {log.action}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {log.table_name}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {log.user_id
+                        ? log.user_id.split('-')[0] + '...'
+                        : 'System'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedLog(log)}
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">View Details</span>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
               {!loading && logs.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center h-24">
@@ -124,6 +148,12 @@ export default function AuditLogs() {
               )}
             </TableBody>
           </Table>
+
+          <PaginationControl
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </CardContent>
       </Card>
 

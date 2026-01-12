@@ -26,3 +26,26 @@ export const getAuditLogs = async () => {
 
   return data
 }
+
+export const getAuditLogsPaginated = async (
+  page: number = 1,
+  limit: number = 10,
+) => {
+  const from = (page - 1) * limit
+  const to = from + limit - 1
+
+  const { data, error, count } = await supabase
+    .from('audit_logs')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(from, to)
+    .returns<AuditLog[]>()
+
+  if (error) throw error
+
+  return {
+    data: data || [],
+    count: count || 0,
+    totalPages: count ? Math.ceil(count / limit) : 0,
+  }
+}

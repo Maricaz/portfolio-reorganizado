@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
-  getAllBooks,
+  getBooksPaginated,
   createBook,
   updateBook,
   deleteBook,
@@ -37,8 +37,16 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
-import { Plus, Pencil, Trash, Search, Image as ImageIcon } from 'lucide-react'
+import {
+  Plus,
+  Pencil,
+  Trash,
+  Search,
+  Image as ImageIcon,
+  Loader2,
+} from 'lucide-react'
 import { ExportButton } from '@/components/admin/ExportButton'
+import { PaginationControl } from '@/components/PaginationControl'
 
 const bookSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -56,11 +64,18 @@ type BookFormValues = z.infer<typeof bookSchema>
 
 export default function BooksManager() {
   const [books, setBooks] = useState<Book[]>([])
+  const [totalBooks, setTotalBooks] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [search, setSearch] = useState('')
+
   const [isOpen, setIsOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [search, setSearch] = useState('')
   const [uploading, setUploading] = useState(false)
   const { toast } = useToast()
+
+  const pageSize = 10
 
   const form = useForm<BookFormValues>({
     resolver: zodResolver(bookSchema),
@@ -78,21 +93,39 @@ export default function BooksManager() {
   })
 
   const loadBooks = async () => {
+    setIsLoading(true)
     try {
-      const data = await getAllBooks()
+      const {
+        data,
+        count,
+        totalPages: total,
+      } = await getBooksPaginated(currentPage, pageSize, search)
       setBooks(data || [])
+      setTotalBooks(count)
+      setTotalPages(total)
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to load books',
         variant: 'destructive',
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    loadBooks()
-  }, [])
+    const delayDebounceFn = setTimeout(() => {
+      // Reset to page 1 on search change
+      if (currentPage !== 1 && search) {
+        setCurrentPage(1)
+      } else {
+        loadBooks()
+      }
+    }, 500)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [search, currentPage])
 
   const handleEdit = (book: Book) => {
     setEditingId(book.id)
@@ -181,16 +214,14 @@ export default function BooksManager() {
     }
   }
 
-  const filteredBooks = books.filter((b) =>
-    b.title.toLowerCase().includes(search.toLowerCase()),
-  )
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold">Books Manager</h1>
-          <p className="text-muted-foreground">Manage your reading list.</p>
+          <p className="text-muted-foreground">
+            Manage your reading list. Total: {totalBooks}
+          </p>
         </div>
         <div className="flex gap-2">
           <ExportButton data={books} filename="books_export" />
@@ -394,46 +425,70 @@ export default function BooksManager() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredBooks.map((book) => (
-              <TableRow key={book.id}>
-                <TableCell>
-                  {book.image_url ? (
-                    <img
-                      src={book.image_url}
-                      alt={book.title}
-                      className="h-10 w-8 object-cover rounded"
-                    />
-                  ) : (
-                    <div className="h-10 w-8 bg-muted rounded flex items-center justify-center">
-                      <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell className="font-medium">{book.title}</TableCell>
-                <TableCell>{book.author}</TableCell>
-                <TableCell>{book.language_code}</TableCell>
-                <TableCell className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEdit(book)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive"
-                    onClick={() => handleDelete(book.id)}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : books.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  No books found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              books.map((book) => (
+                <TableRow key={book.id}>
+                  <TableCell>
+                    {book.image_url ? (
+                      <img
+                        src={book.image_url}
+                        alt={book.title}
+                        className="h-10 w-8 object-cover rounded"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="h-10 w-8 bg-muted rounded flex items-center justify-center">
+                        <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-medium">{book.title}</TableCell>
+                  <TableCell>{book.author}</TableCell>
+                  <TableCell>{book.language_code}</TableCell>
+                  <TableCell className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(book)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive"
+                      onClick={() => handleDelete(book.id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
+
+      <PaginationControl
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   )
 }

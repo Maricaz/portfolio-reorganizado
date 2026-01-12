@@ -10,6 +10,7 @@ import { RouteChangeTracker } from '@/components/RouteChangeTracker'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/hooks/use-auth'
+import { ThemeSynchronizer } from '@/components/ThemeSynchronizer'
 
 // Lazy loaded pages
 const Index = lazy(() => import('./pages/Index'))
@@ -52,6 +53,7 @@ const App = () => (
     future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
   >
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <ThemeSynchronizer />
       <AuthProvider>
         <LanguageProvider>
           <TooltipProvider>

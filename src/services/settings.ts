@@ -9,6 +9,8 @@ export const getSiteSettings = async (): Promise<
       description: string
       keywords: string
     }
+    theme_primary_color?: string
+    theme_font_family?: string
   }
 > => {
   const { data, error } = await supabase
@@ -32,6 +34,12 @@ export const getSiteSettings = async (): Promise<
         typeof item.value === 'string' ? item.value : String(item.value)
     } else if (item.key === 'seo_global') {
       settings.seo_global = item.value
+    } else if (item.key === 'theme_primary_color') {
+      settings.theme_primary_color =
+        typeof item.value === 'string' ? item.value : String(item.value)
+    } else if (item.key === 'theme_font_family') {
+      settings.theme_font_family =
+        typeof item.value === 'string' ? item.value : String(item.value)
     }
   })
 

@@ -29,11 +29,20 @@ import {
   Image as ImageIcon,
   Loader2,
   Globe,
+  Palette,
+  Type,
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTheme } from '@/components/theme-provider'
 import { SecuritySettings } from '@/components/admin/SecuritySettings'
 import { SeoSettings } from '@/components/admin/SeoSettings'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function SettingsManager() {
   const [dbTranslations, setDbTranslations] = useState<any[]>([])
@@ -42,6 +51,7 @@ export default function SettingsManager() {
   const { toast } = useToast()
   const { theme, setTheme } = useTheme()
   const [accentColor, setAccentColor] = useState('240 5.9% 10%')
+  const [fontFamily, setFontFamily] = useState('Inter var, sans-serif')
   const [homeImage, setHomeImage] = useState<string>('')
   const [uploadingImage, setUploadingImage] = useState(false)
 
@@ -60,10 +70,6 @@ export default function SettingsManager() {
   useEffect(() => {
     loadTranslations()
     loadSettings()
-    const savedAccent = localStorage.getItem('admin_accent')
-    if (savedAccent) {
-      setAccentColor(savedAccent)
-    }
   }, [])
 
   const loadSettings = async () => {
@@ -71,6 +77,12 @@ export default function SettingsManager() {
       const settings = await getSiteSettings()
       if (settings.home_hero_image) {
         setHomeImage(settings.home_hero_image)
+      }
+      if (settings.theme_primary_color) {
+        setAccentColor(settings.theme_primary_color)
+      }
+      if (settings.theme_font_family) {
+        setFontFamily(settings.theme_font_family)
       }
     } catch (error) {
       console.error('Failed to load settings', error)
@@ -142,10 +154,18 @@ export default function SettingsManager() {
     key.toLowerCase().includes(search.toLowerCase()),
   )
 
-  const handleAccentChange = (hsl: string) => {
+  const handleAccentChange = async (hsl: string) => {
     setAccentColor(hsl)
     document.documentElement.style.setProperty('--primary', hsl)
-    localStorage.setItem('admin_accent', hsl)
+    await upsertSiteSetting('theme_primary_color', hsl)
+    toast({ title: 'Theme Updated', description: 'Primary color saved.' })
+  }
+
+  const handleFontChange = async (font: string) => {
+    setFontFamily(font)
+    document.documentElement.style.setProperty('--font-primary', font)
+    await upsertSiteSetting('theme_font_family', font)
+    toast({ title: 'Theme Updated', description: 'Font family saved.' })
   }
 
   const accents = [
@@ -155,6 +175,20 @@ export default function SettingsManager() {
     { name: 'Red', value: '346 84% 61%' },
     { name: 'Purple', value: '262 83% 58%' },
     { name: 'Orange', value: '24 94% 50%' },
+  ]
+
+  const fonts = [
+    { name: 'Inter (Default)', value: "'Inter var', sans-serif" },
+    { name: 'Roboto', value: "'Roboto', sans-serif" },
+    {
+      name: 'Serif',
+      value: "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
+    },
+    {
+      name: 'Monospace',
+      value:
+        "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+    },
   ]
 
   return (
@@ -214,7 +248,9 @@ export default function SettingsManager() {
 
             {/* Accent Color */}
             <div className="space-y-4 p-4 border rounded-lg bg-card">
-              <h3 className="text-lg font-medium">Accent Color</h3>
+              <h3 className="text-lg font-medium flex items-center gap-2">
+                <Palette className="h-5 w-5" /> Primary Color
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {accents.map((acc) => (
                   <button
@@ -230,6 +266,31 @@ export default function SettingsManager() {
                   />
                 ))}
               </div>
+            </div>
+
+            {/* Font Family */}
+            <div className="space-y-4 p-4 border rounded-lg bg-card">
+              <h3 className="text-lg font-medium flex items-center gap-2">
+                <Type className="h-5 w-5" /> Font Family
+              </h3>
+              <Select value={fontFamily} onValueChange={handleFontChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a font" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fonts.map((font) => (
+                    <SelectItem key={font.name} value={font.value}>
+                      {font.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p
+                className="text-sm text-muted-foreground"
+                style={{ fontFamily: fontFamily }}
+              >
+                Preview: The quick brown fox jumps over the lazy dog.
+              </p>
             </div>
 
             {/* Home Hero Image */}
