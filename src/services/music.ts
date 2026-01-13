@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase/client'
 import { Database } from '@/lib/supabase/types'
-import { Playlist, PlaylistTrack } from '@/types'
+import { Playlist, PlaylistTrack, AlbumConcept } from '@/types'
 
 type MusicTrack = Database['public']['Tables']['music_tracks']['Row']
 type MusicTrackInsert = Database['public']['Tables']['music_tracks']['Insert']
@@ -15,7 +15,7 @@ export const getMusicTracks = async () => {
 
   if (error) {
     console.error('Error fetching music tracks:', error)
-    throw error
+    return []
   }
 
   return (data as MusicTrack[]) || []
@@ -40,7 +40,14 @@ export const getTracksPaginated = async (
 
   const { data, error, count } = await query.range(from, to)
 
-  if (error) throw error
+  if (error) {
+    console.error('Error fetching paginated tracks:', error)
+    return {
+      data: [],
+      count: 0,
+      totalPages: 0,
+    }
+  }
 
   return {
     data: (data as MusicTrack[]) || [],
@@ -85,11 +92,14 @@ export const getAlbumConcept = async () => {
     .from('album_settings' as any)
     .select('*')
     .limit(1)
-    .single()
+    .maybeSingle()
 
-  if (error) return null
+  if (error) {
+    console.error('Error fetching album concept:', error)
+    return null
+  }
 
-  return data
+  return data as AlbumConcept | null
 }
 
 // Playlists
@@ -101,7 +111,7 @@ export const getPlaylists = async () => {
 
   if (error) {
     console.error('Error fetching playlists:', error)
-    throw error
+    return []
   }
 
   return (data as Playlist[]) || []
@@ -148,7 +158,10 @@ export const getPlaylistTracks = async (playlistId: string) => {
     .eq('playlist_id', playlistId)
     .order('order_index', { ascending: true })
 
-  if (error) throw error
+  if (error) {
+    console.error('Error fetching playlist tracks:', error)
+    return []
+  }
   return (data as unknown as PlaylistTrack[]) || []
 }
 

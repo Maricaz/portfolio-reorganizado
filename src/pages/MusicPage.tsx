@@ -32,22 +32,45 @@ export default function MusicPage() {
 
   // Fetch data
   useEffect(() => {
+    let isMounted = true
+
     const fetchData = async () => {
       setLoading(true)
-      const [tracksRes, albumRes] = await Promise.all([
-        getMusicTracks(),
-        getAlbumConcept(),
-      ])
+      try {
+        const [tracksData, albumData] = await Promise.all([
+          getMusicTracks().catch((err) => {
+            console.error('Failed to fetch music tracks:', err)
+            return []
+          }),
+          getAlbumConcept().catch((err) => {
+            console.error('Failed to fetch album concept:', err)
+            return null
+          }),
+        ])
 
-      if (tracksRes.data) {
-        setTracks(tracksRes.data)
+        if (isMounted) {
+          if (Array.isArray(tracksData)) {
+            setTracks(tracksData)
+          }
+
+          if (albumData) {
+            setAlbumConcept(albumData)
+          }
+        }
+      } catch (error) {
+        console.error('Unexpected error in MusicPage data fetch:', error)
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
       }
-      if (albumRes.data) {
-        setAlbumConcept(albumRes.data)
-      }
-      setLoading(false)
     }
+
     fetchData()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   // Handle URL param
