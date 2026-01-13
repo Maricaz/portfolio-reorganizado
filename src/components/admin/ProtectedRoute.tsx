@@ -13,10 +13,10 @@ export const ProtectedRoute = ({
   children,
   permission,
 }: ProtectedRouteProps) => {
-  const { user, role, hasPermission, loading } = useAuth()
+  const { user, isAdmin, hasPermission, loading } = useAuth()
   const location = useLocation()
 
-  // Improved loading state that doesn't feel "broken"
+  // Improved loading state
   if (loading) {
     return (
       <div className="flex h-full min-h-[50vh] flex-col items-center justify-center gap-4 animate-fade-in">
@@ -33,11 +33,8 @@ export const ProtectedRoute = ({
     return <Navigate to="/admin/login" state={{ from: location }} replace />
   }
 
-  // If role is missing (or banned), or simply 'user', they shouldn't be here.
-  // We double check against expected admin roles just to be safe,
-  // although AdminLayout also does this check.
-  const allowedRoles = ['admin', 'super_admin', 'editor']
-  if (!role || !allowedRoles.includes(role)) {
+  // If user is authenticated but NOT an admin
+  if (!isAdmin) {
     return (
       <div className="flex h-[80vh] flex-col items-center justify-center gap-4 text-center animate-fade-in p-4">
         <div className="rounded-full bg-destructive/10 p-4">
@@ -46,13 +43,18 @@ export const ProtectedRoute = ({
         <div>
           <h2 className="text-2xl font-bold">Acesso Restrito</h2>
           <p className="text-muted-foreground max-w-md mt-2">
-            Sua conta ({user.email}) não possui permissão para acessar esta
-            área.
+            Sua conta ({user.email}) não possui permissão para acessar a área
+            administrativa.
           </p>
         </div>
-        <Button variant="outline" asChild>
-          <a href="/admin/login">Voltar ao Login</a>
-        </Button>
+        <div className="flex gap-4">
+          <Button variant="outline" asChild>
+            <a href="/admin/login">Fazer login com outra conta</a>
+          </Button>
+          <Button variant="ghost" asChild>
+            <a href="/">Voltar ao site</a>
+          </Button>
+        </div>
       </div>
     )
   }
@@ -65,9 +67,9 @@ export const ProtectedRoute = ({
           <ShieldAlert className="h-10 w-10 text-destructive" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold">Acesso Restrito</h2>
+          <h2 className="text-2xl font-bold">Permissão Necessária</h2>
           <p className="text-muted-foreground max-w-md mt-2">
-            Você não tem permissão para acessar esta área ({permission}).
+            Você não tem a permissão '{permission}' para acessar esta área.
           </p>
         </div>
         <Button variant="outline" asChild>

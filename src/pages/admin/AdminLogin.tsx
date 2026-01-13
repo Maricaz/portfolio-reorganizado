@@ -27,19 +27,16 @@ export default function AdminLogin() {
   const [mfaCode, setMfaCode] = useState('')
   const [factorId, setFactorId] = useState<string | null>(null)
 
-  const { signIn, verifyMfa, user, role, signOut } = useAuth()
+  const { signIn, verifyMfa, user, isAdmin, signOut } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
 
-  // Redirect if already logged in and has correct role
+  // Redirect if already logged in as Admin
   useEffect(() => {
-    if (user && role) {
-      const allowedRoles = ['admin', 'super_admin', 'editor']
-      if (allowedRoles.includes(role)) {
-        navigate('/admin')
-      }
+    if (user && isAdmin) {
+      navigate('/admin')
     }
-  }, [user, role, navigate])
+  }, [user, isAdmin, navigate])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -64,56 +61,40 @@ export default function AdminLogin() {
         throw new Error('Erro inesperado: dados do usuário não retornados.')
       }
 
-      // 2. Check User Role directly to ensure immediate feedback
-      let profile = null
-
-      const { data: profileData, error: profileError } = await supabase
+      // 2. Profile & Role Verification
+      // Note: useAuth already triggers a role fetch, but we verify here for immediate feedback
+      // Using maybeSingle to handle potential missing profile cases gracefully
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role, is_banned')
         .eq('id', data.user.id)
-        .single()
+        .maybeSingle()
 
       if (profileError) {
-        if (profileError.code === 'PGRST116') {
-          // Profile missing. Attempt to create default profile so we don't block.
-          // (Though we expect useAuth to also try this, doing it here gives immediate feedback logic)
-          console.log('Profile missing in Login check. Attempting creation...')
-          const { error: insertError } = await supabase
-            .from('profiles')
-            .insert([{ id: data.user.id, email: email, role: 'user' }])
-
-          if (insertError) {
-            // If we can't create, we can't proceed properly
-            console.error('Failed to auto-create profile:', insertError)
-            throw new Error(
-              'Perfil de usuário não encontrado e não pôde ser criado.',
-            )
-          }
-          // Proceed with default 'user' role check (which will fail admin check, but correctly)
-          profile = { role: 'user', is_banned: false }
-        } else {
-          // Other DB error
-          console.error('Profile fetch error:', profileError)
-          throw new Error(`Erro ao verificar perfil: ${profileError.message}`)
-        }
-      } else {
-        profile = profileData
-      }
-
-      if (profile?.is_banned) {
+        // If RLS denies access, it usually means the user is not an Admin (and policies block read)
+        // or a system error. We treat as permission error.
+        console.error('Profile verification error:', profileError)
         await signOut()
         throw new Error(
-          'Acesso negado: Sua conta foi banida ou desativada. Entre em contato com o suporte.',
+          'Erro ao verificar perfil. Tente novamente ou contate o suporte.',
         )
       }
 
-      const userRole = profile?.role || 'user'
-      const allowedRoles = ['admin', 'super_admin', 'editor']
+      // If no profile found (and self-healing in useAuth hasn't caught up or failed), deny access
+      if (!profile) {
+        // We could attempt to create one here, but useAuth handles that globally.
+        // For admin login, if you don't have a profile, you definitely aren't an admin.
+        await signOut()
+        throw new Error('Perfil de usuário não encontrado.')
+      }
 
-      if (!allowedRoles.includes(userRole)) {
-        // We do NOT sign out here immediately, we just show error.
-        // Or we can sign out to force them to use a correct account.
-        // Usually safer to sign out to avoid "stuck" logged in state on login page.
+      if (profile.is_banned) {
+        await signOut()
+        throw new Error('Acesso negado: Sua conta foi banida.')
+      }
+
+      const allowedRoles = ['admin', 'super_admin', 'editor']
+      if (!profile.role || !allowedRoles.includes(profile.role)) {
         await signOut()
         throw new Error(
           'Acesso negado: Esta conta não possui privilégios de administrador.',
@@ -125,7 +106,7 @@ export default function AdminLogin() {
         await supabase.auth.mfa.listFactors()
 
       if (factorsError) {
-        console.error('Error listing MFA factors:', factorsError)
+        console.warn('MFA check failed:', factorsError)
       }
 
       const verifiedFactors =
@@ -137,10 +118,10 @@ export default function AdminLogin() {
         setMfaRequired(true)
         setLoading(false)
       } else {
-        // No MFA, proceed
+        // Success
         toast({
           title: 'Bem-vinda de volta!',
-          description: 'Login realizado com sucesso.',
+          description: 'Login administrativo realizado com sucesso.',
         })
         navigate('/admin')
         setLoading(false)
@@ -171,7 +152,7 @@ export default function AdminLogin() {
 
     if (error) {
       toast({
-        title: 'MFA Falhou',
+        title: 'Código MFA Inválido',
         description: error.message,
         variant: 'destructive',
       })

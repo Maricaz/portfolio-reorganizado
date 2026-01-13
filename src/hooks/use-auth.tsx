@@ -14,6 +14,7 @@ interface AuthContextType {
   user: User | null
   session: Session | null
   role: string | null
+  isAdmin: boolean
   permissions: AdminPermissions
   signUp: (email: string, password: string) => Promise<{ error: any }>
   signIn: (
@@ -50,17 +51,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
 
-  // Robust function to fetch or create user profile
+  // Helper to determine if user is admin
+  const checkIsAdmin = (roleName: string | null) => {
+    return roleName === 'admin' || roleName === 'super_admin'
+  }
+
   const fetchUserRole = async (userId: string, userEmail?: string) => {
     try {
+      // Use maybeSingle to avoid errors if no row exists (though we handle missing profile manually)
       let { data, error } = await supabase
         .from('profiles')
         .select('role, is_banned, permissions')
         .eq('id', userId)
-        .single()
+        .maybeSingle()
 
-      // Self-healing: If profile is missing (PGRST116), try to create it
-      if (error && error.code === 'PGRST116') {
+      // Self-healing: If profile is missing, try to create it
+      if (!data && !error) {
         console.warn('Profile not found for user. Attempting to create...')
 
         const { error: insertError } = await supabase.from('profiles').insert([
@@ -73,20 +79,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (insertError) {
           console.error('Failed to auto-create profile:', insertError)
+          // Don't throw here, just set default user to allow at least partial access or fail gracefully
+          setRole('user')
+          setPermissions({})
+          return
         } else {
           // Retry fetch
           const retryResult = await supabase
             .from('profiles')
             .select('role, is_banned, permissions')
             .eq('id', userId)
-            .single()
+            .maybeSingle()
 
           data = retryResult.data
           error = retryResult.error
         }
       }
 
-      if (!error && data) {
+      if (error) {
+        console.error('Error fetching role:', error)
+        setRole('user') // Fallback to safe default
+        setPermissions({})
+        return
+      }
+
+      if (data) {
         if (data.is_banned) {
           await supabase.auth.signOut()
           setRole(null)
@@ -103,15 +120,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setRole(data.role)
         setPermissions((data.permissions as AdminPermissions) || {})
       } else {
-        console.warn(
-          'Could not fetch role or no role assigned, defaulting to user',
-          error,
-        )
+        // Should be unreachable if self-healing works, but failsafe
         setRole('user')
         setPermissions({})
       }
     } catch (error) {
-      console.error('Error fetching role:', error)
+      console.error('Unexpected error fetching role:', error)
       setRole('user')
       setPermissions({})
     }
@@ -145,29 +159,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } = supabase.auth.onAuthStateChange(async (event, newSession) => {
         if (!mounted) return
 
-        // Handle Token Refresh or Sign In
-        if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
-          setSession(newSession)
-          setUser(newSession?.user ?? null)
-          if (newSession?.user) {
-            // We don't want to block UI on token refresh, but we need to update role
-            fetchUserRole(newSession.user.id, newSession.user.email)
-          }
-        } else if (event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT') {
           setSession(null)
           setUser(null)
           setRole(null)
           setPermissions({})
-        } else {
-          // Initial load or other events
+          setLoading(false)
+        } else if (newSession?.user) {
           setSession(newSession)
-          setUser(newSession?.user ?? null)
-          if (newSession?.user) {
-            await fetchUserRole(newSession.user.id, newSession.user.email)
-          }
+          setUser(newSession.user)
+          // Re-fetch role to ensure up-to-date permissions
+          await fetchUserRole(newSession.user.id, newSession.user.email)
+          setLoading(false)
+        } else {
+          setSession(null)
+          setUser(null)
+          setLoading(false)
         }
-
-        setLoading(false)
       })
 
       return () => {
@@ -175,7 +183,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    const cleanup = initAuth()
+    initAuth()
 
     return () => {
       mounted = false
@@ -184,13 +192,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`
-
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: redirectUrl,
-      },
+      options: { emailRedirectTo: redirectUrl },
     })
     return { error }
   }
@@ -202,7 +207,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })
 
     if (data?.user) {
-      // Force fetch role on explicit sign in to ensure latest data
+      // Force fetch role immediately
       await fetchUserRole(data.user.id, data.user.email)
     }
 
@@ -269,6 +274,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     user,
     session,
     role,
+    isAdmin: checkIsAdmin(role),
     permissions,
     signUp,
     signIn,
