@@ -11,7 +11,8 @@ import { LanguageProvider } from '@/contexts/LanguageContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/hooks/use-auth'
 import { ThemeSynchronizer } from '@/components/ThemeSynchronizer'
-import { ProtectedRoute } from '@/components/admin/ProtectedRoute'
+import { RequireAuth } from '@/components/admin/RequireAuth'
+import { RequireAdmin } from '@/components/admin/RequireAdmin'
 
 // Lazy loaded pages
 const Index = lazy(() => import('./pages/Index'))
@@ -36,6 +37,7 @@ const SettingsManager = lazy(() => import('./pages/admin/SettingsManager'))
 const UserManagement = lazy(() => import('./pages/admin/UserManagement'))
 const AuditLogs = lazy(() => import('./pages/admin/AuditLogs'))
 const ContactManager = lazy(() => import('./pages/admin/ContactManager'))
+const Forbidden = lazy(() => import('./pages/admin/Forbidden'))
 
 const PageLoader = () => (
   <div className="p-8 space-y-4 max-w-4xl mx-auto">
@@ -153,7 +155,7 @@ const App = () => (
                 />
               </Route>
 
-              {/* Admin Routes */}
+              {/* Admin Public Routes */}
               <Route
                 path="/admin/login"
                 element={
@@ -178,70 +180,83 @@ const App = () => (
                   </Suspense>
                 }
               />
+              <Route
+                path="/admin/forbidden"
+                element={
+                  <Suspense fallback={<PageLoader />}>
+                    <Forbidden />
+                  </Suspense>
+                }
+              />
 
+              {/* Protected Admin Routes */}
               <Route
                 path="/admin"
                 element={
-                  <Suspense fallback={<PageLoader />}>
-                    <AdminLayout />
-                  </Suspense>
+                  <RequireAuth>
+                    <RequireAdmin>
+                      <Suspense fallback={<PageLoader />}>
+                        <AdminLayout />
+                      </Suspense>
+                    </RequireAdmin>
+                  </RequireAuth>
                 }
               >
                 <Route index element={<AdminDashboard />} />
                 <Route
                   path="contacts"
                   element={
-                    <ProtectedRoute permission="content">
+                    <RequireAdmin permission="content">
                       <ContactManager />
-                    </ProtectedRoute>
+                    </RequireAdmin>
                   }
                 />
                 <Route
                   path="books"
                   element={
-                    <ProtectedRoute permission="content">
+                    <RequireAdmin permission="content">
                       <BooksManager />
-                    </ProtectedRoute>
+                    </RequireAdmin>
                   }
                 />
                 <Route
                   path="music"
                   element={
-                    <ProtectedRoute permission="content">
+                    <RequireAdmin permission="content">
                       <MusicManager />
-                    </ProtectedRoute>
+                    </RequireAdmin>
                   }
                 />
                 <Route
                   path="resume"
                   element={
-                    <ProtectedRoute permission="content">
+                    <RequireAdmin permission="content">
                       <ResumeManager />
-                    </ProtectedRoute>
+                    </RequireAdmin>
                   }
                 />
                 <Route
                   path="settings"
                   element={
-                    <ProtectedRoute permission="settings">
+                    <RequireAdmin permission="settings">
                       <SettingsManager />
-                    </ProtectedRoute>
+                    </RequireAdmin>
                   }
                 />
                 <Route
                   path="users"
                   element={
-                    <ProtectedRoute permission="users">
+                    <RequireAdmin permission="users">
                       <UserManagement />
-                    </ProtectedRoute>
+                    </RequireAdmin>
                   }
                 />
                 <Route
                   path="audit-logs"
                   element={
-                    <ProtectedRoute permission="audit">
+                    <RequireAdmin permission="audit">
                       <AuditLogs />
-                    </ProtectedRoute>
+                    </RequireAdmin>
                   }
                 />
               </Route>

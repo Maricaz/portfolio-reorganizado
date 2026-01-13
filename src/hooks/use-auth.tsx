@@ -29,6 +29,8 @@ interface AuthContextType {
     code: string,
   ) => Promise<{ error: any; data: any }>
   loading: boolean
+  loadingAuth: boolean
+  loadingProfile: boolean
   refreshRole: () => Promise<void>
   hasPermission: (permission: keyof AdminPermissions) => boolean
 }
@@ -48,7 +50,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null)
   const [role, setRole] = useState<string | null>(null)
   const [permissions, setPermissions] = useState<AdminPermissions>({})
-  const [loading, setLoading] = useState(true)
+
+  // Granular loading states
+  const [loadingAuth, setLoadingAuth] = useState(true)
+  const [loadingProfile, setLoadingProfile] = useState(false)
+
   const { toast } = useToast()
 
   // Helper to determine if user is admin
@@ -57,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const fetchUserRole = async (userId: string, userEmail?: string) => {
+    setLoadingProfile(true)
     try {
       // Use maybeSingle to avoid errors if no row exists
       let { data, error } = await supabase
@@ -81,6 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.error('Failed to auto-create profile:', insertError)
           setRole('user')
           setPermissions({})
+          setLoadingProfile(false)
           return
         } else {
           // Retry fetch
@@ -99,6 +107,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error('Error fetching role:', error)
         setRole('user') // Fallback to safe default
         setPermissions({})
+        setLoadingProfile(false)
         return
       }
 
@@ -114,6 +123,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             description: 'Sua conta foi banida ou desativada.',
             variant: 'destructive',
           })
+          setLoadingProfile(false)
           return
         }
         setRole(data.role)
@@ -126,39 +136,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error('Unexpected error fetching role:', error)
       setRole('user')
       setPermissions({})
+    } finally {
+      setLoadingProfile(false)
     }
   }
 
   useEffect(() => {
     let mounted = true
 
-    // Initialize Auth Listener FIRST to catch any immediate events (like password recovery)
+    // Initialize Auth Listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (!mounted) return
-
-      // console.log('Auth event:', event)
 
       if (event === 'SIGNED_OUT') {
         setSession(null)
         setUser(null)
         setRole(null)
         setPermissions({})
-        setLoading(false)
+        setLoadingAuth(false)
+        setLoadingProfile(false)
       } else if (newSession?.user) {
         setSession(newSession)
         setUser(newSession.user)
-        await fetchUserRole(newSession.user.id, newSession.user.email)
-        setLoading(false)
+        // Only fetch role if we don't have it or if the user changed
+        if (newSession.user.id !== user?.id) {
+          await fetchUserRole(newSession.user.id, newSession.user.email)
+        }
+        setLoadingAuth(false)
       } else {
         setSession(null)
         setUser(null)
-        setLoading(false)
+        setLoadingAuth(false)
       }
     })
 
-    // Then check for existing session
+    // Initial session check
     const checkSession = async () => {
       try {
         const {
@@ -169,13 +183,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSession(initialSession)
           setUser(initialSession.user)
           await fetchUserRole(initialSession.user.id, initialSession.user.email)
-        } else if (mounted && !initialSession) {
-          // If no session found and no event fired yet, stop loading
-          setLoading(false)
         }
       } catch (error) {
         console.error('Error checking initial session:', error)
-        if (mounted) setLoading(false)
+      } finally {
+        if (mounted) setLoadingAuth(false)
       }
     }
 
@@ -223,7 +235,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const resetPassword = async (email: string) => {
-    // Explicitly point to the reset-password route
     const redirectUrl = `${window.location.origin}/admin/reset-password`
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
@@ -268,6 +279,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return !!permissions[permission]
   }
 
+  // Combined loading state for backward compatibility and general UI blocking
+  const loading = loadingAuth || loadingProfile
+
   const value = {
     user,
     session,
@@ -281,6 +295,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     updatePassword,
     verifyMfa,
     loading,
+    loadingAuth,
+    loadingProfile,
     refreshRole,
     hasPermission,
   }
