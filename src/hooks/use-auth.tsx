@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserRole = async (userId: string, userEmail?: string) => {
     try {
-      // Use maybeSingle to avoid errors if no row exists (though we handle missing profile manually)
+      // Use maybeSingle to avoid errors if no row exists
       let { data, error } = await supabase
         .from('profiles')
         .select('role, is_banned, permissions')
@@ -79,7 +79,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (insertError) {
           console.error('Failed to auto-create profile:', insertError)
-          // Don't throw here, just set default user to allow at least partial access or fail gracefully
           setRole('user')
           setPermissions({})
           return
@@ -120,7 +119,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setRole(data.role)
         setPermissions((data.permissions as AdminPermissions) || {})
       } else {
-        // Should be unreachable if self-healing works, but failsafe
         setRole('user')
         setPermissions({})
       }
@@ -134,59 +132,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let mounted = true
 
-    const initAuth = async () => {
+    // Initialize Auth Listener FIRST to catch any immediate events (like password recovery)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      if (!mounted) return
+
+      // console.log('Auth event:', event)
+
+      if (event === 'SIGNED_OUT') {
+        setSession(null)
+        setUser(null)
+        setRole(null)
+        setPermissions({})
+        setLoading(false)
+      } else if (newSession?.user) {
+        setSession(newSession)
+        setUser(newSession.user)
+        await fetchUserRole(newSession.user.id, newSession.user.email)
+        setLoading(false)
+      } else {
+        setSession(null)
+        setUser(null)
+        setLoading(false)
+      }
+    })
+
+    // Then check for existing session
+    const checkSession = async () => {
       try {
         const {
           data: { session: initialSession },
         } = await supabase.auth.getSession()
 
-        if (mounted) {
+        if (mounted && initialSession?.user) {
           setSession(initialSession)
-          setUser(initialSession?.user ?? null)
-        }
-
-        if (initialSession?.user) {
+          setUser(initialSession.user)
           await fetchUserRole(initialSession.user.id, initialSession.user.email)
+        } else if (mounted && !initialSession) {
+          // If no session found and no event fired yet, stop loading
+          setLoading(false)
         }
       } catch (error) {
         console.error('Error checking initial session:', error)
-      } finally {
         if (mounted) setLoading(false)
-      }
-
-      const {
-        data: { subscription },
-      } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-        if (!mounted) return
-
-        if (event === 'SIGNED_OUT') {
-          setSession(null)
-          setUser(null)
-          setRole(null)
-          setPermissions({})
-          setLoading(false)
-        } else if (newSession?.user) {
-          setSession(newSession)
-          setUser(newSession.user)
-          // Re-fetch role to ensure up-to-date permissions
-          await fetchUserRole(newSession.user.id, newSession.user.email)
-          setLoading(false)
-        } else {
-          setSession(null)
-          setUser(null)
-          setLoading(false)
-        }
-      })
-
-      return () => {
-        subscription.unsubscribe()
       }
     }
 
-    initAuth()
+    checkSession()
 
     return () => {
       mounted = false
+      subscription.unsubscribe()
     }
   }, [])
 
@@ -226,6 +223,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const resetPassword = async (email: string) => {
+    // Explicitly point to the reset-password route
     const redirectUrl = `${window.location.origin}/admin/reset-password`
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
