@@ -71,6 +71,7 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 -- Clear old policies to ensure clean slate
 DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profiles;
 DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users can read own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Admins can do everything" ON public.profiles;
