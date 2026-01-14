@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase/client'
@@ -71,8 +72,6 @@ export default function AdminLogin() {
         .maybeSingle()
 
       if (profileError) {
-        // If RLS denies access, it usually means the user is not an Admin (and policies block read)
-        // or a system error. We treat as permission error.
         console.error('Profile verification error:', profileError)
         await signOut()
         throw new Error(
@@ -80,10 +79,7 @@ export default function AdminLogin() {
         )
       }
 
-      // If no profile found (and self-healing in useAuth hasn't caught up or failed), deny access
       if (!profile) {
-        // We could attempt to create one here, but useAuth handles that globally.
-        // For admin login, if you don't have a profile, you definitely aren't an admin.
         await signOut()
         throw new Error('Perfil de usuário não encontrado.')
       }
@@ -309,6 +305,17 @@ export default function AdminLogin() {
             )}
           </form>
         </CardContent>
+        <CardFooter className="flex justify-center">
+          <p className="text-sm text-muted-foreground">
+            Não tem uma conta?{' '}
+            <Link
+              to="/admin/register"
+              className="text-primary hover:underline underline-offset-4"
+            >
+              Cadastre-se
+            </Link>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   )
