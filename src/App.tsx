@@ -28,7 +28,6 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'))
 const AdminDashboard = lazy(() => import('./pages/admin/DashboardOverview'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
-const AdminRegister = lazy(() => import('./pages/admin/AdminRegister'))
 const ForgotPassword = lazy(() => import('./pages/admin/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/admin/ResetPassword'))
 const BooksManager = lazy(() => import('./pages/admin/BooksManager'))
@@ -162,14 +161,6 @@ const App = () => (
                 element={
                   <Suspense fallback={<PageLoader />}>
                     <AdminLogin />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/admin/register"
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <AdminRegister />
                   </Suspense>
                 }
               />

@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase/client'
@@ -305,17 +304,6 @@ export default function AdminLogin() {
             )}
           </form>
         </CardContent>
-        <CardFooter className="flex justify-center">
-          <p className="text-sm text-muted-foreground">
-            Não tem uma conta?{' '}
-            <Link
-              to="/admin/register"
-              className="text-primary hover:underline underline-offset-4"
-            >
-              Cadastre-se
-            </Link>
-          </p>
-        </CardFooter>
       </Card>
     </div>
   )
