@@ -70,6 +70,7 @@ export default function AdminLogin() {
 
       if (!allowedRoles.includes(currentRole)) {
         await signOut()
+        console.warn(`Access denied for role: ${currentRole}`)
         throw new Error(
           'Acesso negado: Esta conta não possui privilégios de administrador.',
         )
@@ -109,7 +110,10 @@ export default function AdminLogin() {
       setLoginError(errorMessage)
 
       // Only show toast if it's not a simple validation error (user sees alert in form)
-      if (!errorMessage.includes('Email ou senha')) {
+      if (
+        !errorMessage.includes('Email ou senha') &&
+        !errorMessage.includes('Acesso negado')
+      ) {
         toast({
           title: 'Falha no Login',
           description: errorMessage,

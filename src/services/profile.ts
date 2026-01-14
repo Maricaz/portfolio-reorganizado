@@ -9,7 +9,7 @@ type Profile = Database['public']['Tables']['profiles']['Row']
 export const getProfile = async (userId: string) => {
   return await supabase
     .from('profiles')
-    .select('role, is_banned, permissions, language')
+    .select('role, is_banned, permissions, language, email')
     .eq('id', userId)
     .maybeSingle()
 }

@@ -69,10 +69,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // 1. Attempt to fetch profile with retry
       let { data, error } = await getProfileWithRetry(userId)
 
-      // 2. Self-healing: If profile is missing after retries, try to create it
-      if (!data && !error) {
+      // 2. Self-healing: If profile is missing (data is null), even if error occurred (e.g. not found)
+      // We try to create it as a fallback
+      if (!data) {
         console.warn(
-          'Profile not found after retries. Attempting fallback creation...',
+          'Profile not found or fetch failed. Attempting fallback creation...',
         )
 
         const { error: insertError } = await createProfileFallback(
@@ -93,12 +94,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
 
-      if (error) {
-        console.error('Error fetching role:', error)
+      if (error && !data) {
+        console.error('Error fetching role after fallback attempt:', error)
         setRole('user') // Fallback to safe default
         setPermissions({})
         setLoadingProfile(false)
-        return null
+        return 'user'
       }
 
       if (data) {
@@ -118,7 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         setRole(data.role || 'user')
         setPermissions((data.permissions as AdminPermissions) || {})
-        return data.role
+        return data.role || 'user'
       } else {
         // Should catch cases where profile insert failed but no hard error
         setRole('user')
@@ -192,7 +193,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       mounted = false
       subscription.unsubscribe()
     }
-  }, []) // Remove 'role' and 'user' dependency to avoid infinite loops, rely on event
+  }, [])
 
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`
