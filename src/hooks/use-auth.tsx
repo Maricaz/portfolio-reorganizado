@@ -9,6 +9,7 @@ import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 import { AdminPermissions } from '@/types'
+import { getProfileWithRetry, createProfileFallback } from '@/services/profile'
 
 interface AuthContextType {
   user: User | null
@@ -20,7 +21,7 @@ interface AuthContextType {
   signIn: (
     email: string,
     password: string,
-  ) => Promise<{ error: any; data: any }>
+  ) => Promise<{ error: any; data: any; role?: string | null }>
   signOut: () => Promise<{ error: any }>
   resetPassword: (email: string) => Promise<{ error: any }>
   updatePassword: (password: string) => Promise<{ error: any }>
@@ -65,24 +66,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserRole = async (userId: string, userEmail?: string) => {
     setLoadingProfile(true)
     try {
-      // 1. Attempt to fetch profile
-      let { data, error } = await supabase
-        .from('profiles')
-        .select('role, is_banned, permissions')
-        .eq('id', userId)
-        .maybeSingle()
+      // 1. Attempt to fetch profile with retry
+      let { data, error } = await getProfileWithRetry(userId)
 
-      // 2. Self-healing: If profile is missing, try to create it
+      // 2. Self-healing: If profile is missing after retries, try to create it
       if (!data && !error) {
-        console.warn('Profile not found for user. Attempting to create...')
+        console.warn(
+          'Profile not found after retries. Attempting fallback creation...',
+        )
 
-        const { error: insertError } = await supabase.from('profiles').insert([
-          {
-            id: userId,
-            email: userEmail || '',
-            role: 'user', // Default role
-          },
-        ])
+        const { error: insertError } = await createProfileFallback(
+          userId,
+          userEmail || '',
+        )
 
         if (insertError) {
           console.error('Failed to auto-create profile:', insertError)
@@ -90,13 +86,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setRole('user')
           setPermissions({})
         } else {
-          // Retry fetch
-          const retryResult = await supabase
-            .from('profiles')
-            .select('role, is_banned, permissions')
-            .eq('id', userId)
-            .maybeSingle()
-
+          // Retry fetch one last time immediately
+          const retryResult = await getProfileWithRetry(userId, 1, 500)
           data = retryResult.data
           error = retryResult.error
         }
@@ -107,7 +98,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setRole('user') // Fallback to safe default
         setPermissions({})
         setLoadingProfile(false)
-        return
+        return null
       }
 
       if (data) {
@@ -123,19 +114,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             variant: 'destructive',
           })
           setLoadingProfile(false)
-          return
+          return null
         }
-        setRole(data.role)
+        setRole(data.role || 'user')
         setPermissions((data.permissions as AdminPermissions) || {})
+        return data.role
       } else {
         // Should catch cases where profile insert failed but no hard error
         setRole('user')
         setPermissions({})
+        return 'user'
       }
     } catch (error) {
       console.error('Unexpected error fetching role:', error)
       setRole('user')
       setPermissions({})
+      return 'user'
     } finally {
       setLoadingProfile(false)
     }
@@ -216,12 +210,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
     })
 
+    let userRole = null
+
     if (data?.user) {
       // Force fetch role immediately to ensure fresh state for Login component
-      await fetchUserRole(data.user.id, data.user.email)
+      // This will wait for retry logic if needed
+      userRole = await fetchUserRole(data.user.id, data.user.email)
     }
 
-    return { data, error }
+    return { data, error, role: userRole }
   }
 
   const signOut = async () => {

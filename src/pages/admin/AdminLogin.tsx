@@ -44,8 +44,10 @@ export default function AdminLogin() {
     setLoginError(null)
 
     try {
-      // 1. Basic Sign In
-      const { data, error } = await signIn(email, password)
+      // 1. Sign In (includes resilient profile fetch)
+      // The signIn function from useAuth now handles retries for profile
+      // and returns the role
+      const { data, error, role } = await signIn(email, password)
 
       if (error) {
         if (
@@ -61,57 +63,12 @@ export default function AdminLogin() {
         throw new Error('Erro inesperado: dados do usuário não retornados.')
       }
 
-      // 2. Profile & Role Verification (Resilient)
-      let profileData = null
-
-      // Attempt to fetch profile
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role, is_banned')
-        .eq('id', data.user.id)
-        .maybeSingle()
-
-      if (profile) {
-        profileData = profile
-      } else if (!profileError || profileError.code === 'PGRST116') {
-        // Profile missing, attempt to create it (Self-healing on Login)
-        console.log('Profile missing on login. Attempting creation...')
-        const { error: insertError } = await supabase.from('profiles').insert([
-          {
-            id: data.user.id,
-            email: email,
-            role: 'user', // Default safe role
-          },
-        ])
-
-        if (!insertError) {
-          // Retry fetch
-          const { data: retryProfile } = await supabase
-            .from('profiles')
-            .select('role, is_banned')
-            .eq('id', data.user.id)
-            .single()
-          profileData = retryProfile
-        } else {
-          console.error('Failed to create profile on login:', insertError)
-        }
-      }
-
-      // Check if we managed to get a profile
-      if (!profileData) {
-        await signOut()
-        throw new Error(
-          'Perfil não encontrado e não pôde ser criado. Contate o suporte.',
-        )
-      }
-
-      if (profileData.is_banned) {
-        await signOut()
-        throw new Error('Acesso negado: Sua conta foi banida.')
-      }
-
+      // 2. Validate Role (based on what useAuth returned or context)
+      // We check the returned role directly to avoid race conditions with context updates
+      const currentRole = role || 'user'
       const allowedRoles = ['admin', 'super_admin', 'editor']
-      if (!profileData.role || !allowedRoles.includes(profileData.role)) {
+
+      if (!allowedRoles.includes(currentRole)) {
         await signOut()
         throw new Error(
           'Acesso negado: Esta conta não possui privilégios de administrador.',
