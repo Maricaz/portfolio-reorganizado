@@ -65,14 +65,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserRole = async (userId: string, userEmail?: string) => {
     setLoadingProfile(true)
     try {
-      // Use maybeSingle to avoid errors if no row exists
+      // 1. Attempt to fetch profile
       let { data, error } = await supabase
         .from('profiles')
         .select('role, is_banned, permissions')
         .eq('id', userId)
         .maybeSingle()
 
-      // Self-healing: If profile is missing, try to create it
+      // 2. Self-healing: If profile is missing, try to create it
       if (!data && !error) {
         console.warn('Profile not found for user. Attempting to create...')
 
@@ -86,10 +86,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (insertError) {
           console.error('Failed to auto-create profile:', insertError)
+          // Don't return yet, set default safe values
           setRole('user')
           setPermissions({})
-          setLoadingProfile(false)
-          return
         } else {
           // Retry fetch
           const retryResult = await supabase
@@ -129,6 +128,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setRole(data.role)
         setPermissions((data.permissions as AdminPermissions) || {})
       } else {
+        // Should catch cases where profile insert failed but no hard error
         setRole('user')
         setPermissions({})
       }
@@ -160,8 +160,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else if (newSession?.user) {
         setSession(newSession)
         setUser(newSession.user)
-        // Only fetch role if we don't have it or if the user changed
-        if (newSession.user.id !== user?.id) {
+        // If user ID changed or we don't have a role yet, fetch it
+        // Check if role is null to cover initial load or refresh cases
+        if (newSession.user.id !== user?.id || role === null) {
           await fetchUserRole(newSession.user.id, newSession.user.email)
         }
         setLoadingAuth(false)
@@ -197,7 +198,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       mounted = false
       subscription.unsubscribe()
     }
-  }, [])
+  }, []) // Remove 'role' and 'user' dependency to avoid infinite loops, rely on event
 
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`
@@ -216,7 +217,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })
 
     if (data?.user) {
-      // Force fetch role immediately
+      // Force fetch role immediately to ensure fresh state for Login component
       await fetchUserRole(data.user.id, data.user.email)
     }
 

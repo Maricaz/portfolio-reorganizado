@@ -61,35 +61,57 @@ export default function AdminLogin() {
         throw new Error('Erro inesperado: dados do usuário não retornados.')
       }
 
-      // 2. Profile & Role Verification
-      // Note: useAuth already triggers a role fetch, but we verify here for immediate feedback
-      // Using maybeSingle to handle potential missing profile cases gracefully
+      // 2. Profile & Role Verification (Resilient)
+      let profileData = null
+
+      // Attempt to fetch profile
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role, is_banned')
         .eq('id', data.user.id)
         .maybeSingle()
 
-      if (profileError) {
-        console.error('Profile verification error:', profileError)
+      if (profile) {
+        profileData = profile
+      } else if (!profileError || profileError.code === 'PGRST116') {
+        // Profile missing, attempt to create it (Self-healing on Login)
+        console.log('Profile missing on login. Attempting creation...')
+        const { error: insertError } = await supabase.from('profiles').insert([
+          {
+            id: data.user.id,
+            email: email,
+            role: 'user', // Default safe role
+          },
+        ])
+
+        if (!insertError) {
+          // Retry fetch
+          const { data: retryProfile } = await supabase
+            .from('profiles')
+            .select('role, is_banned')
+            .eq('id', data.user.id)
+            .single()
+          profileData = retryProfile
+        } else {
+          console.error('Failed to create profile on login:', insertError)
+        }
+      }
+
+      // Check if we managed to get a profile
+      if (!profileData) {
         await signOut()
         throw new Error(
-          'Erro ao verificar perfil. Tente novamente ou contate o suporte.',
+          'Perfil não encontrado e não pôde ser criado. Contate o suporte.',
         )
       }
 
-      if (!profile) {
-        await signOut()
-        throw new Error('Perfil de usuário não encontrado.')
-      }
-
-      if (profile.is_banned) {
+      if (profileData.is_banned) {
         await signOut()
         throw new Error('Acesso negado: Sua conta foi banida.')
       }
 
       const allowedRoles = ['admin', 'super_admin', 'editor']
-      if (!profile.role || !allowedRoles.includes(profile.role)) {
+      if (!profileData.role || !allowedRoles.includes(profileData.role)) {
         await signOut()
         throw new Error(
           'Acesso negado: Esta conta não possui privilégios de administrador.',
@@ -129,11 +151,14 @@ export default function AdminLogin() {
       console.error('Login process error:', error)
       setLoginError(errorMessage)
 
-      toast({
-        title: 'Falha no Login',
-        description: errorMessage,
-        variant: 'destructive',
-      })
+      // Only show toast if it's not a simple validation error (user sees alert in form)
+      if (!errorMessage.includes('Email ou senha')) {
+        toast({
+          title: 'Falha no Login',
+          description: errorMessage,
+          variant: 'destructive',
+        })
+      }
     }
   }
 
