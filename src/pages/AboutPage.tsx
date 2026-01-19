@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getSocialLinks, getSkills } from '@/services/about'
-import { SocialLink, Skill } from '@/types'
+import { SocialLink, ResumeSkill } from '@/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 import {
@@ -19,7 +19,7 @@ import { AboutGallery } from '@/components/AboutGallery'
 export default function AboutPage() {
   const { t } = useLanguage()
   const [socials, setSocials] = useState<SocialLink[]>([])
-  const [skills, setSkills] = useState<Skill[]>([])
+  const [skills, setSkills] = useState<ResumeSkill[]>([])
   const [loading, setLoading] = useState(true)
 
   useSEO({
@@ -120,13 +120,13 @@ export default function AboutPage() {
             {skills.map((skill) => (
               <div key={skill.id} className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="font-medium">{skill.label}</span>
+                  <span className="font-medium">{skill.name}</span>
                   <span className="text-muted-foreground font-mono">
-                    {skill.value}%
+                    {skill.proficiency}%
                   </span>
                 </div>
                 <Progress
-                  value={skill.value}
+                  value={skill.proficiency}
                   className="h-2.5 bg-secondary/50"
                 />
               </div>

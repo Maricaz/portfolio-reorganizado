@@ -1,8 +1,9 @@
 import { supabase } from '@/lib/supabase/client'
-import { SocialLink, Skill } from '@/types'
+import { SocialLink, ResumeSkill } from '@/types'
 
 export const getSocialLinks = async () => {
-  const { data, error } = await supabase
+  // Using any cast since social_links table is not present in the generated types
+  const { data, error } = await (supabase as any)
     .from('social_links')
     .select('*')
     .order('created_at', { ascending: true })
@@ -15,14 +16,15 @@ export const getSocialLinks = async () => {
 }
 
 export const getSkills = async () => {
+  // Querying resume_skills instead of skills which doesn't exist
   const { data, error } = await supabase
-    .from('skills')
+    .from('resume_skills')
     .select('*')
-    .order('value', { ascending: false })
+    .order('proficiency', { ascending: false })
 
   if (error) {
     console.error('Error fetching skills:', error)
     return []
   }
-  return data as Skill[]
+  return data as ResumeSkill[]
 }

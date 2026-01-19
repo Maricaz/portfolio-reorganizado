@@ -84,3 +84,13 @@ export interface PushSubscriptionData {
     auth: string
   }
 }
+
+// Types for About Page and other public facing components
+export type ResumeSkill = Database['public']['Tables']['resume_skills']['Row']
+
+export interface SocialLink {
+  id: string
+  platform: string
+  url: string
+  created_at?: string
+}
