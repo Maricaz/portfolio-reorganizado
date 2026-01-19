@@ -174,7 +174,7 @@ export default function MusicPage() {
             width="100%"
             height="300"
             frameBorder="0"
-            allowTransparency={true}
+            {...({ allowtransparency: 'true' } as any)}
             allow="encrypted-media; clipboard-write"
           />
         </div>
