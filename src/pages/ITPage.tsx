@@ -9,7 +9,6 @@ import { ExternalLink, Cpu, Code2, Github, Filter, Layers } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 import { useAnalytics } from '@/hooks/use-analytics'
-import { cn } from '@/lib/utils'
 
 export default function ITPage() {
   const { t, language } = useLanguage()
@@ -88,7 +87,7 @@ export default function ITPage() {
   }
 
   const getProjectLink = (project: ITProject) => {
-    return project.demo_url || project.link
+    return project.live_url || project.demo_url || project.link
   }
 
   return (
@@ -242,7 +241,7 @@ export default function ITPage() {
                         }
                       >
                         <a
-                          href={getProjectLink(project)}
+                          href={getProjectLink(project)!}
                           target="_blank"
                           rel="noreferrer"
                         >

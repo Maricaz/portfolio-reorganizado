@@ -42,7 +42,8 @@ export const LatestItem = () => {
     return project.title
   }
 
-  const projectLink = project?.demo_url || project?.link || '#'
+  const projectLink =
+    project?.live_url || project?.demo_url || project?.link || '#'
 
   if (loading) {
     return (
@@ -95,7 +96,7 @@ export const LatestItem = () => {
                 <span>{new Date(project.created_at).toLocaleDateString()}</span>
                 <span>•</span>
                 <Badge variant="outline" className="text-xs font-normal">
-                  {project.category}
+                  {project.category || 'Web'}
                 </Badge>
               </div>
               <h3 className="text-2xl md:text-3xl font-bold group-hover:text-primary transition-colors">

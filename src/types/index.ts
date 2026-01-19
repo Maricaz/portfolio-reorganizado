@@ -53,18 +53,26 @@ export type UserProfile = Database['public']['Tables']['profiles']['Row'] & {
 }
 
 export type Book = Database['public']['Tables']['books']['Row']
-export type Project = {
+
+export interface ITProject {
   id: string
-  title: string
-  description_pt: string
-  description_en: string
-  description_ko: string
-  image_url: string
-  tech_stack: string[]
-  demo_url?: string
-  repo_url?: string
   created_at: string
+  title: string
+  title_ko?: string | null
+  description_en?: string | null
+  description_pt?: string | null
+  description_ko?: string | null
+  image_url?: string | null
+  github_url?: string | null
+  live_url?: string | null
+  demo_url?: string | null
+  link?: string | null
+  featured?: boolean
+  tags?: string[] | null
+  category?: string | null
 }
+
+export type Project = ITProject
 
 export type ContactSubmission =
   Database['public']['Tables']['contact_submissions']['Row']
