@@ -88,6 +88,7 @@ export const deleteTrack = async (id: string) => {
 
 // Album Concept
 export const getAlbumConcept = async () => {
+  // Using 'as any' for table name because types might be outdated immediately after migration
   const { data, error } = await supabase
     .from('album_settings' as any)
     .select('*')
@@ -99,7 +100,27 @@ export const getAlbumConcept = async () => {
     return null
   }
 
-  return data as AlbumConcept | null
+  if (!data) return null
+
+  // Map flat DB structure to nested AlbumConcept structure
+  const row = data as any
+
+  const concept: AlbumConcept = {
+    title: {
+      en: row.title_en || '',
+      pt: row.title_pt || '',
+      ko: row.title_ko || '',
+    },
+    description: {
+      en: row.description_en || '',
+      pt: row.description_pt || '',
+      ko: row.description_ko || '',
+    },
+    cover_url: row.image_url,
+    video_url: null, // Video URL is not present in the new schema
+  }
+
+  return concept
 }
 
 // Playlists
