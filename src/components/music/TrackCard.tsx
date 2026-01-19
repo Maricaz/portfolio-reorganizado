@@ -41,10 +41,10 @@ export const TrackCard = ({ track, isActive, onPlay }: TrackCardProps) => {
   return (
     <Card
       className={cn(
-        'overflow-hidden transition-all duration-300 border-l-4',
+        'transition-all duration-300',
         isActive
-          ? 'border-l-primary shadow-lg ring-1 ring-primary/20'
-          : 'border-l-transparent hover:border-l-muted-foreground/50',
+          ? 'border-l-4 border-l-primary shadow-[0_0_20px_rgba(147,51,234,0.3)] ring-1 ring-primary/20'
+          : 'border-l-4 border-l-transparent hover:border-l-muted-foreground/50',
       )}
       id={`track-${track.id}`}
     >

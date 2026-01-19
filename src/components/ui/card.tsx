@@ -2,6 +2,7 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+// Updated Card to use neon styling by default for a consistent look
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -9,7 +10,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'rounded-lg border bg-card text-card-foreground shadow-sm',
+      'rounded-lg neon-card', // Using the neon-card class defined in main.css
       className,
     )}
     {...props}

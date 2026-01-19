@@ -36,7 +36,6 @@ import {
   ExternalLink,
   CheckCircle2,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 export default function ResumePage() {
   const { t, language } = useLanguage()
@@ -270,10 +269,7 @@ export default function ResumePage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {Object.entries(groupedSkills).map(([category, catSkills]) => (
-                  <Card
-                    key={category}
-                    className="overflow-hidden border-primary/10 hover:border-primary/30 transition-colors"
-                  >
+                  <Card key={category}>
                     <CardHeader className="bg-muted/30 pb-3">
                       <CardTitle className="text-lg font-bold flex items-center gap-2">
                         <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -308,10 +304,7 @@ export default function ResumePage() {
               <LoadingSkeleton />
             ) : (
               education.map((item) => (
-                <Card
-                  key={item.id}
-                  className="overflow-hidden hover:shadow-md transition-shadow"
-                >
+                <Card key={item.id}>
                   <CardContent className="p-6">
                     <div className="flex flex-col md:flex-row gap-4 justify-between items-start">
                       <div className="space-y-2">
@@ -352,10 +345,7 @@ export default function ResumePage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {certifications.map((item) => (
-                  <Card
-                    key={item.id}
-                    className="group hover:border-primary/50 transition-all flex flex-col h-full"
-                  >
+                  <Card key={item.id} className="flex flex-col h-full">
                     <CardContent className="p-6 flex flex-col h-full gap-4">
                       <div className="flex items-start gap-4">
                         <div className="p-2 rounded-full bg-secondary text-secondary-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
@@ -433,10 +423,7 @@ export default function ResumePage() {
             ) : (
               <div className="space-y-6">
                 {publications.map((item) => (
-                  <Card
-                    key={item.id}
-                    className="hover:bg-muted/10 transition-colors"
-                  >
+                  <Card key={item.id}>
                     <CardContent className="p-6">
                       <div className="flex flex-col md:flex-row gap-4 justify-between">
                         <div className="space-y-2">

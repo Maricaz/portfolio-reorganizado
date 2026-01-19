@@ -174,7 +174,7 @@ export default function ITPage() {
           {filteredProjects.map((project, index) => (
             <Card
               key={project.id}
-              className="flex flex-col h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border-primary/10 hover:border-primary/50 animate-fade-in-up group bg-card/50 backdrop-blur-sm"
+              className="flex flex-col h-full animate-fade-in-up group"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <div className="relative h-48 overflow-hidden rounded-t-xl bg-muted">

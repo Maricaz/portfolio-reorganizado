@@ -29,7 +29,7 @@ export function BookCard({ book, trackToggle }: BookCardProps) {
   }
 
   return (
-    <Card className="overflow-hidden glass-soft border-primary/10 hover:border-primary/30 transition-all duration-300 h-full flex flex-col group animate-fade-in-up">
+    <Card className="h-full flex flex-col group animate-fade-in-up">
       <div className="aspect-[2/3] relative overflow-hidden bg-muted/30">
         {book.image_url ? (
           <img
