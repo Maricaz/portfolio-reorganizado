@@ -40,8 +40,8 @@ export default function Index() {
       title: t.home.cards.it,
       icon: Code,
       link: '/it',
-      color: 'text-blue-500',
-      bg: 'bg-blue-500/10',
+      color: 'text-cyan-500',
+      bg: 'bg-cyan-500/10',
     },
     {
       title: t.home.cards.music,
@@ -54,15 +54,15 @@ export default function Index() {
       title: t.home.cards.books,
       icon: BookOpen,
       link: '/books',
-      color: 'text-amber-500',
-      bg: 'bg-amber-500/10',
+      color: 'text-fuchsia-500',
+      bg: 'bg-fuchsia-500/10',
     },
     {
       title: t.home.cards.about,
       icon: User,
       link: '/about',
-      color: 'text-green-500',
-      bg: 'bg-green-500/10',
+      color: 'text-blue-500',
+      bg: 'bg-blue-500/10',
     },
   ]
 
@@ -71,14 +71,14 @@ export default function Index() {
       {/* Hero Section */}
       <section className="flex flex-col-reverse md:flex-row items-center gap-12 animate-fade-in-down">
         <div className="flex-1 space-y-6 text-center md:text-left">
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-purple-600 pb-2">
             {t.home.hero_title}
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl">
             {t.home.hero_subtitle}
           </p>
           <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
-            <Button size="lg" className="rounded-full px-8 shadow-lg" asChild>
+            <Button size="lg" className="rounded-full px-8 shadow-xl" asChild>
               <Link to="/contact">{t.home.cta}</Link>
             </Button>
             <Button
@@ -92,7 +92,7 @@ export default function Index() {
           </div>
         </div>
         <div className="flex-1 flex justify-center md:justify-end animate-float">
-          <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-background shadow-2xl ring-4 ring-primary/10">
+          <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-background shadow-2xl ring-4 ring-purple-500/20">
             <img
               src={heroImage}
               alt="Mariana Azevedo"
@@ -112,14 +112,14 @@ export default function Index() {
             onClick={() => trackEvent('nav_click', { link: card.link })}
             className="group"
           >
-            <Card className="h-full hover:shadow-xl transition-all duration-300 border-primary/5 hover:border-primary/20 hover:-translate-y-1 bg-card/50 backdrop-blur-sm">
+            <Card className="h-full hover:shadow-xl transition-all duration-300 border-purple-500/10 hover:border-purple-500/30 hover:-translate-y-1 bg-card/50 backdrop-blur-sm">
               <CardContent className="flex flex-col items-center justify-center p-8 gap-4 text-center h-full">
                 <div
                   className={`p-4 rounded-2xl ${card.bg} ${card.color} group-hover:scale-110 transition-transform duration-300`}
                 >
                   <card.icon className="w-8 h-8" />
                 </div>
-                <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">
+                <h3 className="text-lg font-semibold group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                   {card.title}
                 </h3>
               </CardContent>
