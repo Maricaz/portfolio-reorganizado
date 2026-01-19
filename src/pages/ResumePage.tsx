@@ -141,6 +141,9 @@ export default function ResumePage() {
     </div>
   )
 
+  const tabTriggerClass =
+    'rounded-full px-4 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25 border border-input bg-background hover:bg-purple-500/10 hover:text-purple-600 hover:border-purple-500/50 transition-all shadow-sm'
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
       {/* Header */}
@@ -154,8 +157,7 @@ export default function ResumePage() {
           </p>
         </div>
         <Button
-          variant="outline"
-          className="gap-2 shadow-sm hover:shadow-md transition-all"
+          className="gap-2"
           onClick={handleDownload}
           disabled={!resumeUrl}
         >
@@ -167,45 +169,27 @@ export default function ResumePage() {
       {/* Tabs */}
       <Tabs defaultValue="experience" className="space-y-8">
         <TabsList className="flex flex-wrap h-auto w-full justify-start gap-2 bg-transparent p-0">
-          <TabsTrigger
-            value="experience"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
-          >
+          <TabsTrigger value="experience" className={tabTriggerClass}>
             <Briefcase className="mr-2 h-4 w-4" />
             {t.resume.experience}
           </TabsTrigger>
-          <TabsTrigger
-            value="skills"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
-          >
+          <TabsTrigger value="skills" className={tabTriggerClass}>
             <Trophy className="mr-2 h-4 w-4" />
             {t.resume.skills}
           </TabsTrigger>
-          <TabsTrigger
-            value="education"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
-          >
+          <TabsTrigger value="education" className={tabTriggerClass}>
             <GraduationCap className="mr-2 h-4 w-4" />
             {t.resume.education}
           </TabsTrigger>
-          <TabsTrigger
-            value="certifications"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
-          >
+          <TabsTrigger value="certifications" className={tabTriggerClass}>
             <Award className="mr-2 h-4 w-4" />
             {t.resume.certifications}
           </TabsTrigger>
-          <TabsTrigger
-            value="languages"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
-          >
+          <TabsTrigger value="languages" className={tabTriggerClass}>
             <Languages className="mr-2 h-4 w-4" />
             {t.resume.languages}
           </TabsTrigger>
-          <TabsTrigger
-            value="publications"
-            className="rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all shadow-sm"
-          >
+          <TabsTrigger value="publications" className={tabTriggerClass}>
             <BookOpen className="mr-2 h-4 w-4" />
             {t.resume.publications}
           </TabsTrigger>
@@ -369,7 +353,7 @@ export default function ResumePage() {
                             href={item.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs flex items-center gap-1 text-primary hover:underline font-medium"
+                            className="text-xs flex items-center gap-1 text-primary hover:text-purple-600 hover:underline font-medium transition-colors"
                           >
                             {t.resume.verifier}{' '}
                             <ExternalLink className="h-3 w-3" />
@@ -439,8 +423,7 @@ export default function ResumePage() {
                         </div>
                         {item.url && (
                           <Button
-                            variant="outline"
-                            className="shrink-0 self-start md:self-center gap-2 hover:bg-primary hover:text-primary-foreground"
+                            className="shrink-0 self-start md:self-center gap-2"
                             asChild
                           >
                             <a
