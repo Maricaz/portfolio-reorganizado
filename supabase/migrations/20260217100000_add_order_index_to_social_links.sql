@@ -1,0 +1,1 @@
+ALTER TABLE public.social_links ADD COLUMN IF NOT EXISTS order_index INTEGER DEFAULT 0;

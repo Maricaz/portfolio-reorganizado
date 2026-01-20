@@ -93,4 +93,5 @@ export interface SocialLink {
   platform: string
   url: string
   created_at?: string
+  order_index?: number
 }

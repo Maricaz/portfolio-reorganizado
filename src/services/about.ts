@@ -2,10 +2,11 @@ import { supabase } from '@/lib/supabase/client'
 import { SocialLink, ResumeSkill } from '@/types'
 
 export const getSocialLinks = async () => {
-  // Using any cast since social_links table is not present in the generated types
+  // Using any cast since social_links table or columns might not be present in the generated types yet
   const { data, error } = await (supabase as any)
     .from('social_links')
     .select('*')
+    .order('order_index', { ascending: true })
     .order('created_at', { ascending: true })
 
   if (error) {
