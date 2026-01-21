@@ -63,14 +63,34 @@ export default function AdminLogin() {
         throw new Error('Erro inesperado: dados do usuário não retornados.')
       }
 
-      // 2. Validate Role (based on what useAuth returned or context)
-      // We check the returned role directly to avoid race conditions with context updates
+      // 2. Validate Role
+      // We verify the returned role and fallback to database function check
       const currentRole = role || 'user'
       const allowedRoles = ['admin', 'super_admin', 'editor']
+      let isAuthorized = allowedRoles.includes(currentRole)
 
-      if (!allowedRoles.includes(currentRole)) {
+      // Fallback: Check database function directly if client-side check is ambiguous
+      // This is crucial for robustness against sync issues or RLS edge cases
+      if (!isAuthorized) {
+        try {
+          const { data: isAdminDB, error: rpcError } =
+            await supabase.rpc('is_admin')
+
+          if (!rpcError && isAdminDB) {
+            isAuthorized = true
+          } else if (rpcError) {
+            console.warn('RPC Admin check failed:', rpcError)
+          }
+        } catch (err) {
+          console.warn('Unexpected error during admin RPC check:', err)
+        }
+      }
+
+      if (!isAuthorized) {
         await signOut()
-        console.warn(`Access denied for role: ${currentRole}`)
+        console.warn(
+          `Access denied for user ${data.user.email} with role: ${currentRole}`,
+        )
         throw new Error(
           'Acesso negado: Esta conta não possui privilégios de administrador.',
         )
