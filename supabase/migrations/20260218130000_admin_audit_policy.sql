@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- Policy for Admins to Insert Audit Logs
+DROP POLICY IF EXISTS "Admins can insert audit logs" ON public.audit_logs;
 CREATE POLICY "Admins can insert audit logs" ON public.audit_logs
     FOR INSERT
     WITH CHECK (
@@ -21,6 +22,7 @@ CREATE POLICY "Admins can insert audit logs" ON public.audit_logs
     );
 
 -- Policy for Admins to View Audit Logs
+DROP POLICY IF EXISTS "Admins can view audit logs" ON public.audit_logs;
 CREATE POLICY "Admins can view audit logs" ON public.audit_logs
     FOR SELECT
     USING (
@@ -28,7 +30,7 @@ CREATE POLICY "Admins can view audit logs" ON public.audit_logs
     );
 
 -- Ensure Admins can update Profiles (including roles and ban status)
--- Note: Existing policies might cover this, but we ensure it here
+DROP POLICY IF EXISTS "Admins can update all profiles" ON public.profiles;
 CREATE POLICY "Admins can update all profiles" ON public.profiles
     FOR UPDATE
     USING (
