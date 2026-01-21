@@ -44,9 +44,7 @@ export default function AdminLogin() {
     setLoginError(null)
 
     try {
-      // 1. Sign In (includes resilient profile fetch)
-      // The signIn function from useAuth now handles retries for profile
-      // and returns the role
+      // 1. Sign In
       const { data, error, role } = await signIn(email, password)
 
       if (error) {
@@ -54,45 +52,24 @@ export default function AdminLogin() {
           error.message.includes('Invalid login credentials') ||
           error.message.includes('Email not confirmed')
         ) {
-          throw new Error('Email ou senha incorretos.')
+          throw new Error('Invalid email or password')
         }
-        throw new Error(error.message)
+        throw error
       }
 
       if (!data.user) {
-        throw new Error('Erro inesperado: dados do usuário não retornados.')
+        throw new Error('Unexpected error: User data missing')
       }
 
       // 2. Validate Role
-      // We verify the returned role and fallback to database function check
       const currentRole = role || 'user'
       const allowedRoles = ['admin', 'super_admin', 'editor']
-      let isAuthorized = allowedRoles.includes(currentRole)
-
-      // Fallback: Check database function directly if client-side check is ambiguous
-      // This is crucial for robustness against sync issues or RLS edge cases
-      if (!isAuthorized) {
-        try {
-          const { data: isAdminDB, error: rpcError } =
-            await supabase.rpc('is_admin')
-
-          if (!rpcError && isAdminDB) {
-            isAuthorized = true
-          } else if (rpcError) {
-            console.warn('RPC Admin check failed:', rpcError)
-          }
-        } catch (err) {
-          console.warn('Unexpected error during admin RPC check:', err)
-        }
-      }
+      const isAuthorized = allowedRoles.includes(currentRole)
 
       if (!isAuthorized) {
         await signOut()
-        console.warn(
-          `Access denied for user ${data.user.email} with role: ${currentRole}`,
-        )
         throw new Error(
-          'Acesso negado: Esta conta não possui privilégios de administrador.',
+          'Access denied: This account does not have administrator privileges',
         )
       }
 
@@ -115,8 +92,8 @@ export default function AdminLogin() {
       } else {
         // Success
         toast({
-          title: 'Bem-vinda de volta!',
-          description: 'Login administrativo realizado com sucesso.',
+          title: 'Welcome Back!',
+          description: 'Admin login successful.',
         })
         navigate('/admin')
         setLoading(false)
@@ -124,18 +101,18 @@ export default function AdminLogin() {
     } catch (error: any) {
       setLoading(false)
       const errorMessage =
-        error.message || 'Ocorreu um erro ao tentar entrar. Tente novamente.'
+        error.message || 'An error occurred during login. Please try again.'
 
       console.error('Login process error:', error)
       setLoginError(errorMessage)
 
-      // Only show toast if it's not a simple validation error (user sees alert in form)
+      // Only show toast if it's a system error, specific auth errors are shown in Alert
       if (
-        !errorMessage.includes('Email ou senha') &&
-        !errorMessage.includes('Acesso negado')
+        !errorMessage.includes('Invalid email') &&
+        !errorMessage.includes('Access denied')
       ) {
         toast({
-          title: 'Falha no Login',
+          title: 'Login Failed',
           description: errorMessage,
           variant: 'destructive',
         })
@@ -153,8 +130,8 @@ export default function AdminLogin() {
 
     if (error) {
       toast({
-        title: 'Código MFA Inválido',
-        description: error.message,
+        title: 'Invalid MFA Code',
+        description: 'Please check your code and try again.',
         variant: 'destructive',
       })
     } else {
@@ -170,18 +147,16 @@ export default function AdminLogin() {
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
               <ShieldAlert className="w-6 h-6 text-primary" />
             </div>
-            <CardTitle className="text-center">
-              Autenticação de Dois Fatores
-            </CardTitle>
+            <CardTitle className="text-center">Two-Factor Auth</CardTitle>
             <CardDescription className="text-center">
-              Digite o código do seu aplicativo autenticador
+              Enter the code from your authenticator app
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleMfaVerify} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="mfa-code" className="sr-only">
-                  Código de Autenticação
+                  Authentication Code
                 </Label>
                 <Input
                   id="mfa-code"
@@ -200,7 +175,7 @@ export default function AdminLogin() {
                 className="w-full"
                 disabled={loading || mfaCode.length !== 6}
               >
-                {loading ? 'Verificando...' : 'Verificar'}
+                {loading ? 'Verifying...' : 'Verify'}
               </Button>
               <Button
                 variant="ghost"
@@ -208,7 +183,7 @@ export default function AdminLogin() {
                 className="w-full text-xs text-muted-foreground"
                 onClick={() => window.location.reload()}
               >
-                Voltar ao Login
+                Back to Login
               </Button>
             </form>
           </CardContent>
@@ -227,10 +202,10 @@ export default function AdminLogin() {
             </div>
           </div>
           <CardTitle className="text-center text-2xl font-bold">
-            Área Administrativa
+            Admin Portal
           </CardTitle>
           <CardDescription className="text-center">
-            Entre com suas credenciais para acessar o painel
+            Enter your credentials to access the dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -238,7 +213,7 @@ export default function AdminLogin() {
             {loginError && (
               <Alert variant="destructive" className="animate-fade-in">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Erro</AlertTitle>
+                <AlertTitle>Error</AlertTitle>
                 <AlertDescription className="text-xs mt-1">
                   {loginError}
                 </AlertDescription>
@@ -251,7 +226,7 @@ export default function AdminLogin() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@exemplo.com"
+                  placeholder="admin@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -263,12 +238,12 @@ export default function AdminLogin() {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Senha</Label>
+                <Label htmlFor="password">Password</Label>
                 <Link
                   to="/admin/forgot-password"
                   className="text-xs text-primary hover:underline underline-offset-4"
                 >
-                  Esqueceu a senha?
+                  Forgot password?
                 </Link>
               </div>
               <div className="relative">
@@ -290,24 +265,12 @@ export default function AdminLogin() {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Entrando...
+                  Signing in...
                 </>
               ) : (
-                'Entrar'
+                'Sign In'
               )}
             </Button>
-
-            {loginError && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="w-full text-xs text-muted-foreground mt-2"
-                onClick={() => setLoginError(null)}
-              >
-                Tentar novamente
-              </Button>
-            )}
           </form>
         </CardContent>
       </Card>

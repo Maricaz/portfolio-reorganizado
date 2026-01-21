@@ -51,12 +51,16 @@ export const EditUserDialog = ({
     if (!user) return
     setLoading(true)
     try {
+      // 1. Update Role (Select component used as per user story)
       await updateUserRole(user.id, role)
-      // Only update permissions if role is NOT super_admin (they have all implicitly)
-      // But we can save them anyway.
+
+      // 2. Update Permissions
       await updateUserPermissions(user.id, permissions)
 
-      toast({ title: 'Success', description: 'User updated successfully' })
+      toast({
+        title: 'Success',
+        description: 'User profile updated successfully',
+      })
       onSuccess()
       onOpenChange(false)
     } catch (error) {
@@ -81,34 +85,34 @@ export const EditUserDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit User</DialogTitle>
+          <DialogTitle>Edit User Profile</DialogTitle>
           <DialogDescription>
-            Update role and permissions for {user?.email}
+            Modify role and permissions for{' '}
+            <span className="font-mono text-primary">{user?.email}</span>
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="role" className="text-right">
-              Role
-            </Label>
-            <div className="col-span-3">
-              <Select value={role} onValueChange={setRole}>
-                <SelectTrigger id="role">
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="editor">Editor</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="super_admin">Super Admin</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="role">Role</Label>
+            <Select value={role} onValueChange={setRole}>
+              <SelectTrigger id="role" className="w-full">
+                <SelectValue placeholder="Select a role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="user">User</SelectItem>
+                <SelectItem value="editor">Editor</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="super_admin">Super Admin</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-muted-foreground">
+              Determines the access level of the user within the platform.
+            </p>
           </div>
 
           {role !== 'user' && role !== 'super_admin' && (
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm">Granular Permissions</h4>
+            <div className="space-y-3 pt-2 border-t">
+              <h4 className="font-medium text-sm">Detailed Permissions</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -147,16 +151,19 @@ export const EditUserDialog = ({
           )}
 
           {role === 'super_admin' && (
-            <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
-              Super Administrators have full access to all features
-              automatically.
+            <div className="rounded-md bg-purple-500/10 border border-purple-500/20 p-3 text-sm text-purple-700 dark:text-purple-300 flex gap-2">
+              <ShieldAlert className="h-5 w-5 shrink-0" />
+              <p>
+                Super Administrators have unrestricted access to all system
+                features automatically.
+              </p>
             </div>
           )}
         </div>
         <DialogFooter>
           <Button
             type="button"
-            variant="secondary"
+            variant="ghost"
             onClick={() => onOpenChange(false)}
           >
             Cancel

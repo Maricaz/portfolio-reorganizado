@@ -12,7 +12,13 @@ import {
   CardFooter,
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Shield, ShieldCheck, AlertTriangle, Loader2 } from 'lucide-react'
+import {
+  Shield,
+  ShieldCheck,
+  AlertTriangle,
+  Loader2,
+  QrCode,
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { SessionManager } from '@/components/admin/SessionManager'
 import { logSecurityEvent, triggerSecurityAlert } from '@/services/security'
@@ -83,7 +89,7 @@ export const SecuritySettings = () => {
     if (verifyError) {
       toast({
         title: 'Verification failed',
-        description: verifyError.message,
+        description: 'The code provided was incorrect. Please try again.',
         variant: 'destructive',
       })
     } else {
@@ -151,7 +157,8 @@ export const SecuritySettings = () => {
                 Two-Factor Authentication (MFA)
               </CardTitle>
               <CardDescription>
-                Add an extra layer of security to your account.
+                Secure your admin account with a second factor of
+                authentication.
               </CardDescription>
             </div>
             {hasVerifiedFactor ? (
@@ -165,31 +172,40 @@ export const SecuritySettings = () => {
         </CardHeader>
         <CardContent>
           {enrolling ? (
-            <div className="space-y-4 border rounded-md p-4 bg-muted/20">
-              <h3 className="font-semibold text-lg">Setup Authenticator App</h3>
-              <p className="text-sm text-muted-foreground">
-                Scan the QR code below with your authenticator app (like Google
-                Authenticator or Authy).
-              </p>
+            <div className="space-y-6 border rounded-md p-6 bg-muted/20">
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
+                  <QrCode className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">
+                    Setup Authenticator App
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Scan the QR code below with Google Authenticator or Authy.
+                  </p>
+                </div>
+              </div>
 
               {qrCode && (
-                <div className="flex justify-center p-4 bg-white rounded-md w-fit mx-auto">
+                <div className="flex justify-center p-4 bg-white rounded-md w-fit mx-auto shadow-sm border">
                   <img src={qrCode} alt="QR Code" className="w-48 h-48" />
                 </div>
               )}
 
-              <div className="space-y-2 max-w-xs mx-auto">
-                <Label htmlFor="code">Verification Code</Label>
+              <div className="space-y-2 max-w-xs mx-auto text-center">
+                <Label htmlFor="code">Enter 6-digit Code</Label>
                 <Input
                   id="code"
-                  placeholder="Enter 6-digit code"
+                  placeholder="000000"
                   value={verifyCode}
                   onChange={(e) => setVerifyCode(e.target.value)}
                   maxLength={6}
+                  className="text-center text-lg tracking-widest font-mono"
                 />
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-2">
                 <Button variant="ghost" onClick={() => setEnrolling(false)}>
                   Cancel
                 </Button>
@@ -239,7 +255,8 @@ export const SecuritySettings = () => {
                   <AlertTriangle className="h-10 w-10 mb-2 opacity-50" />
                   <p>You have not enabled 2FA yet.</p>
                   <p className="text-sm">
-                    We strongly recommend enabling it for admin accounts.
+                    We strongly recommend enabling it for all administrator
+                    accounts.
                   </p>
                 </div>
               )}

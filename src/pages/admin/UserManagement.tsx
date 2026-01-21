@@ -40,6 +40,7 @@ import {
   CheckCircle,
   KeyRound,
   MoreVertical,
+  Calendar,
 } from 'lucide-react'
 import { ExportButton } from '@/components/admin/ExportButton'
 import {
@@ -94,7 +95,7 @@ export default function UserManagement() {
         setLoading(false)
       }
     }
-  }, [authLoading, role]) // Simplified dep array
+  }, [authLoading, role])
 
   const handleEditClick = (profile: UserProfile) => {
     setEditingUser(profile)
@@ -215,18 +216,17 @@ export default function UserManagement() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User Info</TableHead>
-              <TableHead>Joined</TableHead>
+              <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
-              <TableHead>Permissions</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Joined</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
+                <TableCell colSpan={5} className="text-center py-8">
                   <div className="flex justify-center items-center gap-2">
                     <Loader2 className="animate-spin h-4 w-4" />
                     Loading users...
@@ -235,7 +235,7 @@ export default function UserManagement() {
               </TableRow>
             ) : profiles.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
+                <TableCell colSpan={5} className="text-center py-8">
                   No users found.
                 </TableCell>
               </TableRow>
@@ -244,7 +244,7 @@ export default function UserManagement() {
                 <TableRow key={profile.id}>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-medium text-sm">
+                      <span className="font-medium">
                         {profile.email || 'No email available'}
                       </span>
                       <span className="font-mono text-xs text-muted-foreground">
@@ -258,51 +258,18 @@ export default function UserManagement() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {new Date(profile.created_at).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
                     <Badge
                       variant="outline"
                       className={
                         profile.role === 'super_admin'
-                          ? 'border-primary text-primary'
+                          ? 'border-purple-500 text-purple-500'
                           : profile.role === 'admin'
                             ? 'border-blue-500 text-blue-500'
-                            : ''
+                            : 'border-gray-500 text-gray-500'
                       }
                     >
                       {profile.role || 'user'}
                     </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {profile.role === 'super_admin' ? (
-                      <span className="text-xs text-muted-foreground">All</span>
-                    ) : profile.permissions ? (
-                      <div className="flex flex-wrap gap-1">
-                        {Object.entries(profile.permissions)
-                          .filter(([, v]) => v)
-                          .map(([k]) => (
-                            <Badge
-                              key={k}
-                              variant="secondary"
-                              className="text-[10px]"
-                            >
-                              {k}
-                            </Badge>
-                          ))}
-                        {Object.values(profile.permissions).every(
-                          (v) => !v,
-                        ) && (
-                          <span className="text-xs text-muted-foreground">
-                            None
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        None
-                      </span>
-                    )}
                   </TableCell>
                   <TableCell>
                     {profile.is_banned ? (
@@ -312,30 +279,41 @@ export default function UserManagement() {
                     ) : (
                       <Badge
                         variant="outline"
-                        className="text-green-600 border-green-200 gap-1"
+                        className="text-green-600 border-green-200 gap-1 bg-green-500/5"
                       >
                         <CheckCircle className="h-3 w-3" /> Active
                       </Badge>
                     )}
                   </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                      <Calendar className="h-3 w-3" />
+                      {new Date(profile.created_at).toLocaleDateString()}
+                    </div>
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={processingId === profile.id}
+                        >
+                          {processingId === profile.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <MoreVertical className="h-4 w-4" />
+                          )}
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
                           onClick={() => handleEditClick(profile)}
-                          disabled={
-                            role !== 'super_admin' && role !== 'admin'
-                            // Admin can edit other users but maybe not super_admins
-                          }
+                          disabled={role !== 'super_admin' && role !== 'admin'}
                         >
                           <Pencil className="mr-2 h-4 w-4" />
-                          Edit Role & Perms
+                          Edit Role
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleResetPassword(profile.email!)}
