@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getMusicTracks, getAlbumConcept } from '@/services/music'
+import { fetchMusic } from '@/lib/queries'
+import { getAlbumConcept } from '@/services/music' // Keeping this service for AlbumConcept as per AC focus on fetchMusic
 import { MusicTrack, AlbumConcept } from '@/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 import { TrackCard } from '@/components/music/TrackCard'
 import { SidePanel } from '@/components/music/SidePanel'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Info } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default function MusicPage() {
   const { t, language } = useLanguage()
@@ -19,6 +21,7 @@ export default function MusicPage() {
   const [albumConcept, setAlbumConcept] = useState<AlbumConcept | null>(null)
   const [selectedTrack, setSelectedTrack] = useState<MusicTrack | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useSEO({
     title: selectedTrack
@@ -38,9 +41,9 @@ export default function MusicPage() {
       setLoading(true)
       try {
         const [tracksData, albumData] = await Promise.all([
-          getMusicTracks().catch((err) => {
+          fetchMusic().catch((err) => {
             console.error('Failed to fetch music tracks:', err)
-            return []
+            throw err
           }),
           getAlbumConcept().catch((err) => {
             console.error('Failed to fetch album concept:', err)
@@ -59,6 +62,7 @@ export default function MusicPage() {
         }
       } catch (error) {
         console.error('Unexpected error in MusicPage data fetch:', error)
+        if (isMounted) setError('Failed to load music tracks.')
       } finally {
         if (isMounted) {
           setLoading(false)
@@ -97,6 +101,24 @@ export default function MusicPage() {
       setSelectedTrack(track)
       navigate(`/music/${track.track_id || track.id}`, { replace: true })
     }
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 min-h-screen flex flex-col items-center justify-center">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => window.location.reload()}
+        >
+          Retry
+        </Button>
+      </div>
+    )
   }
 
   return (

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { submitContactForm } from '@/services/database'
+import { insertContact } from '@/lib/queries'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -85,12 +85,10 @@ export default function ContactPage() {
 
     setIsSubmitting(true)
     try {
-      // 1. Formspree Integration
+      // 1. Formspree Integration (Legacy/Backup)
       const formspreeEndpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT
-      if (!formspreeEndpoint || formspreeEndpoint.includes('PLACEHOLDER')) {
-        // Proceeding to Supabase even if Formspree is not configured
-      } else {
-        const response = await fetch(formspreeEndpoint, {
+      if (formspreeEndpoint && !formspreeEndpoint.includes('PLACEHOLDER')) {
+        await fetch(formspreeEndpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -102,21 +100,16 @@ export default function ContactPage() {
             _subject: `[Portfólio] Nova mensagem de ${values.name}`,
             _origin: window.location.href,
           }),
-        })
-
-        if (!response.ok) {
-          throw new Error('Formspree submission failed')
-        }
+        }).catch((e) => console.warn('Formspree failed', e))
       }
 
-      // 2. Supabase Persistence
-      const { error } = await submitContactForm({
+      // 2. Supabase Persistence using new insertContact query
+      await insertContact({
         name: values.name,
         email: values.email,
         message: values.message,
         origin: window.location.href,
       })
-      if (error) throw error
 
       // Success handling
       setIsSuccess(true)

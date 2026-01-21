@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getITProjects } from '@/services/it-projects'
+import { fetchProjects } from '@/lib/queries'
 import { ITProject } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -9,12 +9,14 @@ import { ExternalLink, Cpu, Code2, Github, Filter, Layers } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSEO } from '@/hooks/use-seo'
 import { useAnalytics } from '@/hooks/use-analytics'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 export default function ITPage() {
   const { t, language } = useLanguage()
   const { trackProjectOpen, trackEvent } = useAnalytics()
   const [projects, setProjects] = useState<ITProject[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [selectedTech, setSelectedTech] = useState<string>('All')
 
@@ -24,18 +26,18 @@ export default function ITPage() {
   })
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const loadProjects = async () => {
       try {
-        const { data, error } = await getITProjects()
+        const data = await fetchProjects()
         if (data) setProjects(data)
-        if (error) console.error('Failed to fetch IT projects', error)
       } catch (err) {
         console.error('Failed to fetch IT projects', err)
+        setError('Failed to load projects. Please try again later.')
       } finally {
         setLoading(false)
       }
     }
-    fetchProjects()
+    loadProjects()
   }, [])
 
   const categories = useMemo(() => {
@@ -88,6 +90,24 @@ export default function ITPage() {
 
   const getProjectLink = (project: ITProject) => {
     return project.live_url || project.demo_url || project.link
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => window.location.reload()}
+        >
+          Retry
+        </Button>
+      </div>
+    )
   }
 
   return (

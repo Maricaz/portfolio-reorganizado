@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Calendar, Code2 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getITProjects } from '@/services/it-projects'
+import { fetchProjects } from '@/lib/queries'
 import { ITProject } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -17,7 +17,8 @@ export const LatestItem = () => {
   useEffect(() => {
     const fetchLatest = async () => {
       try {
-        const { data } = await getITProjects()
+        // Use fetchProjects to get featured projects as per user story requirements
+        const data = await fetchProjects(true)
         if (data && data.length > 0) {
           setProject(data[0])
         }

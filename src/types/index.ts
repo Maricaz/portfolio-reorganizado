@@ -8,7 +8,11 @@ export type PlaylistTrack =
     track?: MusicTrack
   }
 
-export type MusicTrack = Database['public']['Tables']['music_tracks']['Row']
+// Extending MusicTrack to include description_en as per user story requirements
+// even if it's not yet in the auto-generated types
+export type MusicTrack = Database['public']['Tables']['music_tracks']['Row'] & {
+  description_en?: string | null
+}
 
 export interface AlbumConcept {
   title: Record<string, string>
@@ -85,8 +89,11 @@ export interface PushSubscriptionData {
   }
 }
 
-// Types for About Page and other public facing components
 export type ResumeSkill = Database['public']['Tables']['resume_skills']['Row']
+
+// Using the type from lib/queries.ts implied return, but here we define what we expect from DB
+export type ResumeExperience =
+  Database['public']['Tables']['resume_experience']['Row']
 
 export interface SocialLink {
   id: string

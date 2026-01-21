@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { getBooks } from '@/services/books'
+import { fetchBooks } from '@/lib/queries'
 import { Book } from '@/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BookOpen } from 'lucide-react'
 import { useSEO } from '@/hooks/use-seo'
 import { useAnalytics } from '@/hooks/use-analytics'
 import { BookCard } from '@/components/BookCard'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 
 export default function BooksPage() {
   const { t, language } = useLanguage()
   const { trackBookSynopsisToggle } = useAnalytics()
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useSEO({
     title: `${t.books.title} — Mariana Azevedo`,
@@ -20,20 +23,49 @@ export default function BooksPage() {
   })
 
   useEffect(() => {
-    const fetchBooks = async () => {
+    const loadBooks = async () => {
       setLoading(true)
       try {
-        const data = await getBooks(language)
+        const data = await fetchBooks()
         if (data) setBooks(data)
         else setBooks([])
       } catch (err) {
         console.error('Failed to fetch books', err)
+        setError('Failed to load books. Please try again later.')
       } finally {
         setLoading(false)
       }
     }
-    fetchBooks()
-  }, [language])
+    loadBooks()
+  }, []) // fetchBooks fetches all books, we filter by language in render if needed or allow all
+
+  // Filter books by current language if needed, or display all.
+  // Previous implementation filtered by language in query.
+  // fetchBooks returns all. Let's filter client-side to match previous behavior if expected,
+  // or maybe better to show all? The previous one had `getBooks(language)`.
+  // The user story asked for `fetchBooks` (retrieves all).
+  // I will filter them here to keep UX consistent.
+  const displayedBooks = books.filter(
+    (b) => b.language_code === language || !b.language_code,
+  )
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-7xl min-h-[50vh] flex flex-col items-center justify-center">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => window.location.reload()}
+        >
+          Retry
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl space-y-12 min-h-[80vh]">
@@ -62,9 +94,9 @@ export default function BooksPage() {
             </div>
           ))}
         </div>
-      ) : books.length > 0 ? (
+      ) : displayedBooks.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {books.map((book) => (
+          {displayedBooks.map((book) => (
             <BookCard
               key={book.id}
               book={book}

@@ -1,19 +1,21 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { fetchExperiences } from '@/lib/queries'
 import {
-  getResumeExperience,
   getResumeEducation,
   getResumeSkills,
   getResumeCertifications,
   getResumeLanguages,
   getResumePublications,
+} from '@/services/resume' // Keeping other services as user story only specified fetchExperiences
+import {
   ResumeExperience,
   ResumeEducation,
   ResumeSkill,
   ResumeCertification,
   ResumeLanguage,
   ResumePublication,
-} from '@/services/resume'
+} from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -36,11 +38,13 @@ import {
   ExternalLink,
   CheckCircle2,
 } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 export default function ResumePage() {
   const { t, language } = useLanguage()
   const { trackResumeDownload } = useAnalytics()
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [experience, setExperience] = useState<ResumeExperience[]>([])
   const [education, setEducation] = useState<ResumeEducation[]>([])
   const [skills, setSkills] = useState<ResumeSkill[]>([])
@@ -61,7 +65,7 @@ export default function ResumePage() {
       try {
         setLoading(true)
         const [exp, edu, ski, cert, lang, pub, settings] = await Promise.all([
-          getResumeExperience(),
+          fetchExperiences(),
           getResumeEducation(),
           getResumeSkills(),
           getResumeCertifications(),
@@ -70,7 +74,7 @@ export default function ResumePage() {
           getSiteSettings(),
         ])
 
-        if (exp.data) setExperience(exp.data)
+        if (exp) setExperience(exp)
         if (edu.data) setEducation(edu.data)
         if (ski.data) setSkills(ski.data)
         if (cert.data) setCertifications(cert.data)
@@ -80,6 +84,7 @@ export default function ResumePage() {
           setResumeUrl(settings.resume_config.url)
       } catch (err) {
         console.error('Failed to fetch resume data', err)
+        setError('Failed to load resume data.')
       } finally {
         setLoading(false)
       }
@@ -143,6 +148,24 @@ export default function ResumePage() {
 
   const tabTriggerClass =
     'rounded-full px-4 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25 border border-input bg-background hover:bg-purple-500/10 hover:text-purple-600 hover:border-purple-500/50 transition-all shadow-sm'
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => window.location.reload()}
+        >
+          Retry
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
